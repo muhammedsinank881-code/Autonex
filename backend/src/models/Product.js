@@ -2,11 +2,52 @@ import mongoose from "mongoose";
 
 const variantSchema = new mongoose.Schema(
   {
-    size: String,
+    name: {
+      type: String,
+      required: true, 
+    },
+
+    price: {
+      type: Number,
+      required: true,
+    },
+
+    discountPrice: {
+      type: Number,
+      default: 0,
+    },
 
     stock: {
       type: Number,
       default: 0,
+    },
+
+    sku: {
+      type: String,
+      trim: true,
+    },
+  },
+  {
+    _id: true,
+  }
+);
+
+const compatibleVehicleSchema = new mongoose.Schema(
+  {
+    make: {
+      type: String,
+      required: true, 
+      trim: true,
+    },
+
+    model: {
+      type: String,
+      required: true, 
+      trim: true,
+    },
+
+    year: {
+      type: Number,
     },
   },
   {
@@ -19,6 +60,18 @@ const productSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
+    },
+
+    description: {
+      type: String,
+      default: "",
+    },
+
+    sku: {
+      type: String,
+      unique: true,
+      sparse: true,
       trim: true,
     },
 
@@ -51,11 +104,21 @@ const productSchema = new mongoose.Schema(
 
     images: [
       {
-        url: String,
+        url: {
+          type: String,
+          required: true,
+        },
+
+        alt: {
+          type: String,
+          default: "",
+        },
       },
     ],
 
     variants: [variantSchema],
+
+    compatibleVehicles: [compatibleVehicleSchema],
 
     brand: {
       type: mongoose.Schema.Types.ObjectId,
@@ -83,5 +146,10 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Useful indexes
+productSchema.index({ name: "text" });
+productSchema.index({ category: 1 });
+productSchema.index({ brand: 1 });
 
 export default mongoose.model("Product", productSchema);

@@ -1,6 +1,6 @@
 import User from "../models/User.js";
-import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/generateToken.js";
+import { hashPassword, comparePassword } from "../utils/hashPassword.js";
 
 export const register = async (req, res) => {
   try {
@@ -17,7 +17,7 @@ export const register = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
 
     const user = await User.create({
       fullName,
@@ -57,7 +57,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await comparePassword(password, user.password);
 
     if (!isMatch) {
       return res.status(400).json({
@@ -106,9 +106,7 @@ export const getProfile = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { fullName, email, country, phone, password } = req.body;
-
     const user = await User.findById(req.user.id);
-
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -116,19 +114,21 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    // Update fields only if provided
     user.fullName = fullName || user.fullName;
     user.email = email || user.email;
     user.country = country || user.country;
     user.phone = phone || user.phone;
 
-    // Update password if provided
     if (password) {
-      user.password = await bcrypt.hash(password, 10);
+      user.password = await hashPassword(password);
+    }
+
+    // handle uploaded file
+    if (req.file) {
+      user.profilePicture = req.file.path; // or req.file.filename, depending on storage setup
     }
 
     const updatedUser = await user.save();
-
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
@@ -139,9 +139,36 @@ export const updateProfile = async (req, res) => {
         country: updatedUser.country,
         phone: updatedUser.phone,
         role: updatedUser.role,
+        profilePicture: updatedUser.profilePicture,
       },
     });
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const deletedUser = await User.findByIdAndDelete(req.user.id);
+
+    if (!deletedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Account deleted successfully",
+    });
+
+  } catch (error) {
+    console.error("Delete User Error:", error);
+
     res.status(500).json({
       success: false,
       message: error.message,
