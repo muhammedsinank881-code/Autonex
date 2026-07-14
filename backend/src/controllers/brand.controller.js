@@ -24,7 +24,7 @@ export const getAllBrands = async (req, res) => {
     const {
       isActive,
       isFeatured,
-      ortBy = "createdAt",
+      sortBy = "createdAt",
       order = "desc",
       search,
       page = 1,
@@ -58,11 +58,8 @@ export const getAllBrands = async (req, res) => {
 
     const [brands, total] = await Promise.all([
       Brand.find(filter).sort(sortOptions).skip(skip).limit(pageSize),
-
       Brand.countDocuments(filter),
     ]);
-
-    const brands = await Brand.find(filter).sort(sortOptions);
 
     res.status(200).json({
       success: true,
@@ -166,7 +163,6 @@ export const toggleBrandStatus = async (req, res) => {
     });
   }
 };
-
 
 export const permanentlyDeleteBrand = async (req, res) => {
   try {
