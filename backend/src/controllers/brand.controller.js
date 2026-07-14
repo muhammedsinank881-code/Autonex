@@ -1,4 +1,5 @@
 import Brand from "../models/Brand.js";
+import Product from "../models/Product.js";
 
 // Create Brand
 export const createBrand = async (req, res) => {
@@ -20,11 +21,56 @@ export const createBrand = async (req, res) => {
 // Get All Brands
 export const getAllBrands = async (req, res) => {
   try {
-    const brands = await Brand.find({ isActive: true });
+    const {
+      isActive,
+      isFeatured,
+      ortBy = "createdAt",
+      order = "desc",
+      search,
+      page = 1,
+      limit = 10,
+    } = req.query;
+
+    const filter = {};
+
+    if (isActive !== undefined) {
+      filter.isActive = isActive === "true";
+    }
+
+    if (isFeatured !== undefined) {
+      filter.isFeatured = isFeatured === "true";
+    }
+
+    if (search) {
+      filter.name = {
+        $regex: search,
+        $options: "i",
+      };
+    }
+
+    const pageNumber = Math.max(Number(page), 1);
+    const pageSize = Math.min(Number(limit) || 10, 50);
+    const skip = (pageNumber - 1) * pageSize;
+
+    const sortOptions = {
+      [sortBy]: order === "asc" ? 1 : -1,
+    };
+
+    const [brands, total] = await Promise.all([
+      Brand.find(filter).sort(sortOptions).skip(skip).limit(pageSize),
+
+      Brand.countDocuments(filter),
+    ]);
+
+    const brands = await Brand.find(filter).sort(sortOptions);
 
     res.status(200).json({
       success: true,
+      total,
       count: brands.length,
+      currentPage: pageNumber,
+      totalPages: Math.ceil(total / pageSize),
+      limit: pageSize,
       data: brands,
     });
   } catch (error) {
@@ -62,14 +108,10 @@ export const getBrandById = async (req, res) => {
 // Update Brand
 export const updateBrand = async (req, res) => {
   try {
-    const brand = await Brand.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    const brand = await Brand.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!brand) {
       return res.status(404).json({
@@ -90,8 +132,8 @@ export const updateBrand = async (req, res) => {
   }
 };
 
-// Delete Brand
-export const deleteBrand = async (req, res) => {
+// toggle status
+export const toggleBrandStatus = async (req, res) => {
   try {
     const brand = await Brand.findById(req.params.id);
 
@@ -102,13 +144,53 @@ export const deleteBrand = async (req, res) => {
       });
     }
 
-    brand.isActive = false;
+    const newStatus = !brand.isActive;
+
+    brand.isActive = newStatus;
     await brand.save();
+
+    await Product.updateMany(
+      { brand: brand._id },
+      { $set: { isActive: newStatus } },
+    );
 
     res.status(200).json({
       success: true,
-      message: "Brand deactivated successfully",
+      message: `Brand ${brand.isActive ? "activated" : "deactivated"} successfully`,
       data: brand,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+export const permanentlyDeleteBrand = async (req, res) => {
+  try {
+    const brand = await Brand.findById(req.params.id);
+
+    if (!brand) {
+      return res.status(404).json({
+        success: false,
+        message: "Brand not found",
+      });
+    }
+
+    // Delete all products belonging to this brand
+    const deletedProducts = await Product.deleteMany({
+      brand: brand._id,
+    });
+
+    // Delete brand
+    await Brand.findByIdAndDelete(brand._id);
+
+    res.status(200).json({
+      success: true,
+      message: "Brand and related products deleted successfully",
+      deletedProductsCount: deletedProducts.deletedCount,
     });
   } catch (error) {
     res.status(500).json({

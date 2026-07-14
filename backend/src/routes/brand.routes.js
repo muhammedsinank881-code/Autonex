@@ -4,17 +4,18 @@ import {
   getAllBrands,
   getBrandById,
   updateBrand,
-  deleteBrand,
+  toggleBrandStatus,
 } from "../controllers/brand.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
 import { adminOnly } from "../middlewares/role.middleware.js";
 
 const router = express.Router();
 
-router.post("/",protect , adminOnly , createBrand);
-router.get("/", getAllBrands);
+router.post("/", protect, adminOnly, createBrand);
+
+router.get("/", getAllBrands); // have features - brand name , isActive , isFeatured , sort by , search , pagination
 router.get("/:id", getBrandById);
-router.put("/:id",protect, adminOnly, updateBrand);
-router.delete("/:id",protect, adminOnly, deleteBrand);
+router.put("/:id", protect, adminOnly, updateBrand);
+router.delete("/:id", protect, adminOnly, toggleBrandStatus);
 
 export default router;

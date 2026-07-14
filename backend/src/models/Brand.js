@@ -8,7 +8,7 @@ const brandSchema = new mongoose.Schema(
       required: true,
       trim: true,
       minlength: 2,
-      maxlength: 100, 
+      maxlength: 50,
     },
     slug: {
       type: String,
@@ -19,17 +19,17 @@ const brandSchema = new mongoose.Schema(
     description: {
       type: String,
       trim: true,
-      maxlength: [1000, "Description cannot exceed 1000 characters"],
+      maxlength: 1000,
       default: "",
     },
     logo: {
       url: { type: String, default: null },
-      publicId: { type: String, default: null }, // e.g. Cloudinary asset id
+      publicId: { type: String, default: null },
     },
     website: {
       type: String,
       trim: true,
-      match: [/^https?:\/\/.+/i, "Website must be a valid URL"],
+      match: [/^https?:\/\/.+/i],
     },
     isActive: {
       type: Boolean,
@@ -40,16 +40,26 @@ const brandSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    sortOrder: {
+      type: Number,
+      default: 0,
+    },
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
-// Case-insensitive uniqueness on name (avoids "Nike" vs "nike" duplicates)
-brandSchema.index({ name: 1 }, { unique: true, collation: { locale: "en", strength: 2 } });
+brandSchema.index(
+  { name: 1 },
+  { unique: true, collation: { locale: "en", strength: 2 } },
+);
 
 // Generate/refresh slug whenever the name changes
 brandSchema.pre("save", function (next) {
