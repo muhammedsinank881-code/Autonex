@@ -15,8 +15,6 @@ export const loginValidation = Joi.object({
 
 export const updateProfileValidation = Joi.object({
   fullName: Joi.string().min(3).max(50),
-  email: Joi.string().email(),
   country: Joi.string(),
-  phone: Joi.string().pattern(/^[0-9]{10,15}$/),
-  password: Joi.string().min(8).max(30)
+  phone: Joi.number(),
 });
