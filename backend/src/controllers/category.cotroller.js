@@ -8,9 +8,6 @@ import {
   restoreCategoryService,
 } from "../services/categoryService.js";
 
-
-
-
 export const createCategory = async (req, res) => {
   try {
     const category = await createCategoryService(req.body);
@@ -27,8 +24,6 @@ export const createCategory = async (req, res) => {
     });
   }
 };
-
-
 
 
 export const getAllCategories = async (req, res) => {
@@ -68,8 +63,6 @@ export const getActiveCategories = async (req, res) => {
 };
 
 
-
-
 export const getCategoryById = async (req, res) => {
   try {
     const category = await getCategoryByIdService(req.params.id);
@@ -85,8 +78,6 @@ export const getCategoryById = async (req, res) => {
     });
   }
 };
-
-
 
 
 export const updateCategory = async (req, res) => {
@@ -109,8 +100,6 @@ export const updateCategory = async (req, res) => {
   }
 };
 
-
-
 export const deleteCategory = async (req, res) => {
   try {
     const category = await deleteCategoryService(req.params.id);
@@ -127,8 +116,6 @@ export const deleteCategory = async (req, res) => {
     });
   }
 };
-
-
 
 
 export const restoreCategory = async (req, res) => {

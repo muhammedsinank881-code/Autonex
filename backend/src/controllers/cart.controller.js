@@ -1,6 +1,6 @@
-import Cart from "../models/cartModel.js";
-import Product from "../models/productModel.js";
-import Brand from "../models/brandModel.js";
+import Cart from "../models/Cart.js";
+import Product from "../models/Product.js";
+import Brand from "../models/Brand.js";
 import { recalculateCart } from "../utils/recalculateCart.js";
 
 export const addToCart = async (req, res) => {
@@ -9,8 +9,7 @@ export const addToCart = async (req, res) => {
 
     const userId = req.user.id;
 
-    const product = await Product.findById(productId)
-      .populate("brand");
+    const product = await Product.findById(productId).populate("brand");
 
     if (!product) {
       return res.status(404).json({
@@ -46,17 +45,11 @@ export const addToCart = async (req, res) => {
         });
       }
 
-      price =
-        variant.discountPrice > 0
-          ? variant.discountPrice
-          : variant.price;
+      price = variant.discountPrice > 0 ? variant.discountPrice : variant.price;
 
       availableStock = variant.stock;
     } else {
-      price =
-        product.discountPrice > 0
-          ? product.discountPrice
-          : product.price;
+      price = product.discountPrice > 0 ? product.discountPrice : product.price;
 
       availableStock = product.stock;
     }
@@ -80,7 +73,7 @@ export const addToCart = async (req, res) => {
     const existingItem = cart.items.find(
       (item) =>
         item.productId.toString() === productId &&
-        item.variantId?.toString() === variantId
+        item.variantId?.toString() === variantId,
     );
 
     if (existingItem) {
@@ -156,10 +149,17 @@ export const getCart = async (req, res) => {
     });
   }
 };
-
+  
 export const updateCartItem = async (req, res) => {
   try {
     const { quantity } = req.body;
+
+    if (!quantity || quantity < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Quantity must be at least 1",
+      });
+    }
 
     const cart = await Cart.findOne({
       userId: req.user.id,
@@ -181,6 +181,39 @@ export const updateCartItem = async (req, res) => {
       });
     }
 
+    const product = await Product.findById(item.productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    let availableStock;
+
+    if (item.variantId) {
+      const variant = product.variants.id(item.variantId);
+
+      if (!variant) {
+        return res.status(404).json({
+          success: false,
+          message: "Variant not found",
+        });
+      }
+
+      availableStock = variant.stock;
+    } else {
+      availableStock = product.stock;
+    }
+
+    if (quantity > availableStock) {
+      return res.status(400).json({
+        success: false,
+        message: `Only ${availableStock} items available`,
+      });
+    }
+
     item.quantity = quantity;
 
     recalculateCart(cart);
@@ -198,7 +231,7 @@ export const updateCartItem = async (req, res) => {
       message: error.message,
     });
   }
-};
+}; 
 
 export const removeCartItem = async (req, res) => {
   try {
@@ -214,7 +247,7 @@ export const removeCartItem = async (req, res) => {
     }
 
     cart.items = cart.items.filter(
-      (item) => item._id.toString() !== req.params.itemId
+      (item) => item._id.toString() !== req.params.itemId,
     );
 
     recalculateCart(cart);

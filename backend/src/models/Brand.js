@@ -62,21 +62,21 @@ brandSchema.index(
 );
 
 // Generate/refresh slug whenever the name changes
-brandSchema.pre("save", function (next) {
+brandSchema.pre("save", function () {
   if (this.isModified("name")) {
     this.slug = slugify(this.name, { lower: true, strict: true });
   }
-  next();
 });
 
-// findByIdAndUpdate doesn't run document middleware by default,
-// so keep the slug in sync there too.
-brandSchema.pre("findOneAndUpdate", function (next) {
+brandSchema.pre("findOneAndUpdate", function () {
   const update = this.getUpdate();
+
   if (update?.name) {
-    update.slug = slugify(update.name, { lower: true, strict: true });
+    update.slug = slugify(update.name, {
+      lower: true,
+      strict: true,
+    });
   }
-  next();
 });
 
 export default mongoose.model("Brand", brandSchema);

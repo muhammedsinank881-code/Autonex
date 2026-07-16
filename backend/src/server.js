@@ -5,7 +5,9 @@ import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import brandRoutes from "./routes/brand.routes.js";
-import cartRoutes from "./routes/brand.routes.js"
+import cartRoutes from "./routes/cart.routes.js"
+import wishRoutes from "./routes/whishlist.routes.js"
+import addressRoutes from "./routes/address.routes.js"
 import app from "./app.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 
@@ -18,6 +20,8 @@ app.use("/api/products", productRoutes);
 app.use("/api/category", categoryRoutes );
 app.use("/api/brands", brandRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/whishlist", wishRoutes )
+app.use("/api/address" , addressRoutes)
 
 
 app.use(errorHandler);

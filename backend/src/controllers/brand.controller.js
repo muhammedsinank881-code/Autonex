@@ -4,13 +4,42 @@ import Product from "../models/Product.js";
 // Create Brand
 export const createBrand = async (req, res) => {
   try {
-    const brand = await Brand.create(req.body);
+    const { name, description, website, logo, sortOrder, isFeatured } =
+      req.body;
+
+    const existingBrand = await Brand.findOne({ name }).collation({
+      locale: "en",
+      strength: 2,
+    });
+
+    if (existingBrand) {
+      return res.status(400).json({
+        success: false,
+        message: "Brand already exists",
+      });
+    }
+
+    const brand = await Brand.create({
+      name,
+      description,
+      website,
+      logo,
+      sortOrder,
+      isFeatured,
+    });
 
     res.status(201).json({
       success: true,
       data: brand,
     });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Brand already exists",
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -122,6 +151,13 @@ export const updateBrand = async (req, res) => {
       data: brand,
     });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Brand already exists",
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -164,6 +200,7 @@ export const toggleBrandStatus = async (req, res) => {
   }
 };
 
+// delete comolete brand Items 
 export const permanentlyDeleteBrand = async (req, res) => {
   try {
     const brand = await Brand.findById(req.params.id);
