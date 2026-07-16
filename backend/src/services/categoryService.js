@@ -8,8 +8,6 @@ import {
   saveCategory,
 } from "../repositories/category.repository.js";
 
-
-
 export const createCategoryService = async (data) => {
   const { name, description, image } = data;
 
@@ -43,22 +41,15 @@ export const createCategoryService = async (data) => {
   return category;
 };
 
-
-
-
 export const getAllCategoriesService = async () => {
   return await findAllCategories();
 };
-
-
-
 
 export const getActiveCategoriesService = async () => {
   return await findAllCategories({
     isActive: true,
   });
 };
-
 
 export const getCategoryByIdService = async (id) => {
   const category = await findCategoryById(id);
@@ -69,8 +60,6 @@ export const getCategoryByIdService = async (id) => {
 
   return category;
 };
-
-
 
 export const updateCategoryService = async (id, data) => {
   const category = await findCategoryById(id);
@@ -115,8 +104,6 @@ export const updateCategoryService = async (id, data) => {
   return category;
 };
 
-
-
 export const deleteCategoryService = async (id) => {
   const category = await findCategoryById(id);
 
@@ -130,8 +117,6 @@ export const deleteCategoryService = async (id) => {
 
   return category;
 };
-
-
 
 export const restoreCategoryService = async (id) => {
   const category = await findCategoryById(id);
