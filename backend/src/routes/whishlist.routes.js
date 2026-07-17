@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.use(protect);
 
-router.get("/", getWishlist);
+router.get("/", getWishlist); 
 
 router.post("/", addToWishlist);
 

@@ -4,7 +4,7 @@ const variantSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true, 
+      required: true,
     },
 
     price: {
@@ -29,20 +29,20 @@ const variantSchema = new mongoose.Schema(
   },
   {
     _id: true,
-  }
+  },
 );
 
 const compatibleVehicleSchema = new mongoose.Schema(
   {
     make: {
       type: String,
-      required: true, 
+      required: true,
       trim: true,
     },
 
     model: {
       type: String,
-      required: true, 
+      required: true,
       trim: true,
     },
 
@@ -52,7 +52,7 @@ const compatibleVehicleSchema = new mongoose.Schema(
   },
   {
     _id: false,
-  }
+  },
 );
 
 const productSchema = new mongoose.Schema(
@@ -108,6 +108,10 @@ const productSchema = new mongoose.Schema(
           type: String,
           required: true,
         },
+        publicId: {
+          type: String,
+          required: true,
+        },
 
         alt: {
           type: String,
@@ -144,7 +148,7 @@ const productSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Useful indexes

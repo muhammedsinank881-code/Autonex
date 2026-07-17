@@ -1,52 +1,47 @@
-import { body, param, query, validationResult } from "express-validator";
-import ApiError from "../utils/ApiError.js";
+import Joi from "joi";
 
-// Collects express-validator errors and turns them into a single ApiError
-export const validate = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const details = errors
-      .array()
-      .map((e) => ({ field: e.path, message: e.msg }));
-    return next(ApiError.badRequest("Validation failed", details));
-  }
-  next();
-};
+export const createBrandSchema = Joi.object({
+  name: Joi.string().trim().min(2).max(100).required(),
 
-export const createBrandRules = [
-  body("name")
-    .trim()
-    .notEmpty()
-    .withMessage("Name is required")
-    .isLength({ min: 2, max: 100 })
-    .withMessage("Name must be between 2 and 100 characters"),
-  body("description").optional().trim().isLength({ max: 1000 }),
-  body("website")
-    .optional()
-    .trim()
-    .isURL()
-    .withMessage("Website must be a valid URL"),
-];
+  description: Joi.string().trim().allow("").max(1000).optional(),
 
-export const updateBrandRules = [
-  param("id").isMongoId().withMessage("Invalid brand id"),
-  body("name").optional().trim().isLength({ min: 2, max: 100 }),
-  body("description").optional().trim().isLength({ max: 1000 }),
-  body("website")
-    .optional()
-    .trim()
-    .isURL()
-    .withMessage("Website must be a valid URL"),
-];
+  website: Joi.string().uri().optional(),
 
-export const idParamRule = [
-  param("id").isMongoId().withMessage("Invalid brand id"),
-];
+  isFeatured: Joi.boolean().optional(),
 
-export const listBrandsRules = [
-  query("page").optional().isInt({ min: 1 }).toInt(),
-  query("limit").optional().isInt({ min: 1, max: 100 }).toInt(),
-  query("search").optional().trim().isLength({ max: 100 }),
-  query("sortBy").optional().isIn(["name", "createdAt", "updatedAt"]),
-  query("order").optional().isIn(["asc", "desc"]),
-];
+  isActive: Joi.boolean().optional(),
+});
+
+export const updateBrandSchema = Joi.object({
+  name: Joi.string().trim().min(2).max(100),
+
+  description: Joi.string().trim().allow("").max(1000),
+
+  website: Joi.string().uri(),
+
+  isFeatured: Joi.boolean(),
+
+  isActive: Joi.boolean(),
+}).min(1);
+
+export const objectIdSchema = Joi.object({
+  id: Joi.string().hex().length(24).required(),
+});
+
+export const listBrandsSchema = Joi.object({
+  page: Joi.number().integer().min(1).default(1),
+
+  limit: Joi.number().integer().min(1).max(100).default(10),
+
+  search: Joi.string().trim().max(100).optional(),
+
+  sortBy: Joi.string()
+    .valid("name", "createdAt", "updatedAt")
+    .default("createdAt"),
+
+  order: Joi.string().valid("asc", "desc").default("desc"),
+
+  isActive: Joi.boolean(),
+
+  isFeatured: Joi.boolean(),
+});

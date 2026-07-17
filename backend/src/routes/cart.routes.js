@@ -10,7 +10,7 @@ import { protect } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.post("/add", protect, addToCart);
+router.post("/items", protect, addToCart);
 router.get("/", protect, getCart);
 router.patch("/item/:itemId", protect, updateCartItem);
 router.delete("/item/:itemId", protect, removeCartItem);

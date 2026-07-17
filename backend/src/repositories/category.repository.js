@@ -14,7 +14,7 @@ export const findCategoryByName = (name) => {
 export const findCategoryBySlug = (slug) => {
   return Category.findOne({ slug });
 };
-
+  
 // Get all categories
 export const findAllCategories = (filter = {}) => {
   return Category.find(filter);

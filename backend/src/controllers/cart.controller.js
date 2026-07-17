@@ -20,7 +20,7 @@ export const addToCart = async (req, res) => {
 
     if (!product.isActive) {
       return res.status(400).json({
-        success: false,
+        success: false, 
         message: "Product is inactive",
       });
     }

@@ -1,13 +1,15 @@
+import cloudinary from "../config/cloudinary.js";
 import Brand from "../models/Brand.js";
 import Product from "../models/Product.js";
 
 // Create Brand
 export const createBrand = async (req, res) => {
   try {
-    const { name, description, website, logo, sortOrder, isFeatured } =
-      req.body;
+    const { name, description, website, sortOrder, isFeatured } = req.body;
 
-    const existingBrand = await Brand.findOne({ name }).collation({
+    const existingBrand = await Brand.findOne({
+      name,
+    }).collation({
       locale: "en",
       strength: 2,
     });
@@ -19,13 +21,33 @@ export const createBrand = async (req, res) => {
       });
     }
 
+    let logoData = {
+      url: null,
+      publicId: null,
+    };
+
+    const logoFile = req.files?.logo?.[0];
+
+    if (logoFile) {
+      const uploadResult = await cloudinary.uploader.upload(logoFile.path, {
+        folder: "brands",
+        resource_type: "image",
+      });
+
+      logoData = {
+        url: uploadResult.secure_url,
+        publicId: uploadResult.public_id,
+      };
+    }
+
     const brand = await Brand.create({
       name,
       description,
       website,
-      logo,
       sortOrder,
       isFeatured,
+      logo: logoData,
+      createdBy: req.user.id,
     });
 
     res.status(201).json({
@@ -134,10 +156,7 @@ export const getBrandById = async (req, res) => {
 // Update Brand
 export const updateBrand = async (req, res) => {
   try {
-    const brand = await Brand.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const brand = await Brand.findById(req.params.id);
 
     if (!brand) {
       return res.status(404).json({
@@ -145,6 +164,43 @@ export const updateBrand = async (req, res) => {
         message: "Brand not found",
       });
     }
+
+    const { name, description, website, sortOrder, isFeatured, isActive } =
+      req.body;
+
+    const logoFile = req.files?.logo?.[0];
+
+    if (logoFile) {
+      // Delete old logo from Cloudinary
+      if (brand.logo?.publicId) {
+        await cloudinary.uploader.destroy(brand.logo.publicId);
+      }
+
+      // Upload new logo
+      const uploadResult = await cloudinary.uploader.upload(logoFile.path, {
+        folder: "brands",
+        resource_type: "image",
+      });
+
+      brand.logo = {
+        url: uploadResult.secure_url,
+        publicId: uploadResult.public_id,
+      };
+    }
+
+    if (name !== undefined) brand.name = name;
+
+    if (description !== undefined) brand.description = description;
+
+    if (website !== undefined) brand.website = website;
+
+    if (sortOrder !== undefined) brand.sortOrder = sortOrder;
+
+    if (isFeatured !== undefined) brand.isFeatured = isFeatured;
+
+    if (isActive !== undefined) brand.isActive = isActive;
+
+    await brand.save();
 
     res.status(200).json({
       success: true,
@@ -200,7 +256,7 @@ export const toggleBrandStatus = async (req, res) => {
   }
 };
 
-// delete comolete brand Items 
+// delete comolete brand Items
 export const permanentlyDeleteBrand = async (req, res) => {
   try {
     const brand = await Brand.findById(req.params.id);

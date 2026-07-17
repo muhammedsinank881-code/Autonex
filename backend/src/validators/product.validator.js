@@ -42,11 +42,6 @@ export const createProductValidation = Joi.object({
 
   stock: Joi.number().integer().min(0).default(0),
 
-  images: Joi.array()
-    .items(imageSchema)
-    .min(1)
-    .required(),
-
   variants: Joi.array()
     .items(variantSchema)
     .optional(),

@@ -9,7 +9,7 @@ import {
 } from "../repositories/category.repository.js";
 
 export const createCategoryService = async (data) => {
-  const { name, description, image } = data;
+  const { name, description, icon } = data;
 
   // Check duplicate name
   const existingCategory = await findCategoryByName(name);
@@ -35,7 +35,7 @@ export const createCategoryService = async (data) => {
     name,
     slug,
     description,
-    image,
+    icon,
   });
 
   return category;
@@ -68,20 +68,33 @@ export const updateCategoryService = async (id, data) => {
     throw new Error("Category not found.");
   }
 
-  // Update name
+  // Update name & slug
   if (data.name && data.name !== category.name) {
     const existingCategory = await findCategoryByName(data.name);
 
-    if (existingCategory) {
+    if (
+      existingCategory &&
+      existingCategory._id.toString() !== id
+    ) {
       throw new Error("Category name already exists.");
     }
 
-    category.name = data.name;
-
-    category.slug = slugify(data.name, {
+    const newSlug = slugify(data.name, {
       lower: true,
       strict: true,
     });
+
+    const existingSlug = await findCategoryBySlug(newSlug);
+
+    if (
+      existingSlug &&
+      existingSlug._id.toString() !== id
+    ) {
+      throw new Error("Category slug already exists.");
+    }
+
+    category.name = data.name;
+    category.slug = newSlug;
   }
 
   // Update description
@@ -89,9 +102,9 @@ export const updateCategoryService = async (id, data) => {
     category.description = data.description;
   }
 
-  // Update image
-  if (data.image !== undefined) {
-    category.image = data.image;
+  // Update icon
+  if (data.icon !== undefined) {
+    category.icon = data.icon;
   }
 
   // Update status

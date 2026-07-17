@@ -2,7 +2,12 @@ import Wishlist from "../models/Wishlist.js";
 
 // Find wishlist by user ID
 export const findWishlistByUserId = (userId) => {
-  return Wishlist.findOne({ userId }).populate("products");
+  return Wishlist.findOne({ userId }).populate({
+    path: "products",
+    match: {
+      isActive: true,
+    },
+  });
 };
 
 // Create wishlist

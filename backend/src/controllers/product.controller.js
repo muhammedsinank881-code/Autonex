@@ -1,8 +1,31 @@
 import mongoose from "mongoose";
 import Product from "../models/Product.js";
+import Brand from "../models/Brand.js";
+import Category from "../models/Category.js";
+import cloudinary from "../config/cloudinary.js";
 
 export const createProduct = async (req, res) => {
   try {
+    const { brand, category } = req.body;
+
+    const existingBrand = await Brand.findById(brand);
+
+    if (!existingBrand) {
+      return res.status(400).json({
+        success: false,
+        message: "Brand not found",
+      });
+    }
+
+    const existingCategory = await Category.findById(category);
+
+    if (!existingCategory) {
+      return res.status(400).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
     const product = await Product.create(req.body);
 
     res.status(201).json({
@@ -68,7 +91,7 @@ export const getProducts = async (req, res) => {
 
     // Price Range
     if (minPrice || maxPrice) {
-      matchStage.basePrice = {};
+      matchStage.price = {};
 
       if (minPrice) {
         matchStage.basePrice.$gte = Number(minPrice);
@@ -240,6 +263,30 @@ export const getProductById = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
+    const { brand, category } = req.body;
+
+    if (brand) {
+      const existingBrand = await Brand.findById(brand);
+
+      if (!existingBrand) {
+        return res.status(400).json({
+          success: false,
+          message: "Brand not found",
+        });
+      }
+    }
+
+    if (category) {
+      const existingCategory = await Category.findById(category);
+
+      if (!existingCategory) {
+        return res.status(400).json({
+          success: false,
+          message: "Category not found",
+        });
+      }
+    }
+
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -266,7 +313,7 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    const product = await Product.findById(req.params.id);
 
     if (!product) {
       return res.status(404).json({
@@ -274,6 +321,19 @@ export const deleteProduct = async (req, res) => {
         message: "Product not found",
       });
     }
+
+    // Delete images from Cloudinary
+    if (product.images && product.images.length > 0) {
+      await Promise.all(
+        product.images.map((image) => {
+          if (image.publicId) {
+            return cloudinary.uploader.destroy(image.publicId);
+          }
+        }),
+      );
+    }
+
+    await Product.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
       success: true,
@@ -286,4 +346,3 @@ export const deleteProduct = async (req, res) => {
     });
   }
 };
-

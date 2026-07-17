@@ -1,20 +1,38 @@
-import Joi from 'joi';
+import Joi from "joi";
 
 export const registerValidation = Joi.object({
   fullName: Joi.string().min(3).max(50).required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(8).max(30).required(),
   country: Joi.string().required(),
-  phone: Joi.string().pattern(/^[0-9]{10,15}$/).required()
+  phone: Joi.string()
+    .pattern(/^[0-9]{10,15}$/)
+    .required(),
 });
 
 export const loginValidation = Joi.object({
   email: Joi.string().email().required(),
-  password: Joi.string().required()
+  password: Joi.string().required(),
 });
 
 export const updateProfileValidation = Joi.object({
   fullName: Joi.string().min(3).max(50),
   country: Joi.string(),
-  phone: Joi.number(),
+  phone: Joi.string().pattern(/^[0-9]{10,15}$/),
+});
+
+export const emailValidation = Joi.object({
+  email: Joi.string().email().required(),
+});
+
+export const verifyOtpValidation = Joi.object({
+  email: Joi.string().email().required(),
+
+  otp: Joi.string().length(6).required(),
+});
+
+export const resetPasswordValidation = Joi.object({
+  email: Joi.string().email().required(),
+
+  password: Joi.string().min(6).required(),
 });

@@ -17,6 +17,8 @@ export const getWishlistService = async (userId) => {
     };
   }
 
+  wishlist.products = wishlist.products.filter(Boolean);
+
   return wishlist;
 };
 
