@@ -1,4 +1,6 @@
 import bcrypt from "bcryptjs";
+import fs from "fs/promises";
+import path from "path";
 import PendingRegistration from "../models/PendingRegistration.js";
 import User from "../models/User.js";
 import { sendOTPEmail } from "../services/mail.service.js";
@@ -415,37 +417,43 @@ export const resetPassword = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const updateData = {};
+    const user = await User.findById(req.user.id);
 
-    if (req.body.fullName) updateData.fullName = req.body.fullName;
-    if (req.body.country) updateData.country = req.body.country;
-    if (req.body.phone) updateData.phone = req.body.phone;
-
-    if (req.file) {
-      updateData.profile = req.file.path;
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
-      updateData,
-      {
-        new: true,
-        runValidators: true,
-      }
-    ).select("-password");
-
-    if (!updatedUser) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
 
+    if (req.body.fullName) user.fullName = req.body.fullName;
+    if (req.body.country) user.country = req.body.country;
+    if (req.body.phone) user.phone = req.body.phone;
+
+    if (req.file) {
+      // Delete old profile image
+      if (user.profile) {
+        try {
+          await fs.unlink(path.join(process.cwd(), user.profile));
+        } catch (err) {
+          // Ignore if the file doesn't exist
+        }
+      }
+
+      user.profile = req.file.path;
+    }
+
+    await user.save();
+
+    const updatedUser = user.toObject();
+    delete updatedUser.password;
+
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
       user: updatedUser,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -456,20 +464,32 @@ export const updateProfile = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   try {
-    const deletedUser = await User.findByIdAndDelete(req.user.id);
+    const user = await User.findById(req.user.id);
 
-    if (!deletedUser) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
 
+    // Delete profile image if it exists
+    if (user.profile) {
+      const imagePath = path.join(process.cwd(), user.profile);
+
+      try {
+        await fs.unlink(imagePath);
+      } catch (err) {
+        // Ignore if file doesn't exist
+      }
+    }
+
+    await User.findByIdAndDelete(req.user.id);
+
     res.status(200).json({
       success: true,
       message: "Account deleted successfully",
     });
-
   } catch (error) {
     console.error("Delete User Error:", error);
 

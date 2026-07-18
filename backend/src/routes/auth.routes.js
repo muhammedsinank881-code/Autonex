@@ -24,13 +24,21 @@ import {
   updateProfileValidation,
   verifyOtpValidation,
 } from "../validators/auth.validator.js";
-import { otpLimiter } from "../middlewares/rateLimiter.js";
+import {
+  otpLimiter,
+  loginLimiter,
+  registerLimiter,
+  verifyOtpLimiter,
+  uploadLimiter,
+  forgotPasswordLimiter,
+} from "../middlewares/rateLimiter.js";
 import { profileUpload } from "../middlewares/multer/types.multer.middleware.js";
 
 const router = express.Router();
 
 router.post(
   "/register",
+  registerLimiter,
   profileUpload.single("profile"),
   validate(registerValidation),
   register,
@@ -40,18 +48,18 @@ router.post("/resend-otp", otpLimiter, validate(emailValidation), resendOTP);
 
 router.post(
   "/verify-otp",
-  otpLimiter,
+  verifyOtpLimiter,
   validate(verifyOtpValidation),
   verifyOTP,
 );
 
-router.post("/login", validate(loginValidation), login);
+router.post("/login", loginLimiter, validate(loginValidation), login);
 
 router.get("/profile", protect, getProfile);
 
 router.post(
   "/forgot-password",
-  otpLimiter,
+  forgotPasswordLimiter,
   validate(emailValidation),
   forgotPassword,
 );
@@ -70,6 +78,7 @@ router.post(
 router.put(
   "/updateUser",
   protect,
+  uploadLimiter,
   profileUpload.single("profile"),
   validate(updateProfileValidation),
   updateProfile,

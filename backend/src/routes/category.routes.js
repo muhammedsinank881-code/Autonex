@@ -12,13 +12,14 @@ import {
 import { protect } from "../middlewares/auth.middleware.js";
 import { adminOnly } from "../middlewares/role.middleware.js";
 import { categoryUpload } from "../middlewares/multer/types.multer.middleware.js";
+import { searchLimiter } from "../middlewares/rateLimiter.js";
 
 const router = express.Router();
 
 // Public Routes
-router.get("/", getAllCategories);
-router.get("/active", getActiveCategories);
-router.get("/:id", getCategoryById);
+router.get("/",searchLimiter , getAllCategories);
+router.get("/active",searchLimiter , getActiveCategories);
+router.get("/:id",searchLimiter, getCategoryById);
 
 // Admin Routes
 router.post(
@@ -39,3 +40,4 @@ router.patch("/:id/restore", protect, adminOnly, restoreCategory);
 router.delete("/:id", protect, adminOnly, deleteCategory);
 
 export default router;
+ 

@@ -91,7 +91,7 @@ export const getProducts = async (req, res) => {
 
     // Price Range
     if (minPrice || maxPrice) {
-      matchStage.price = {};
+      matchStage.basePrice = {};
 
       if (minPrice) {
         matchStage.basePrice.$gte = Number(minPrice);
