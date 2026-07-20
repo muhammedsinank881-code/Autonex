@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink , Link} from "react-router-dom";
 import {
   Search,
   User,
@@ -14,6 +14,35 @@ import {
 } from "lucide-react";
 import { Garage } from "../../assets/icon.js";
 import Logo from "../../assets/icons/AutonexLogo.png";
+
+const navItems = [
+  {
+    name: "Home",
+    path: "/",
+    hasDropdown: true,
+  },
+  {
+    name: "Shop",
+    path: "/shop",
+    hasDropdown: true,
+  },
+  {
+    name: "Tires & Wheels",
+    path: "/category/tires-wheels",
+  },
+  {
+    name: "Headlights & Lighting",
+    path: "/category/headlights-lighting",
+  },
+  {
+    name: "Blog",
+    path: "/blog",
+  },
+  {
+    name: "Contact",
+    path: "/contact",
+  },
+];
 
 const Navbar = () => {
   const [wishlistCount] = useState(0);
@@ -58,7 +87,7 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-6">
           {/* Logo */}
           <Link
-            to="/"
+            to="/#"
             className="flex h-10 w-32 overflow-hidden items-center gap-2 shrink-0"
           >
             <img
@@ -142,55 +171,44 @@ const Navbar = () => {
       </div>
 
       {/* 3. Navigation Links Row */}
-      <div className="hidden md:block bg-white border-b border-gray-200/80">
-        <div className="max-w-7xl mx-auto px-4 h-11 flex items-center justify-between text-xs font-semibold text-gray-800">
-          <div className="flex items-center gap-6">
-            <button className="flex items-center gap-2 hover:text-blue-600 transition-colors">
-              <Menu size={16} />
-              <span>All Categories</span>
-            </button>
+<div className="hidden md:block bg-white border-b border-gray-200/80">
+  <div className="max-w-7xl mx-auto px-4 h-11 flex items-center justify-between text-xs font-semibold text-gray-800">
+    <div className="flex items-center gap-6">
+      <button className="flex items-center gap-2 hover:text-blue-600 transition-colors">
+        <Menu size={16} />
+        <span>All Categories</span>
+      </button>
 
-            <span className="text-gray-300 font-normal">|</span>
+      <span className="text-gray-300 font-normal">|</span>
 
-            <nav className="flex items-center gap-6">
-              <Link
-                to="/"
-                className="flex items-center gap-1 hover:text-blue-600"
-              >
-                Home <ChevronDown size={11} />
-              </Link>
-              <Link
-                to="/shop"
-                className="flex items-center gap-1 hover:text-blue-600"
-              >
-                Shop <ChevronDown size={11} />
-              </Link>
-              <Link to="/category/tires-wheels" className="hover:text-blue-600">
-                Tires &amp; Wheels
-              </Link>
-              <Link
-                to="/category/headlights-lighting"
-                className="hover:text-blue-600"
-              >
-                Headlights &amp; Lighting
-              </Link>
-              <Link to="/blog" className="hover:text-blue-600">
-                Blog
-              </Link>
-              <Link to="/contact" className="hover:text-blue-600">
-                Contact
-              </Link>
-            </nav>
-          </div>
+      <nav className="flex items-center gap-6">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `flex items-center gap-1 transition-colors ${
+                isActive
+                  ? "text-blue-600"
+                  : "hover:text-blue-600"
+              }`
+            }
+          >
+            {item.name}
+            {item.hasDropdown && <ChevronDown size={11} />}
+          </NavLink>
+        ))}
+      </nav>
+    </div>
 
-          <div className="flex items-center gap-1.5">
-            <span className="font-bold text-gray-900">Best Seller</span>
-            <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
-              Sale
-            </span>
-          </div>
-        </div>
-      </div>
+    <div className="flex items-center gap-1.5">
+      <span className="font-bold text-gray-900">Best Seller</span>
+      <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
+        Sale
+      </span>
+    </div>
+  </div>
+</div>
 
       {/* ============ MOBILE ============ */}
       <div className="md:hidden">
