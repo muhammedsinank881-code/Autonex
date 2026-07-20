@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import MainLayout from './components/MainLayout'
+import MainLayout from './Layouts/MainLayout'
 
 
 function App() {

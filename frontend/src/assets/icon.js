@@ -1,6 +1,5 @@
 // SVGs
 export { default as Garage } from "./icons/garageicon.svg?react";
-export { default as Logo } from "./icons/AutonexLogo.svg?react";
 export { default as Playstore } from "./icons/google-white.png.svg?react";
 export { default as Appstore } from "./icons/apple-white.png.svg?react";
 export { default as LogoWhite } from "./icons/logowhite.svg?react";
