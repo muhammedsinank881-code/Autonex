@@ -13,8 +13,7 @@ import {
   Warehouse, // Placeholder if custom Garage icon is not available
 } from "lucide-react";
 import { Garage } from "../../assets/icon.js";
-import Logo from "../../assets/icons/AutonexLogo.png"
-
+import Logo from "../../assets/icons/AutonexLogo.png";
 
 const Navbar = () => {
   const [wishlistCount] = useState(0);
@@ -58,8 +57,15 @@ const Navbar = () => {
       <div className="hidden md:block bg-[#F3F5F7]">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-6">
           {/* Logo */}
-          <Link to="/" className="flex h-10 w-32 overflow-hidden items-center gap-2 shrink-0">
-           <img src={Logo} alt="Autonex"  className="h-30 w-auto object-cover"  />
+          <Link
+            to="/"
+            className="flex h-10 w-32 overflow-hidden items-center gap-2 shrink-0"
+          >
+            <img
+              src={Logo}
+              alt="Autonex"
+              className="h-30 w-auto object-cover"
+            />
           </Link>
 
           {/* Add Vehicle / My Garage */}
@@ -198,13 +204,15 @@ const Navbar = () => {
             <Menu size={18} />
           </button>
 
-          <Link to="/" className="flex items-center gap-2">
-            <div className="bg-[#0066CC] text-white rounded-full p-1">
-              <Car size={16} />
-            </div>
-            <span className="text-base font-extrabold tracking-wide text-[#0066CC]">
-              AUTONEX
-            </span>
+          <Link
+            to="/"
+            className="flex h-10 w-32 overflow-hidden items-center gap-2 shrink-0"
+          >
+            <img
+              src={Logo}
+              alt="Autonex"
+              className="h-30 w-auto object-cover"
+            />
           </Link>
 
           <Link
@@ -266,15 +274,13 @@ const Navbar = () => {
             <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
               <Link
                 to="/"
-                onClick={() => setDrawerOpen(false)}
-                className="flex items-center gap-2"
+                className="flex h-10 w-32 overflow-hidden items-center gap-2 shrink-0"
               >
-                <div className="bg-[#0066CC] text-white rounded-full p-1">
-                  <Car size={16} />
-                </div>
-                <span className="text-base font-bold text-[#0066CC]">
-                  AUTONEX
-                </span>
+                <img
+                  src={Logo}
+                  alt="Autonex"
+                  className="h-30 w-auto object-cover"
+                />
               </Link>
               <button
                 onClick={() => setDrawerOpen(false)}
