@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Garage from "../../assets/icons/garageicon.svg?react";
-import Logo from "../../assets/icons/AutonexLogo.svg?react";
+import { Logo, Garage } from "../../assets/icon.js";
 import {
   Search,
   User,
@@ -52,7 +51,7 @@ const Navbar = () => {
       </div>
 
       {/* Main row: logo, garage, search, account/wishlist/compare/cart */}
-      <div className="hidden md:flex max-w-7xl mx-auto px-4  items-center gap-6">
+      <div className="hidden md:flex max-w-7xl mx-auto px-4 h-22 bg-gray-50 items-center gap-6">
         <Logo className="w-32 h-auto" />
 
         <button className="hidden lg:flex items-center gap-2 text-sm text-gray-700 shrink-0">
@@ -72,21 +71,21 @@ const Navbar = () => {
             placeholder="Search popular products..."
             className="flex-1 px-4 py-2.5 text-sm outline-none"
           />
-          <button className="px-4 py-2.5 bg-blue-600 text-white hover:bg-blue-700 transition-colors">
-            <Search size={18} />
+          <button className="px-4 py-2.5  text-white hover:bg-blue-700 transition-colors">
+            <Search size={18}  className="text-gray-500"/>
           </button>
         </div>
 
-        <div className="flex items-center gap-5 shrink-0">
+        <div className="flex items-center gap-5 shrink-0 ">
           <Link
             to="/account"
-            className="flex items-center gap-2 text-sm text-gray-700"
+            className="flex items-center gap-2 text-sm text-gray-600"
           >
-            <User size={22} />
+            <User size={26} className="border flex rounded-full"/>
             <span className="leading-tight">
               Sign In
               <br />
-              <span className="font-semibold">Account</span>
+              <span className="font-bold">Account</span>
             </span>
           </Link>
 
@@ -120,25 +119,16 @@ const Navbar = () => {
             </button>
             <span className="text-gray-300">|</span>
             <nav className="flex items-center gap-6 text-gray-700">
-              <Link
-                to="/"
-                className="flex items-center gap-1 hover:text-blue-600"
-              >
+              <Link to="/" className="flex items-center gap-1 hover:text-blue-600">
                 Home <ChevronDown size={12} />
               </Link>
-              <Link
-                to="/shop"
-                className="flex items-center gap-1 hover:text-blue-600"
-              >
+              <Link to="/shop" className="flex items-center gap-1 hover:text-blue-600">
                 Shop <ChevronDown size={12} />
               </Link>
               <Link to="/category/tires-wheels" className="hover:text-blue-600">
                 Tires &amp; Wheels
               </Link>
-              <Link
-                to="/category/headlights-lighting"
-                className="hover:text-blue-600"
-              >
+              <Link to="/category/headlights-lighting" className="hover:text-blue-600">
                 Headlights &amp; Lighting
               </Link>
               <Link to="/blog" className="hover:text-blue-600">
@@ -196,7 +186,7 @@ const Navbar = () => {
         {/* Split row: My Garage | Search Product */}
         <div className="grid grid-cols-2 divide-x divide-gray-200 border-t border-b border-gray-100 text-sm font-medium text-gray-700">
           <button className="flex items-center justify-center gap-2 py-2.5">
-            <Garage className="w-4 h-4" />
+           <Garage className="w-4 h-4" />
             My Garage
           </button>
           <button

@@ -1,18 +1,23 @@
 import { Link } from "react-router-dom";
 
+import { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa";
+import { LogoWhite, Playstore, Appstore, Mastercard, Visa, Paypal, Skrill } from "../../assets/icon.js";
+
+
 const Footer = () => {
   return (
     <footer className="font-sans">
       {/* Newsletter bar */}
       <div className="bg-gray-50 border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className=" px-4 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h3 className="text-xl font-bold text-gray-900">
               Join the AUTONEX VIP Club!
             </h3>
             <p className="text-sm text-gray-500 mt-1 max-w-md">
-              Whether you&apos;re welcoming new contacts or sharing the latest
-              news, you can make your business look good in just a few clicks.
+              Whether you&apos;re welcoming new contacts or sharing the
+              latest news, you can make your business look good in just a
+              few clicks.
             </p>
           </div>
 
@@ -76,51 +81,15 @@ const Footer = () => {
           <div>
             <h4 className="text-white font-semibold mb-4">Let Us Help You</h4>
             <ul className="space-y-2.5 text-sm text-gray-400">
-              <li>
-                <Link to="/accessibility" className="hover:text-white">
-                  Accessibility Statement
-                </Link>
-              </li>
-              <li>
-                <Link to="/orders" className="hover:text-white">
-                  Your Orders
-                </Link>
-              </li>
-              <li>
-                <Link to="/returns" className="hover:text-white">
-                  Returns &amp; Replacements
-                </Link>
-              </li>
-              <li>
-                <Link to="/shipping-policy" className="hover:text-white">
-                  Shipping Rates &amp; Policies
-                </Link>
-              </li>
-              <li>
-                <Link to="/refund-policy" className="hover:text-white">
-                  Refund and Returns Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacy" className="hover:text-white">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="hover:text-white">
-                  Terms and Conditions
-                </Link>
-              </li>
-              <li>
-                <Link to="/cookie-settings" className="hover:text-white">
-                  Cookie Settings
-                </Link>
-              </li>
-              <li>
-                <Link to="/help" className="hover:text-white">
-                  Help Center
-                </Link>
-              </li>
+              <li><Link to="/accessibility" className="hover:text-white">Accessibility Statement</Link></li>
+              <li><Link to="/orders" className="hover:text-white">Your Orders</Link></li>
+              <li><Link to="/returns" className="hover:text-white">Returns &amp; Replacements</Link></li>
+              <li><Link to="/shipping-policy" className="hover:text-white">Shipping Rates &amp; Policies</Link></li>
+              <li><Link to="/refund-policy" className="hover:text-white">Refund and Returns Policy</Link></li>
+              <li><Link to="/privacy" className="hover:text-white">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-white">Terms and Conditions</Link></li>
+              <li><Link to="/cookie-settings" className="hover:text-white">Cookie Settings</Link></li>
+              <li><Link to="/help" className="hover:text-white">Help Center</Link></li>
             </ul>
           </div>
 
@@ -128,46 +97,14 @@ const Footer = () => {
           <div>
             <h4 className="text-white font-semibold mb-4">Customer Service</h4>
             <ul className="space-y-2.5 text-sm text-gray-400">
-              <li>
-                <Link to="/sell" className="hover:text-white">
-                  Sell on AUTONEX
-                </Link>
-              </li>
-              <li>
-                <Link to="/sell/services" className="hover:text-white">
-                  Sell Your Services on AUTONEX
-                </Link>
-              </li>
-              <li>
-                <Link to="/sell/business" className="hover:text-white">
-                  Sell on AUTONEX Business
-                </Link>
-              </li>
-              <li>
-                <Link to="/sell/apps" className="hover:text-white">
-                  Sell Your Apps on AUTONEX
-                </Link>
-              </li>
-              <li>
-                <Link to="/affiliate" className="hover:text-white">
-                  Become an Affiliate
-                </Link>
-              </li>
-              <li>
-                <Link to="/advertise" className="hover:text-white">
-                  Advertise Your Products
-                </Link>
-              </li>
-              <li>
-                <Link to="/sell/publish" className="hover:text-white">
-                  Sell &amp; Publish with Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/vendor" className="hover:text-white">
-                  Become an AUTONEX Vendor
-                </Link>
-              </li>
+              <li><Link to="/sell" className="hover:text-white">Sell on AUTONEX</Link></li>
+              <li><Link to="/sell/services" className="hover:text-white">Sell Your Services on AUTONEX</Link></li>
+              <li><Link to="/sell/business" className="hover:text-white">Sell on AUTONEX Business</Link></li>
+              <li><Link to="/sell/apps" className="hover:text-white">Sell Your Apps on AUTONEX</Link></li>
+              <li><Link to="/affiliate" className="hover:text-white">Become an Affiliate</Link></li>
+              <li><Link to="/advertise" className="hover:text-white">Advertise Your Products</Link></li>
+              <li><Link to="/sell/publish" className="hover:text-white">Sell &amp; Publish with Us</Link></li>
+              <li><Link to="/vendor" className="hover:text-white">Become an AUTONEX Vendor</Link></li>
             </ul>
           </div>
 
@@ -175,70 +112,38 @@ const Footer = () => {
           <div>
             <h4 className="text-white font-semibold mb-4">Get to Know Us</h4>
             <ul className="space-y-2.5 text-sm text-gray-400">
-              <li>
-                <Link to="/careers" className="hover:text-white">
-                  Careers for AUTONEX
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="hover:text-white">
-                  About AUTONEX
-                </Link>
-              </li>
-              <li>
-                <Link to="/investor-relations" className="hover:text-white">
-                  Investor Relations
-                </Link>
-              </li>
-              <li>
-                <Link to="/devices" className="hover:text-white">
-                  AUTONEX Devices
-                </Link>
-              </li>
-              <li>
-                <Link to="/reviews" className="hover:text-white">
-                  Customer Reviews
-                </Link>
-              </li>
-              <li>
-                <Link to="/social-responsibility" className="hover:text-white">
-                  Social Responsibility
-                </Link>
-              </li>
-              <li>
-                <Link to="/stores" className="hover:text-white">
-                  Store Locations
-                </Link>
-              </li>
+              <li><Link to="/careers" className="hover:text-white">Careers for AUTONEX</Link></li>
+              <li><Link to="/about" className="hover:text-white">About AUTONEX</Link></li>
+              <li><Link to="/investor-relations" className="hover:text-white">Investor Relations</Link></li>
+              <li><Link to="/devices" className="hover:text-white">AUTONEX Devices</Link></li>
+              <li><Link to="/reviews" className="hover:text-white">Customer Reviews</Link></li>
+              <li><Link to="/social-responsibility" className="hover:text-white">Social Responsibility</Link></li>
+              <li><Link to="/stores" className="hover:text-white">Store Locations</Link></li>
             </ul>
           </div>
         </div>
 
         {/* Logo / social / app download row */}
         <div className="border-t border-gray-800">
-          <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
             <Link to="/" className="flex items-center gap-2">
-              <div className="bg-blue-600 text-white rounded-full p-1.5">
-                {/* <Car size={18} /> */}
-              </div>
-              <span className="text-lg font-bold text-white tracking-wide">
-                AUTONEX
-              </span>
+                <LogoWhite className="h-32 w-auto" />
+
             </Link>
 
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-400">Follow Us:</span>
               <a href="#" aria-label="Facebook" className="hover:text-white">
-                {/* <Facebook size={18} /> */}
+                <FaFacebook  size={18} />
               </a>
               <a href="#" aria-label="Twitter" className="hover:text-white">
-                {/* <Twitter size={18} /> */}
+                <FaTwitter size={18} />
               </a>
               <a href="#" aria-label="Instagram" className="hover:text-white">
-                {/* <Instagram size={18} /> */}
+                <FaInstagram size={18} />
               </a>
               <a href="#" aria-label="YouTube" className="hover:text-white">
-                {/* <Youtube size={18} /> */}
+                <FaYoutube size={18} />
               </a>
             </div>
 
@@ -246,16 +151,8 @@ const Footer = () => {
               <span className="text-sm text-gray-400 hidden md:inline">
                 Download App
               </span>
-              <img
-                src="/assets/google-play-badge.png"
-                alt="Get it on Google Play"
-                className="h-9"
-              />
-              <img
-                src="/assets/app-store-badge.png"
-                alt="Download on the App Store"
-                className="h-9"
-              />
+              <Playstore className="h-8 w-auto cursor-pointer" />
+              <Appstore className="h-8 w-auto cursor-pointer" />
             </div>
           </div>
         </div>
@@ -265,27 +162,13 @@ const Footer = () => {
           <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-gray-500">
             <p>Copyright 2026 © AUTONEX Theme. All rights reserved.</p>
             <div className="flex items-center gap-2">
-              <img
-                src="/assets/payments/mastercard.png"
-                alt="Mastercard"
-                className="h-5"
-              />
-              <img src="/assets/payments/visa.png" alt="Visa" className="h-5" />
-              <img
-                src="/assets/payments/paypal.png"
-                alt="PayPal"
-                className="h-5"
-              />
-              <img
-                src="/assets/payments/skrill.png"
-                alt="Skrill"
-                className="h-5"
-              />
-              <img
-                src="/assets/payments/klarna.png"
-                alt="Klarna"
-                className="h-5"
-              />
+              
+            <Mastercard className="h-4 w-auto" />
+            <Visa className="h-4 w-auto" /> 
+            <Paypal className="h-4 w-auto" />
+            <Skrill className="h-4 w-auto" />
+
+
             </div>
           </div>
         </div>
