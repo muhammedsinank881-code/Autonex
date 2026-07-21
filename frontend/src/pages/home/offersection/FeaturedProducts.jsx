@@ -216,7 +216,8 @@ const FeaturedProducts = () => {
         </div>
 
         {/* CENTER COLUMN (Spotlight Card) */}
-        <div className="w-[280px] sm:w-[340px] lg:w-full shrink-0 lg:shrink snap-start bg-white rounded-2xl border-2 border-[#F43F5E] p-3 sm:p-4 flex flex-col justify-between shadow-sm relative group h-[480px] lg:h-full min-h-0 overflow-hidden">
+        <div className="w-[280px] sm:w-[340px] lg:w-full shrink-0 lg:shrink snap-start bg-[#fff5f7] rounded-2xl border-2 border-[#F43F5E] p-3 sm:p-4 flex flex-col justify-between shadow-sm relative group 
+        h-[480px] lg:h-full min-h-0 overflow-hidden shadow-[0_0_20px_rgba(244,63,94,0.12)]">
           {/* Wishlist Button */}
           <button
             onClick={() => toggleWishlist(featuredSpotlight.id)}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink , Link} from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import {
   Search,
   User,
@@ -46,6 +46,8 @@ const navItems = [
 ];
 
 const Navbar = () => {
+
+  const navigate = useNavigate()
   const [wishlistCount] = useState(0);
   const [cartCount] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -99,7 +101,9 @@ const Navbar = () => {
           </Link>
 
           {/* Add Vehicle / My Garage */}
-          <button className="hidden lg:flex items-center gap-2.5 shrink-0 text-left">
+          <button
+          onClick={()=> navigate("/MyGaragePage")}
+           className="hidden lg:flex items-center gap-2.5 shrink-0 text-left">
             <div className="w-10 h-10 rounded-full bg-gray-200/70 flex items-center justify-center text-gray-600">
               <Warehouse size={18} />
             </div>
@@ -129,28 +133,62 @@ const Navbar = () => {
           {/* Action Icons */}
           <div className="flex items-center gap-4 shrink-0">
             {/* Account */}
-            <Link to="/account" className="flex items-center gap-2 text-xs">
-              <div className="w-9 h-9 rounded-full bg-gray-200/70 flex items-center justify-center text-gray-700">
-                <User size={18} />
-              </div>
-              <div className="text-left hidden xl:block">
-                <span className="text-gray-400 block text-[10px] leading-tight">
-                  Sign In
-                </span>
-                <span className="font-bold text-gray-800">Account</span>
-              </div>
-            </Link>
+            <NavLink to="/account">
+              {({ isActive }) => (
+                <div className="flex items-center gap-2 text-xs">
+                  <div
+                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${
+                      isActive
+                        ? "bg-blue-400 text-white"
+                        : "bg-gray-200/70 text-gray-700 hover:bg-gray-300/60"
+                    }`}
+                  >
+                    <User size={18} />
+                  </div>
+
+                  <div className="text-left hidden xl:block">
+                    <span
+                      className={`block text-[10px] leading-tight ${
+                        isActive ? "text-blue-500" : "text-gray-400"
+                      }`}
+                    >
+                      Sign In
+                    </span>
+
+                    <span
+                      className={`font-bold ${
+                        isActive ? "text-blue-600" : "text-gray-800"
+                      }`}
+                    >
+                      Account
+                    </span>
+                  </div>
+                </div>
+              )}
+            </NavLink>
 
             {/* Wishlist */}
-            <Link
-              to="/wishlist"
-              className="relative w-9 h-9 rounded-full bg-gray-200/70 flex items-center justify-center text-gray-700 hover:bg-gray-300/60 transition-colors"
+            <NavLink
+              to="/wish-list"
+              className={({ isActive }) =>
+                `relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
+                  isActive
+                    ? "bg-red-100 text-[#F43F5E]"
+                    : "bg-gray-200/70 text-gray-700 hover:bg-gray-300/60"
+                }`
+              }
             >
-              <Heart size={18} />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                {wishlistCount}
-              </span>
-            </Link>
+              {({ isActive }) => (
+                <>
+                  <Heart size={18} />
+                  {!isActive && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                      {wishlistCount}
+                    </span>
+                  )}
+                </>
+              )}
+            </NavLink>
 
             {/* Compare */}
             <button className="w-9 h-9 rounded-full bg-gray-200/70 flex items-center justify-center text-gray-700 hover:bg-gray-300/60 transition-colors">
@@ -158,58 +196,69 @@ const Navbar = () => {
             </button>
 
             {/* Cart */}
-            <Link
+            <NavLink
               to="/cart"
-              className="relative w-9 h-9 rounded-full bg-gray-200/70 flex items-center justify-center text-gray-700 hover:bg-gray-300/60 transition-colors"
+              className={({ isActive }) =>
+                `relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
+                  isActive
+                    ? "bg-red-100 text-[#F43F5E]"
+                    : "bg-gray-200/70 text-gray-700 hover:bg-gray-300/60"
+                }`
+              }
             >
-              <ShoppingCart size={18} />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                {cartCount}
-              </span>
-            </Link>
+              {({ isActive }) => (
+                <>
+                  <ShoppingCart size={18} />
+
+                  {!isActive && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </>
+              )}
+            </NavLink>
           </div>
         </div>
       </div>
 
       {/* 3. Navigation Links Row */}
-<div className="hidden md:block bg-white border-b border-gray-200/80">
-  <div className="max-w-7xl mx-auto px-4 h-11 flex items-center justify-between text-xs font-semibold text-gray-800">
-    <div className="flex items-center gap-6">
-      <button className="flex items-center gap-2 hover:text-blue-600 transition-colors">
-        <Menu size={16} />
-        <span>All Categories</span>
-      </button>
+      <div className="hidden md:block bg-white border-b border-gray-200/80">
+        <div className="max-w-7xl mx-auto px-4 h-11 flex items-center justify-between text-xs font-semibold text-gray-800">
+          <div className="flex items-center gap-6">
+            <button className="flex items-center gap-2 hover:text-blue-600 transition-colors">
+              <Menu size={16} />
+              <span>All Categories</span>
+            </button>
 
-      <span className="text-gray-300 font-normal">|</span>
+            <span className="text-gray-300 font-normal">|</span>
 
-      <nav className="flex items-center gap-6">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              `flex items-center gap-1 transition-colors ${
-                isActive
-                  ? "text-blue-600"
-                  : "hover:text-blue-600"
-              }`
-            }
-          >
-            {item.name}
-            {item.hasDropdown && <ChevronDown size={11} />}
-          </NavLink>
-        ))}
-      </nav>
-    </div>
+            <nav className="flex items-center gap-6">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `flex items-center gap-1 transition-colors ${
+                      isActive ? "text-blue-600" : "hover:text-blue-600"
+                    }`
+                  }
+                >
+                  {item.name}
+                  {item.hasDropdown && <ChevronDown size={11} />}
+                </NavLink>
+              ))}
+            </nav>
+          </div>
 
-    <div className="flex items-center gap-1.5">
-      <span className="font-bold text-gray-900">Best Seller</span>
-      <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
-        Sale
-      </span>
-    </div>
-  </div>
-</div>
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-gray-900">Best Seller</span>
+            <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
+              Sale
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* ============ MOBILE ============ */}
       <div className="md:hidden">
@@ -234,16 +283,28 @@ const Navbar = () => {
             />
           </Link>
 
-          <Link
+          <NavLink
             to="/cart"
-            aria-label="Cart"
-            className="relative w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-700"
+            className={({ isActive }) =>
+              `relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
+                isActive
+                  ? "bg-red-100 text-[#F43F5E]"
+                  : "bg-gray-200/70 text-gray-700 hover:bg-gray-300/60"
+              }`
+            }
           >
-            <ShoppingCart size={18} />
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-              {cartCount}
-            </span>
-          </Link>
+            {({ isActive }) => (
+              <>
+                <ShoppingCart size={18} />
+
+                {!isActive && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </>
+            )}
+          </NavLink>
         </div>
 
         {/* Quick action bar */}
@@ -311,20 +372,20 @@ const Navbar = () => {
             </div>
 
             <nav className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-1 text-xs text-gray-700">
-              <Link
+              <NavLink
                 to="/account"
                 onClick={() => setDrawerOpen(false)}
                 className="flex items-center gap-3 py-2 font-medium"
               >
                 <User size={16} /> Sign In / Account
-              </Link>
-              <Link
-                to="/wishlist"
+              </NavLink>
+              <NavLink
+                to="/wish-list"
                 onClick={() => setDrawerOpen(false)}
                 className="flex items-center gap-3 py-2 font-medium"
               >
                 <Heart size={16} /> Wishlist ({wishlistCount})
-              </Link>
+              </NavLink>
 
               <div className="border-t border-gray-100 my-2" />
 

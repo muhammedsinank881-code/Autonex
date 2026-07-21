@@ -1,161 +1,86 @@
-import React from 'react';
-import { Heart, Star } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Heart, Star, ShoppingCart } from "lucide-react";
 
-export default function ProductCard({ product, viewMode = 'grid' }) {
-  // Safe fallbacks to prevent crashes if data properties are missing
-  const rating = product?.rating ?? 0;
-  const reviews = product?.reviews ?? 0;
-  const title = product?.title ?? '';
-  const price = product?.price ?? '$0.00';
+const ProductCard = ({ product, viewMode = 'grid' }) => {
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
-  const productSku = product?.sku ?? 'unknown';
-  const targetUrl = `/product/${productSku}`;
+  // Format price safely to prevent double $ signs (e.g. "$$215.00" -> "$215.00")
+  const rawPrice = typeof product.price === 'string' ? product.price.replace(/^\$+/, '') : product.price;
+  const formattedPrice = typeof rawPrice === 'number' ? rawPrice.toFixed(2) : rawPrice;
 
-  // --- 1. LIST VIEW FORMAT (Exactly your preferred layout) ---
-  if (viewMode === 'list') {
-    return (
-      <div className="bg-white rounded-xl p-4 border border-slate-100 flex flex-row items-center gap-5 hover:shadow-md transition-all duration-200 group relative w-full">
-        
-        {/* Absolute Badging for List View */}
-        {product?.badge && (
-          <div className="absolute top-4 left-4 z-10 pointer-events-none">
-            <span className={`${product.badge.color || 'bg-[#0062bd]'} text-white font-bold text-[11px] px-2 py-0.5 rounded shadow-xs pointer-events-auto`}>
-              {typeof product.badge === 'object' ? product.badge.text : product.badge}
-            </span>
-          </div>
+  return (
+    <div className="group relative bg-white rounded-xl  shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden p-2 sm:p-3">
+      {/* Top Image Section (Reduced aspect ratio & padding to lower overall height) */}
+      <div className="relative w-full h-32 sm:h-40 bg-slate-50 rounded-lg overflow-hidden flex items-center justify-center mb-2">
+        {/* Discount Badge */}
+        {product.discount && (
+          <span className="absolute top-1.5 left-1.5 bg-cyan-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded z-10">
+            {product.discount}
+          </span>
         )}
 
-        {/* Image Container asset - Restrained to row proportions */}
-        <Link to={targetUrl} className="shrink-0 block">
-          <div className="w-40 h-40 border border-slate-200/60 bg-white rounded-lg flex items-center justify-center overflow-hidden shrink-0">
-            <div className="w-11/12 h-11/12 bg-slate-50 rounded-md flex items-center justify-center text-slate-300 text-xs font-medium border border-slate-100">
-              Product Asset Image
-            </div>
-          </div>
-        </Link>
-
-        {/* Meta Content details - Flex layout fills remaining width */}
-        <div className="flex-1 flex flex-col justify-between py-1 h-40">
-          
-          <div>
-            {/* Title layout heading */}
-            <Link to={targetUrl} className="block hover:text-[#006bc0] transition-colors">
-              <h4 className="text-sm font-normal text-slate-900 leading-snug mb-2">
-                {title}
-              </h4>
-            </Link>
-
-            {/* Ratings block layout */}
-            <div className="flex items-center gap-1 mb-2">
-              <div className="flex text-amber-400 gap-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star 
-                    key={i} 
-                    size={13} 
-                    className={`${i < Math.floor(rating) ? 'fill-current text-[#f5b300]' : 'text-slate-200'}`} 
-                  />
-                ))}
-              </div>
-              <span className="text-xs font-bold text-slate-900 ml-1">{rating.toFixed(2)}</span>
-              <span className="text-xs text-slate-400 font-normal">({reviews})</span>
-            </div>
-
-            {/* Price layout blocks - Styled Emerald Green to match image */}
-            <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-lg font-bold text-[#00a062] tracking-tight">{price}</span>
-              {product?.oldPrice && (
-                <span className="text-xs text-slate-400 line-through font-normal">{product.oldPrice}</span>
-              )}
-            </div>
-          </div>
-
-          {/* Layout actions with side-by-side heart button */}
-          <div className="flex items-center gap-3 max-w-sm w-full">
-            {/* Solid Corporate Blue Action Button */}
-            <button 
-              className="flex-1 text-center py-2 px-4 rounded-md text-xs font-semibold tracking-wide transition-colors bg-[#006bc0] hover:bg-[#005aa3] text-white"
-            >
-              {title.includes('Radiator Direct') ? 'Select options' : product?.isAlternateButton ? 'Buy product' : 'Add to cart'}
-            </button>
-
-            {/* Row-specific isolated heart button trigger */}
-            <button className="text-slate-400 hover:text-red-500 transition-colors p-2 bg-slate-50 hover:bg-slate-100 rounded-md border border-slate-200 shrink-0">
-              <Heart size={18} className="stroke-[2]" />
-            </button>
-          </div>
-
-        </div>
-      </div>
-    );
-  }
-
-  // --- 2. GRID VIEW FORMAT (Your original layout completely untouched) ---
-  return (
-    <div className="bg-white rounded-xl p-4 flex flex-col justify-between relative hover:shadow-md transition-all duration-200 group">
-      
-      {/* Absolute Badging / Top Actions Container */}
-      <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10 pointer-events-none">
-        {product?.badge ? (
-          <span className={`${product.badge.color || 'bg-[#0062bd]'} text-white font-bold text-[11px] px-2 py-0.5 rounded shadow-xs pointer-events-auto`}>
-            {typeof product.badge === 'object' ? product.badge.text : product.badge}
-          </span>
-        ) : <div />}
-        <button className="text-slate-400 hover:text-red-500 transition-colors pointer-events-auto p-1 bg-white/80 backdrop-blur-xs rounded-full">
-          <Heart size={18} className="stroke-[2]" />
-        </button>
-      </div>
-
-      {/* Image Container asset */}
-      <Link to={targetUrl} className="w-full block">
-        <div className="w-full aspect-square bg-white rounded-lg flex items-center justify-center overflow-hidden">
-          <div className="w-11/12 h-11/12 bg-slate-50 rounded-md flex items-center justify-center text-slate-300 text-xs font-medium border border-slate-100">
-            Product Asset Image
-          </div>
-        </div>
-      </Link>
-
-      {/* Meta Content details */}
-      <div className="flex-1 flex flex-col justify-end">
-        
-        {/* Ratings block layout */}
-        <div className="flex items-center gap-1 mb-2">
-          <div className="flex text-amber-400 gap-0.5">
-            {[...Array(5)].map((_, i) => (
-              <Star 
-                key={i} 
-                size={13} 
-                className={`${i < Math.floor(rating) ? 'fill-current text-[#f5b300]' : 'text-slate-200'}`} 
-              />
-            ))}
-          </div>
-          <span className="text-xs font-bold text-slate-900 ml-1">{rating.toFixed(2)}</span>
-          <span className="text-xs text-slate-400 font-normal">({reviews})</span>
-        </div>
-
-        {/* Title layout heading */}
-        <Link to={targetUrl} className="block hover:text-[#006bc0] transition-colors">
-          <h4 className="text-sm font-normal text-slate-900 line-clamp-2 leading-snug mb-3 min-h-[40px]">
-            {title}
-          </h4>
-        </Link>
-
-        {/* Price layout blocks - Styled Emerald Green to match image */}
-        <div className="flex items-baseline gap-2 mb-4">
-          <span className="text-lg font-bold text-[#00a062] tracking-tight">{price}</span>
-          {product?.oldPrice && (
-            <span className="text-xs text-slate-400 line-through font-normal">{product.oldPrice}</span>
-          )}
-        </div>
-
-        {/* Solid Corporate Blue Action Button */}
-        <button 
-          className="w-full text-center py-2 px-4 rounded-md text-xs font-semibold tracking-wide transition-colors bg-[#006bc0] hover:bg-[#005aa3] text-white"
+        {/* Wishlist Button */}
+        <button
+          onClick={() => setIsWishlisted(!isWishlisted)}
+          aria-label="Add to wishlist"
+          className="absolute top-1.5 right-1.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/90 backdrop-blur-md border border-slate-100 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-white transition-all z-10 shadow-xs"
         >
-          {title.includes('Radiator Direct') ? 'Select options' : product?.isAlternateButton ? 'Buy product' : 'Add to cart'}
+          <Heart
+            size={13}
+            className={isWishlisted ? "fill-red-500 text-red-500" : ""}
+          />
         </button>
 
+        {/* Product Image */}
+        <img
+          src={product.image || "https://via.placeholder.com/150"}
+          alt={product.title}
+          className="w-full h-full object-contain p-1.5 group-hover:scale-105 transition-transform duration-300"
+        />
+      </div>
+
+      {/* Content Section */}
+      <div className="flex flex-col flex-1 justify-between">
+        <div>
+          {/* Ratings */}
+          <div className="flex items-center gap-1 mb-0.5">
+            <Star size={11} className="fill-amber-400 text-amber-400 shrink-0" />
+            <span className="text-[10px] font-semibold text-slate-700 leading-none">
+              {product.rating}
+            </span>
+            <span className="text-[9px] text-slate-400 leading-none">
+              ({product.reviewsCount || 0})
+            </span>
+          </div>
+
+          {/* Title - Strict 2 Line Limit */}
+          <h3 className="text-xs font-medium text-slate-800 line-clamp-2 leading-tight mb-1.5 hover:text-[#006bc0] transition-colors">
+            {product.title}
+          </h3>
+        </div>
+
+        {/* Price & Action Section */}
+        <div className="mt-1">
+          <div className="flex items-baseline gap-1 mb-1.5">
+            <span className="text-xs sm:text-sm font-bold text-emerald-600">
+              ${formattedPrice}
+            </span>
+            {product.oldPrice && (
+              <span className="text-[9px] text-slate-400 line-through">
+                ${product.oldPrice}
+              </span>
+            )}
+          </div>
+
+          {/* Compact Button */}
+          <button className="w-full bg-[#006bc0] hover:bg-[#005aa3] active:bg-[#004a87] text-white font-semibold text-[11px] sm:text-xs py-1.5 px-2 rounded-lg flex items-center justify-center gap-1 transition-colors shadow-2xs">
+            <ShoppingCart size={13} className="hidden sm:inline-block" />
+            <span>Add to cart</span>
+          </button>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default ProductCard;
