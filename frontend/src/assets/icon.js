@@ -7,6 +7,10 @@ export { default as Mastercard } from "./icons/mastercard.svg?react";
 export { default as Visa } from "./icons/visa.svg?react";
 export { default as Paypal } from "./icons/paypal.svg?react";
 export { default as Skrill } from "./icons/skrill.svg?react";
+export { default as Affordable } from "./icons/affordable.svg?react";
+export { default as Medal } from "./icons/medal.svg?react";
+export { default as WideVeriety } from "./icons/wideVeriety.svg?react";
+
 
 // React Icons
 export { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa";

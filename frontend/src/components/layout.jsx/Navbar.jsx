@@ -13,6 +13,7 @@ import {
   Warehouse, // Placeholder if custom Garage icon is not available
 } from "lucide-react";
 import { Garage } from "../../assets/icon.js";
+
 import Logo from "../../assets/icons/AutonexLogo.png";
 
 const navItems = [
