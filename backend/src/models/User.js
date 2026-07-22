@@ -23,6 +23,11 @@ const userSchema = new mongoose.Schema(
       minlength: 10,
     },
 
+    refreshToken: {
+      type: String,
+      default: null,
+    },
+
     country: {
       type: String,
       required: true,

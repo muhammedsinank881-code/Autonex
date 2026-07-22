@@ -5,8 +5,11 @@ import PendingRegistration from "../models/PendingRegistration.js";
 import User from "../models/User.js";
 import { sendOTPEmail } from "../services/mail.service.js";
 import { generateOTP } from "../utils/generateOTP.js";
-import { generateToken } from "../utils/generateToken.js";
 import { hashPassword, comparePassword } from "../utils/hashPassword.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../utils/generateToken.js";
 
 export const register = async (req, res) => {
   try {
@@ -40,9 +43,9 @@ export const register = async (req, res) => {
       password: hashedPassword,
       country,
       phone,
-      profile : profile,
+      profile: profile,
       otp: hashedOTP,
-      lastOtpSentAt:new Date(),
+      lastOtpSentAt: new Date(),
       expiresAt: new Date(Date.now() + 10 * 60 * 1000),
     });
 
@@ -53,7 +56,6 @@ export const register = async (req, res) => {
       success: true,
       message: "OTP sent successfully. Please verify your email.",
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -64,7 +66,6 @@ export const register = async (req, res) => {
 
 export const resendOTP = async (req, res) => {
   try {
-
     const { email } = req.body;
 
     const pendingUser = await PendingRegistration.findOne({ email });
@@ -81,14 +82,12 @@ export const resendOTP = async (req, res) => {
       (Date.now() - pendingUser.lastOtpSentAt.getTime()) / 1000;
 
     if (secondsPassed < 60) {
-
       return res.status(429).json({
         success: false,
         message: `Please wait ${Math.ceil(
-          60 - secondsPassed
+          60 - secondsPassed,
         )} seconds before requesting another OTP.`,
       });
-
     }
 
     const otp = generateOTP();
@@ -109,14 +108,11 @@ export const resendOTP = async (req, res) => {
       success: true,
       message: "OTP sent successfully.",
     });
-
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
 };
 
@@ -142,10 +138,7 @@ export const verifyOTP = async (req, res) => {
     }
 
     // Compare OTP
-    const isMatch = await bcrypt.compare(
-      otp,
-      pendingUser.otp
-    );
+    const isMatch = await bcrypt.compare(otp, pendingUser.otp);
 
     if (!isMatch) {
       return res.status(400).json({
@@ -161,8 +154,8 @@ export const verifyOTP = async (req, res) => {
       password: pendingUser.password,
       country: pendingUser.country,
       phone: pendingUser.phone,
-      profile:pendingUser.profile,
-      isVerified:true
+      profile: pendingUser.profile,
+      isVerified: true,
     });
 
     // Delete temporary record
@@ -175,7 +168,6 @@ export const verifyOTP = async (req, res) => {
       message: "Account created successfully",
       user,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -188,9 +180,7 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({
-      email,
-    });
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(400).json({
@@ -208,11 +198,21 @@ export const login = async (req, res) => {
       });
     }
 
-    const token = generateToken(user._id);
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    user.refreshToken = await bcrypt.hash(refreshToken, 10);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     res.status(200).json({
       success: true,
-      token,
+      accessToken,
       user,
     });
   } catch (error) {
@@ -229,7 +229,7 @@ export const getProfile = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        message: "user not found",
+        message: "User not found",
       });
     }
 
@@ -284,20 +284,16 @@ export const forgotPassword = async (req, res) => {
       success: true,
       message: "OTP sent successfully.",
     });
-
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
 };
 
 export const verifyForgotPassword = async (req, res) => {
   try {
-
     const { email, otp } = req.body;
 
     const pendingUser = await PendingRegistration.findOne({ email });
@@ -310,23 +306,17 @@ export const verifyForgotPassword = async (req, res) => {
     }
 
     if (pendingUser.attempts >= 5) {
-
       await PendingRegistration.deleteOne({ email });
 
       return res.status(400).json({
         success: false,
         message: "Too many attempts.",
       });
-
     }
 
-    const isMatch = await bcrypt.compare(
-      otp,
-      pendingUser.otp
-    );
+    const isMatch = await bcrypt.compare(otp, pendingUser.otp);
 
     if (!isMatch) {
-
       pendingUser.attempts++;
 
       await pendingUser.save();
@@ -335,7 +325,6 @@ export const verifyForgotPassword = async (req, res) => {
         success: false,
         message: "Invalid OTP",
       });
-
     }
 
     pendingUser.isOtpVerified = true;
@@ -348,20 +337,16 @@ export const verifyForgotPassword = async (req, res) => {
       success: true,
       message: "OTP verified successfully.",
     });
-
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
 };
 
 export const resetPassword = async (req, res) => {
   try {
-
     const { email, password } = req.body;
 
     // Find pending verification
@@ -404,14 +389,11 @@ export const resetPassword = async (req, res) => {
       success: true,
       message: "Password reset successfully.",
     });
-
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
 };
 
@@ -453,9 +435,106 @@ export const updateProfile = async (req, res) => {
       message: "Profile updated successfully",
       user: updatedUser,
     });
-
   } catch (error) {
     res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const refreshToken = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token missing",
+      });
+    }
+
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+    const user = await User.findById(decoded.id);
+
+    if (!user || !user.refreshToken) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(refreshToken, user.refreshToken);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid refresh token",
+      });
+    }
+
+    // Rotate tokens
+    const newAccessToken = generateAccessToken(user._id);
+    const newRefreshToken = generateRefreshToken(user._id);
+
+    user.refreshToken = await bcrypt.hash(newRefreshToken, 10);
+
+    await user.save();
+
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      success: true,
+      accessToken: newAccessToken,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired refresh token",
+    });
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (refreshToken) {
+      try {
+        const decoded = jwt.verify(
+          refreshToken,
+          process.env.JWT_REFRESH_SECRET,
+        );
+
+        const user = await User.findById(decoded.id);
+
+        if (user) {
+          user.refreshToken = null;
+          await user.save();
+        }
+      } catch (_) {
+        // Ignore invalid or expired refresh tokens
+      }
+    }
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -473,27 +552,30 @@ export const deleteUser = async (req, res) => {
       });
     }
 
-    // Delete profile image if it exists
     if (user.profile) {
-      const imagePath = path.join(process.cwd(), user.profile);
-
       try {
-        await fs.unlink(imagePath);
-      } catch (err) {
-        // Ignore if file doesn't exist
-      }
+        await fs.unlink(path.join(process.cwd(), user.profile));
+      } catch (_) {}
     }
 
-    await User.findByIdAndDelete(req.user.id);
+    // Invalidate refresh token
+    user.refreshToken = null;
+    await user.save();
 
-    res.status(200).json({
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    await user.deleteOne();
+
+    return res.status(200).json({
       success: true,
       message: "Account deleted successfully",
     });
   } catch (error) {
-    console.error("Delete User Error:", error);
-
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

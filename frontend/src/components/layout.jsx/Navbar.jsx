@@ -46,8 +46,7 @@ const navItems = [
 ];
 
 const Navbar = () => {
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [wishlistCount] = useState(0);
   const [cartCount] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -101,19 +100,34 @@ const Navbar = () => {
           </Link>
 
           {/* Add Vehicle / My Garage */}
-          <button
-          onClick={()=> navigate("/MyGaragePage")}
-           className="hidden lg:flex items-center gap-2.5 shrink-0 text-left">
-            <div className="w-10 h-10 rounded-full bg-gray-200/70 flex items-center justify-center text-gray-600">
-              <Warehouse size={18} />
-            </div>
-            <div className="text-xs">
-              <span className="text-gray-400 block text-[10px] leading-tight">
-                Add Vehicle
-              </span>
-              <span className="font-bold text-gray-800 text-xs">My Garage</span>
-            </div>
-          </button>
+          <NavLink to="/MyGaragePage">
+            {({ isActive }) => (
+              <div className="hidden lg:flex items-center gap-2.5 shrink-0 text-left">
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+                    isActive
+                      ? "bg-blue-400 text-white"
+                      : "bg-gray-200/70 text-gray-600 hover:bg-gray-300/60"
+                  }`}
+                >
+                  <Warehouse size={18} />
+                </div>
+
+                <div className="text-xs">
+                  <span className="text-gray-400 block text-[10px] leading-tight">
+                    Add Vehicle
+                  </span>
+                  <span
+                    className={`font-bold text-xs transition-colors ${
+                      isActive ? "text-blue-500" : "text-gray-800"
+                    }`}
+                  >
+                    My Garage
+                  </span>
+                </div>
+              </div>
+            )}
+          </NavLink>
 
           {/* Search Bar */}
           <div className="flex-1 max-w-2xl relative">
@@ -191,9 +205,22 @@ const Navbar = () => {
             </NavLink>
 
             {/* Compare */}
-            <button className="w-9 h-9 rounded-full bg-gray-200/70 flex items-center justify-center text-gray-700 hover:bg-gray-300/60 transition-colors">
-              <Repeat size={18} />
-            </button>
+            <NavLink
+              to="/compare" // Change this to your route
+              className={({ isActive }) =>
+                `relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
+                  isActive
+                    ? "bg-blue-100 text-blue-600"
+                    : "bg-gray-200/70 text-gray-700 hover:bg-gray-300/60"
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <Repeat size={18} />
+                </>
+              )}
+            </NavLink>
 
             {/* Cart */}
             <NavLink

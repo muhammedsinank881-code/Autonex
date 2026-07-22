@@ -1,9 +1,9 @@
 import React from 'react';
 import { LayoutGrid, List } from 'lucide-react';
 
-export default function ProductGridHeader({ 
-  totalResults, 
-  indexOfFirstProduct, 
+export default function ProductGridHeader({
+  totalResults,
+  indexOfFirstProduct,
   indexOfLastProduct,
   sortOption,
   setSortOption,
@@ -12,71 +12,73 @@ export default function ProductGridHeader({
   viewMode,
   setViewMode
 }) {
-  // Dynamically calculate accurate bounds matching the active pagination index window
-  const currentMin = totalResults === 0 ? 0 : indexOfFirstProduct + 1;
   const currentMax = Math.min(indexOfLastProduct, totalResults);
-
-  const sortOptions = [
-    { value: "default", label: "Default sorting" },
-    { value: "rating", label: "Sort by average rating" },
-    { value: "price-low-high", label: "Sort by price: low to high" },
-    { value: "price-high-low", label: "Sort by price: high to low" }
-  ];
+  const currentMin = totalResults > 0 ? indexOfFirstProduct + 1 : 0;
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-100 mb-6 select-none">
-      
-      {/* Total items display text (Image 1 style matching your typography) */}
-      <div className="text-[13px] text-slate-500 font-medium">
-        Showing {currentMin}–{currentMax} of {totalResults} results
-      </div>
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-slate-100">
+      {/* Results Count Summary */}
+      <p className="text-xs sm:text-sm text-slate-500 font-medium">
+        Showing <span className="text-slate-800 font-semibold">{currentMin}–{currentMax}</span> of <span className="text-slate-800 font-semibold">{totalResults}</span> results
+      </p>
 
-      {/* Control Tools Container Frame (Image 2 styles and layout arrangement) */}
-      <div className="flex items-center gap-2.5 self-end sm:self-auto">
-        
-        {/* Sort selector label wrapper */}
-        <div className="flex items-center gap-1">
-          <span className="text-slate-400 text-xs font-normal">Sort:</span>
-          <select 
+      {/* Control Bar: Stacks cleanly on mobile, inline on desktop */}
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+        {/* Sort Dropdown */}
+        <div className="flex items-center gap-1.5 flex-1 sm:flex-none min-w-[130px]">
+          <span className="text-xs text-slate-400 font-medium whitespace-nowrap hidden min-[380px]:inline">
+            Sort:
+          </span>
+          <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
-            className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-white text-slate-800 outline-none focus:border-blue-500 transition-colors cursor-pointer min-w-[155px]"
+            className="w-full sm:w-auto bg-white border border-slate-200 text-slate-700 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer shadow-xs font-medium"
           >
-            {sortOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
+            <option value="default">Default sorting</option>
+            <option value="price-low-high">Price: Low to High</option>
+            <option value="price-high-low">Price: High to Low</option>
+            <option value="rating">Average rating</option>
           </select>
         </div>
 
-        {/* Sizing dropdown limiter component */}
-        <select 
-          value={itemsPerPage}
-          onChange={(e) => setItemsPerPage(Number(e.target.value))}
-          className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-white text-slate-800 outline-none focus:border-blue-500 transition-colors cursor-pointer"
-        >
-          <option value={12}>12 Items</option>
-          <option value={24}>24 Items</option>
-          <option value={30}>30 Items</option>
-        </select>
-
-        {/* Border grid-view utility toggler layout frames */}
-        <div className="flex items-center gap-1 pl-1">
-          <button 
-            onClick={() => setViewMode('grid')}
-            className={`p-1.5 rounded-md border transition-all ${viewMode === 'grid' ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-600'}`}
+        {/* Per-Page Selector */}
+        <div className="flex items-center">
+          <select
+            value={itemsPerPage}
+            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            className="bg-white border border-slate-200 text-slate-700 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer shadow-xs font-medium"
           >
-            <LayoutGrid size={14} className="stroke-[2.5]" />
-          </button>
-          <button 
-            onClick={() => setViewMode('list')}
-            className={`p-1.5 rounded-md border transition-all ${viewMode === 'list' ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-600'}`}
-          >
-            <List size={14} className="stroke-[2.5]" />
-          </button>
+            <option value={12}>12 Items</option>
+            <option value={24}>24 Items</option>
+            <option value={36}>36 Items</option>
+          </select>
         </div>
 
+        {/* View Mode Switches */}
+        <div className="flex items-center gap-1 border border-slate-200 rounded-lg p-0.5 bg-slate-50/50">
+          <button
+            onClick={() => setViewMode('grid')}
+            title="Grid View"
+            className={`p-1.5 rounded-md transition-all ${
+              viewMode === 'grid'
+                ? 'bg-white text-blue-600 shadow-xs border border-slate-200/60'
+                : 'text-slate-400 hover:text-slate-600'
+            }`}
+          >
+            <LayoutGrid size={15} />
+          </button>
+          <button
+            onClick={() => setViewMode('list')}
+            title="List View"
+            className={`p-1.5 rounded-md transition-all ${
+              viewMode === 'list'
+                ? 'bg-white text-blue-600 shadow-xs border border-slate-200/60'
+                : 'text-slate-400 hover:text-slate-600'
+            }`}
+          >
+            <List size={15} />
+          </button>
+        </div>
       </div>
     </div>
   );
