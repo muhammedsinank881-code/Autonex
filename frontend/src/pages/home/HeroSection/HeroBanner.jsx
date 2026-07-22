@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const HeroBanner = () => {
+
+  const navigate = useNavigate()
   return (
     <div>
       <section className="relative bg-[#1A232E] text-white overflow-hidden py-12 lg:py-16">
@@ -31,7 +34,9 @@ const HeroBanner = () => {
               </p>
 
               <div>
-                <button className="bg-[#0066CC] hover:bg-[#0052A3] text-white font-semibold text-sm px-6 py-3 rounded-md transition-all shadow-md active:scale-95">
+                <button 
+                onClick={()=> navigate("/shop")}
+                 className="bg-[#0066CC] hover:bg-[#0052A3] text-white font-semibold text-sm px-6 py-3 rounded-md transition-all shadow-md active:scale-95">
                   View All Products
                 </button>
               </div>

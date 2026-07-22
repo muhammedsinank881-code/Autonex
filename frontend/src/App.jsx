@@ -9,6 +9,7 @@ import CheckoutPage from "./pages/cart/CheckoutPage";
 import AuthPage from "./pages/Login/AuthPage";
 import Wishlist from "./pages/cart/Wishlist";
 import MyGaragePage from "./pages/garage/MyGaragePage";
+import ProfileLayout from "./pages/Login/profile/ProfileLayout";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -41,13 +42,13 @@ function App() {
         <Route path="/product/:sku" element={<ProductDetailsPage/>}/>
         <Route path="/cart" element={<CartPage/>}/>
         <Route path="/cart/checkout" element={<CheckoutPage/>}/> 
-        <Route path="/account" element={<AuthPage/>}/>
+        <Route path="/account" element={<ProfileLayout/>}/>
         <Route path="/wish-list" element={<Wishlist/>}/>
 
         <Route path="/MyGaragePage" element={<MyGaragePage/>}/>
 
 
-      </Route>
+      </Route>  
     </Routes>
   );
 }

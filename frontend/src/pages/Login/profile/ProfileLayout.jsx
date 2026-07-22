@@ -64,7 +64,7 @@ const ProfileLayout = () => {
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
-                return (
+                return ( 
                   <button
                     key={item.id}
                     onClick={() => handleTabSelect(item.id)}

@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const FeaturedBanner = () => {
+
+  const navigate = useNavigate()
   return (
     <div>
       <section className="w-full px-4">
@@ -30,7 +33,9 @@ const FeaturedBanner = () => {
                 Add your vehicle once and enjoy personalized shopping forever.
                 Get parts fast, accurate, and stress-free.
               </p>
-              <button className="bg-[#0066CC] hover:bg-[#0052A3] text-white font-semibold text-xs px-5 py-2.5 rounded transition-all shadow">
+              <button
+              onClick={()=> navigate("/MyGaragePage")}
+               className="bg-[#0066CC] hover:bg-[#0052A3] text-white font-semibold text-xs px-5 py-2.5 rounded transition-all shadow">
                 Shop Now
               </button>
             </div>
