@@ -7,9 +7,6 @@ const API = axios.create({
   withCredentials: true,
 });
 
-// -------------------------
-// Request Interceptor
-// -------------------------
 
 API.interceptors.request.use(
   (config) => {
@@ -24,9 +21,6 @@ API.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// -------------------------
-// Refresh Queue
-// -------------------------
 
 let isRefreshing = false;
 let failedQueue = [];
@@ -43,9 +37,6 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
-// -------------------------
-// Response Interceptor
-// -------------------------
 
 API.interceptors.response.use(
   (response) => response,
@@ -59,9 +50,6 @@ API.interceptors.response.use(
 
     originalRequest._retry = true;
 
-    // -------------------
-    // Already Refreshing
-    // -------------------
 
     if (isRefreshing) {
       return new Promise((resolve, reject) => {

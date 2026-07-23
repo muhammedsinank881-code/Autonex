@@ -51,7 +51,7 @@ function App() {
         <Route path="/product/:sku" element={<ProductDetailsPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/cart/checkout" element={<CheckoutPage />} />
-        <Route path="/account" element={<ProfileLayout />} />
+        <Route path="/account" element={<AuthPage/>} />
         <Route
           path="/wish-list"
           element={<Wishlist onReturnToShop={handleReturnToShop} />}

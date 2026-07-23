@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Register from "./Register";
 import { Link } from "react-router-dom";
-import { useLogin } from "../hooks/auth/useLogin";
+import { useLogin } from "../../hooks/mutations/useLogin.js";
 
 const AuthPage = () => {
+  const loginMutation = useLogin();
   const [activeTab, setActiveTab] = useState("login"); // 'login' or 'register'
   const [showPassword, setShowPassword] = useState(false);
-
 
   // Login form state
   const [loginData, setLoginData] = useState({
@@ -41,7 +41,8 @@ const AuthPage = () => {
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    console.log("Login Submitted:", loginData);
+
+    loginMutation.mutate(loginData);
   };
 
   const handleRegisterSubmit = (e) => {
@@ -140,6 +141,12 @@ const AuthPage = () => {
                   </button>
                 </div>
               </div>
+              {loginMutation.isError && (
+                <p className="text-red-500 text-xs">
+                  {loginMutation.error?.response?.data?.message ||
+                    "Something went wrong."}
+                </p>
+              )}
 
               <div className="flex items-center justify-between pt-1">
                 <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-600">
@@ -163,9 +170,10 @@ const AuthPage = () => {
 
               <button
                 type="submit"
-                className="w-full bg-[#0066b2] hover:bg-[#005290] text-white text-xs font-semibold py-3 px-4 rounded-md transition-colors mt-2"
+                disabled={loginMutation.isPending}
+                className="w-full bg-[#0066b2] hover:bg-[#005290] text-white text-xs font-semibold py-3 px-4 rounded-md transition-colors mt-2 disabled:opacity-60"
               >
-                Log in
+                {loginMutation.isPending ? "Signing In..." : "Log in"}
               </button>
             </form>
           )}
