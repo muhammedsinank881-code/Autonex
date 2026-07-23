@@ -404,7 +404,7 @@ const Navbar = () => {
 
             <nav className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-1 text-xs text-gray-700">
               <NavLink
-                to={isAuthenticated ? "/profile" : "/auth"}
+                to={isAuthenticated ? "/auth" : "/account"}
                 onClick={() => setDrawerOpen(false)}
                 className="flex items-center gap-3 py-2 font-medium"
               >

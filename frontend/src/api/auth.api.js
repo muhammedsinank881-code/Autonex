@@ -13,8 +13,6 @@ export const register = async (formData) => {
 
 // Login
 export const login = async (credentials) => {
-  console.log("Credentials:", credentials);
-
   const { data } = await API.post("/auth/login", credentials);
 
   return data;
@@ -26,7 +24,6 @@ export const verifyOTP = async (payload) => {
 
   return data;
 };
-
 
 // Resend Registration OTP
 export const resendOTP = async (payload) => {
@@ -60,7 +57,7 @@ export const resetPassword = async (payload) => {
 export const getCurrentUser = async () => {
   const { data } = await API.get("/auth/profile");
 
-  return data.data; // or return data depending on your backend response
+  return data;
 };
 
 // Update Profile

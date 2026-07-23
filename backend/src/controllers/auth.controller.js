@@ -163,10 +163,14 @@ export const verifyOTP = async (req, res) => {
       email,
     });
 
+    const safeUser = await User.findById(user._id).select(
+      "-password -refreshToken",
+    );
+
     return res.status(201).json({
       success: true,
       message: "Account created successfully",
-      user,
+      safeUser,
     });
   } catch (error) {
     return res.status(500).json({
@@ -205,6 +209,10 @@ export const login = async (req, res) => {
 
     await user.save();
 
+    const safeUser = await User.findById(user._id).select(
+      "-password -refreshToken",
+    );
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -215,7 +223,7 @@ export const login = async (req, res) => {
     res.status(200).json({
       success: true,
       accessToken,
-      user,
+      safeUser,
     });
   } catch (error) {
     res.status(500).json({
@@ -227,7 +235,9 @@ export const login = async (req, res) => {
 
 export const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user.id).select(
+      "-password -refreshToken",
+    );
 
     if (!user) {
       return res.status(404).json({
