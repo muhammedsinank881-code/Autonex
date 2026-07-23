@@ -4,11 +4,15 @@ import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { WishlistProvider } from "./context/WishlistContext.jsx";
+import { Provider } from "react-redux";
+import { store } from "./redux/store.js";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <WishlistProvider>
-      <App />
-    </WishlistProvider>
+    <Provider store={store}>
+      <WishlistProvider>
+        <App />
+      </WishlistProvider>
+    </Provider>
   </BrowserRouter>,
 );

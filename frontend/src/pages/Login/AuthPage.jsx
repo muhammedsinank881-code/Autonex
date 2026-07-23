@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Register from "./Register";
 import { Link } from "react-router-dom";
+import { useLogin } from "../hooks/auth/useLogin";
 
 const AuthPage = () => {
   const [activeTab, setActiveTab] = useState("login"); // 'login' or 'register'
   const [showPassword, setShowPassword] = useState(false);
+
 
   // Login form state
   const [loginData, setLoginData] = useState({
@@ -169,9 +171,7 @@ const AuthPage = () => {
           )}
 
           {/* REGISTER FORM */}
-          {activeTab === "register" && (
-            <Register/>
-          )}
+          {activeTab === "register" && <Register />}
         </div>
       </div>
     </div>
