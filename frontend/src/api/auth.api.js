@@ -13,7 +13,7 @@ export const register = async (formData) => {
 
 // Login
 export const login = async (credentials) => {
-  const { data } = await API.post("/auth/login", credentials);
+  const { data } = await API.post("/api/auth/login", credentials);
 
   return data;
 };
