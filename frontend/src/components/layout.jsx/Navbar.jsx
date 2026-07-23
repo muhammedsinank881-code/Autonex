@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import {
   Search,
@@ -47,6 +48,9 @@ const navItems = [
 
 const Navbar = () => {
   const navigate = useNavigate();
+
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
   const [wishlistCount] = useState(0);
   const [cartCount] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -147,7 +151,7 @@ const Navbar = () => {
           {/* Action Icons */}
           <div className="flex items-center gap-4 shrink-0">
             {/* Account */}
-            <NavLink to="/account">
+            <NavLink to={isAuthenticated ? "/profile" : "/auth"}>
               {({ isActive }) => (
                 <div className="flex items-center gap-2 text-xs">
                   <div
@@ -400,7 +404,7 @@ const Navbar = () => {
 
             <nav className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-1 text-xs text-gray-700">
               <NavLink
-                to="/account"
+                to={isAuthenticated ? "/profile" : "/auth"}
                 onClick={() => setDrawerOpen(false)}
                 className="flex items-center gap-3 py-2 font-medium"
               >

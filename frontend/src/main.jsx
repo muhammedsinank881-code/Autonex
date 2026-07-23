@@ -8,13 +8,16 @@ import App from "./App.jsx";
 import { WishlistProvider } from "./context/WishlistContext.jsx";
 import { store } from "./redux/store.js";
 import { queryClient } from "./hooks/queryClient.js";
+import AuthProvider from "./providers/AuthProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <WishlistProvider>
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
         </WishlistProvider>
       </QueryClientProvider>
     </Provider>

@@ -13,7 +13,9 @@ export const register = async (formData) => {
 
 // Login
 export const login = async (credentials) => {
-  const { data } = await API.post("/api/auth/login", credentials);
+  console.log("Credentials:", credentials);
+
+  const { data } = await API.post("/auth/login", credentials);
 
   return data;
 };
@@ -55,10 +57,10 @@ export const resetPassword = async (payload) => {
 };
 
 // Get Current User Profile
-export const getProfile = async () => {
+export const getCurrentUser = async () => {
   const { data } = await API.get("/auth/profile");
 
-  return data;
+  return data.data; // or return data depending on your backend response
 };
 
 // Update Profile

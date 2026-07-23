@@ -1,36 +1,51 @@
-import React, { useState } from 'react';
-import { User, MapPin, Package, Search, LogOut, ChevronDown, Menu, X } from 'lucide-react';
-import PersonalInformation from './PersonalInformation';
-import ManageAddress from './ManageAddress';
-import Orders from './Orders';
-import OrderTracking from './OrderTracking';
+import React, { useState } from "react";
+import {
+  User,
+  MapPin,
+  Package,
+  Search,
+  LogOut,
+  ChevronDown,
+  Menu,
+  X,
+} from "lucide-react";
+import PersonalInformation from "./PersonalInformation";
+import ManageAddress from "./ManageAddress";
+import Orders from "./Orders";
+import OrderTracking from "./OrderTracking";
+
+import { useCurrentUser } from "../../../hooks/mutations/useCurrentUser.js";
 
 const ProfileLayout = () => {
-  const [activeTab, setActiveTab] = useState('profile');
+
+  const { data: user, isLoading, isError } = useCurrentUser();
+
+  const [activeTab, setActiveTab] = useState("profile");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const menuItems = [
-    { id: 'profile', label: 'Personal Information', icon: User },
-    { id: 'address', label: 'Manage Address', icon: MapPin },
-    { id: 'orders', label: 'My Orders', icon: Package },
-    { id: 'tracking', label: 'Order Tracking', icon: Search },
+    { id: "profile", label: "Personal Information", icon: User },
+    { id: "address", label: "Manage Address", icon: MapPin },
+    { id: "orders", label: "My Orders", icon: Package },
+    { id: "tracking", label: "Order Tracking", icon: Search },
   ];
 
-  const activeItem = menuItems.find((item) => item.id === activeTab) || menuItems[0];
+  const activeItem =
+    menuItems.find((item) => item.id === activeTab) || menuItems[0];
   const ActiveIcon = activeItem.icon;
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'profile':
-        return <PersonalInformation />;
-      case 'address':
+      case "profile":
+        return <PersonalInformation user={user} />;
+      case "address":
         return <ManageAddress />;
-      case 'orders':
+      case "orders":
         return <Orders setActiveTab={setActiveTab} />;
-      case 'tracking':
+      case "tracking":
         return <OrderTracking />;
       default:
-        return <PersonalInformation />;
+        return <PersonalInformation user={user} />;
     }
   };
 
@@ -39,10 +54,16 @@ const ProfileLayout = () => {
     setIsMobileMenuOpen(false);
   };
 
+  if (isLoading) {
+    return <h1>Loading...</h1>;
+  }
+
+  if (isError) {
+    return <h1>Something went wrong.</h1>;
+  }
   return (
     <div className="min-h-screen bg-slate-50/50 py-6 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-6xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row overflow-hidden min-h-[75vh] ">
-        
         {/* Mobile Navigation Header */}
         <div className="md:hidden border-b border-gray-100 p-4 bg-white">
           <button
@@ -53,9 +74,13 @@ const ProfileLayout = () => {
               <div className="p-2 rounded-lg bg-[#0067B2]/10 text-[#0067B2]">
                 <ActiveIcon className="w-5 h-5" />
               </div>
-              <span className="text-sm font-semibold text-gray-800">{activeItem.label}</span>
+              <span className="text-sm font-semibold text-gray-800">
+                {activeItem.label}
+              </span>
             </div>
-            <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${isMobileMenuOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown
+              className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${isMobileMenuOpen ? "rotate-180" : ""}`}
+            />
           </button>
 
           {/* Mobile Dropdown Menu */}
@@ -64,14 +89,14 @@ const ProfileLayout = () => {
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
-                return ( 
+                return (
                   <button
                     key={item.id}
                     onClick={() => handleTabSelect(item.id)}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-[#0067B2]/10 text-[#0067B2] font-semibold'
-                        : 'text-gray-600 hover:bg-gray-50'
+                        ? "bg-[#0067B2]/10 text-[#0067B2] font-semibold"
+                        : "text-gray-600 hover:bg-gray-50"
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -91,12 +116,21 @@ const ProfileLayout = () => {
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex flex-col w-72 border-r border-gray-100 bg-white p-6 shrink-0">
           <div className="flex items-center space-x-3.5 mb-8 pb-6 border-b border-gray-100">
-            <div className="w-12 h-12 rounded-full bg-[#0067B2]/10 text-[#0067B2] flex items-center justify-center font-bold text-base shadow-sm">
-              JD
+            <div className="w-12 h-12 rounded-full bg-[#0067B2]/10 text-[#0067B2] flex items-center justify-center font-bold">
+              {user?.profile ? (
+                <img
+                  src={user.profile}
+                  alt={user.fullName}
+                  className="w-full h-full rounded-full object-cover"
+                />
+              ) : (
+                user?.fullName?.charAt(0).toUpperCase()
+              )}
             </div>
             <div className="overflow-hidden">
-              <h3 className="text-sm font-bold text-gray-900 truncate">John Doe</h3>
-              <p className="text-xs text-gray-500 truncate">john.doe@example.com</p>
+              <h3 className="text-sm font-bold truncate">{user?.fullName}</h3>
+
+              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
             </div>
           </div>
 
@@ -110,8 +144,8 @@ const ProfileLayout = () => {
                   onClick={() => setActiveTab(item.id)}
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-[#0067B2]/10 text-[#0067B2] font-semibold shadow-xs'
-                      : 'text-gray-600 hover:bg-[#0067B2]/5 hover:text-[#0067B2]'
+                      ? "bg-[#0067B2]/10 text-[#0067B2] font-semibold shadow-xs"
+                      : "text-gray-600 hover:bg-[#0067B2]/5 hover:text-[#0067B2]"
                   }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -130,10 +164,7 @@ const ProfileLayout = () => {
         </aside>
 
         {/* Dynamic Content Area */}
-        <main className="flex-1 p-6 md:p-10 bg-white">
-          {renderContent()}
-        </main>
-
+        <main className="flex-1 p-6 md:p-10 bg-white">{renderContent()}</main>
       </div>
     </div>
   );

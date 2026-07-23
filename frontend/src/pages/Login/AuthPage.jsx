@@ -11,7 +11,7 @@ const AuthPage = () => {
 
   // Login form state
   const [loginData, setLoginData] = useState({
-    identifier: "",
+    email: "",
     password: "",
     rememberMe: false,
   });
@@ -42,7 +42,10 @@ const AuthPage = () => {
   const handleLoginSubmit = (e) => {
     e.preventDefault();
 
-    loginMutation.mutate(loginData);
+    loginMutation.mutate({
+      email : loginData.email,
+      password : loginData.password
+    })
   };
 
   const handleRegisterSubmit = (e) => {
@@ -107,9 +110,9 @@ const AuthPage = () => {
                 </label>
                 <input
                   type="text"
-                  name="identifier"
+                  name="email"
                   required
-                  value={loginData.identifier}
+                  value={loginData.email}
                   onChange={handleLoginChange}
                   className="w-full border border-gray-200 rounded-md p-2.5 text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                 />
