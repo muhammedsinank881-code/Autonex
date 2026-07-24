@@ -5,13 +5,14 @@ export const sendOTPEmail = async (email, otp) => {
     console.log("1. Creating transporter");
 
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
+      host: process.env.EMAIL_HOST,
+      port: Number(process.env.EMAIL_PORT),
       secure: false,
 
       connectionTimeout: 10000,
       greetingTimeout: 10000,
       socketTimeout: 10000,
+
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
@@ -25,7 +26,7 @@ export const sendOTPEmail = async (email, otp) => {
     console.log("3. SMTP verified");
 
     await transporter.sendMail({
-      from: `"Autonex" <${process.env.EMAIL_USER}>`,
+      from: `"Autonex" <${process.env.SENDER_EMAIL}>`,
       to: email,
       subject: "Autonex Email Verification",
       html: `
