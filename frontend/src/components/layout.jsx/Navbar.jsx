@@ -151,7 +151,7 @@ const Navbar = () => {
           {/* Action Icons */}
           <div className="flex items-center gap-4 shrink-0">
             {/* Account */}
-            <NavLink to={isAuthenticated ? "/profile" : "/auth"}>
+            <NavLink to={isAuthenticated ? "/auth" : "/account"}>
               {({ isActive }) => (
                 <div className="flex items-center gap-2 text-xs">
                   <div

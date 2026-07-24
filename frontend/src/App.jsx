@@ -21,6 +21,7 @@ import Brands from "./components/admin/Brands";
 import Orders from "./components/admin/Orders";
 import UsersView from "./components/admin/UsersView";
 import ProtectedRoute from "./routes/ProtectedRoute"
+import VerifyOTPPage from "./pages/Login/VerifyOTPPage";
 
 
 const App = () => {
@@ -84,6 +85,8 @@ const App = () => {
           <Route path="/compare" element={<ComparePage />} />
 
           <Route path="/MyGaragePage" element={<MyGaragePage />} />
+          <Route path="/verify-otp" element={<VerifyOTPPage/>} />
+
         </Route>
 
         <Route path="/admin" element={<AdminLayout />}>

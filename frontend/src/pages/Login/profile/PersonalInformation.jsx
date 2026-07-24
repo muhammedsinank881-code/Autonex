@@ -1,21 +1,46 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Pencil, Camera, Check, Trash2, AlertTriangle } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const PersonalInformation = () => {
+  const user = useSelector((state) => state.auth.user);
+
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const fileInputRef = useRef(null);
 
   // Form State
   const [formData, setFormData] = useState({
-    fullName: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 000-0000",
-    country: "United States",
+    fullName: "",
+    email: "",
+    phone: "",
+    country: "",
   });
 
-  // Temporary state for editing so changes can be canceled
-  const [tempData, setTempData] = useState({ ...formData });
+  const [tempData, setTempData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    country: "",
+  });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        fullName: user.fullName || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        country: user.country || "",
+      });
+
+      setTempData({
+        fullName: user.fullName || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        country: user.country || "",
+      });
+    }
+  }, [user]);
 
   // Avatar Image State
   const [avatarSrc, setAvatarSrc] = useState(null);

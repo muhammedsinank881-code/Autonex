@@ -16,26 +16,11 @@ const AuthPage = () => {
     rememberMe: false,
   });
 
-  // Register form state
-  const [registerData, setRegisterData] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
-
   const handleLoginChange = (e) => {
     const { name, value, type, checked } = e.target;
     setLoginData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleRegisterChange = (e) => {
-    const { name, value } = e.target;
-    setRegisterData((prev) => ({
-      ...prev,
-      [name]: value,
     }));
   };
 
@@ -48,10 +33,6 @@ const AuthPage = () => {
     })
   };
 
-  const handleRegisterSubmit = (e) => {
-    e.preventDefault();
-    console.log("Register Submitted:", registerData);
-  };
 
   return (
     <div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8 font-sans text-gray-800">

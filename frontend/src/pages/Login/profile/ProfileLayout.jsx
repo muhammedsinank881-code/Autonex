@@ -15,10 +15,11 @@ import Orders from "./Orders";
 import OrderTracking from "./OrderTracking";
 
 import { useCurrentUser } from "../../../hooks/mutations/useCurrentUser.js";
+import { useLogout } from "../../../hooks/mutations/useLogout";
 
 const ProfileLayout = () => {
-
   const { data: user, isLoading, isError } = useCurrentUser();
+  const logoutMutation = useLogout();
 
   const [activeTab, setActiveTab] = useState("profile");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -33,6 +34,10 @@ const ProfileLayout = () => {
   const activeItem =
     menuItems.find((item) => item.id === activeTab) || menuItems[0];
   const ActiveIcon = activeItem.icon;
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -105,9 +110,15 @@ const ProfileLayout = () => {
                 );
               })}
 
-              <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50/80 transition-colors mt-2">
+              <button
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
+                className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50/80 transition-colors mt-2"
+              >
                 <LogOut className="w-5 h-5" />
-                <span>Logout</span>
+                <span>
+                  {logoutMutation.isPending ? "Logging out..." : "Logout"}
+                </span>
               </button>
             </div>
           )}
@@ -156,9 +167,15 @@ const ProfileLayout = () => {
           </nav>
 
           <div className="pt-6 border-t border-gray-100">
-            <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
+            <button
+              onClick={handleLogout}
+              disabled={logoutMutation.isPending}
+              className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+            >
               <LogOut className="w-5 h-5" />
-              <span>Logout</span>
+              <span>
+                {logoutMutation.isPending ? "Logging out..." : "Logout"}
+              </span>
             </button>
           </div>
         </aside>
