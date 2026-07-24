@@ -50,7 +50,7 @@ export const register = async (req, res) => {
     });
 
     // Send OTP email
-    await sendOTPEmail(email, otp);
+    // await sendOTPEmail(email, otp);
 
     return res.status(200).json({
       success: true,
