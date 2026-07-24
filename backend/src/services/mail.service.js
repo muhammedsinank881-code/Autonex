@@ -12,6 +12,9 @@ export const sendOTPEmail = async (email, otp) => {
       },
     });
 
+    console.log("EMAIL_USER:", process.env.EMAIL_USER);
+    console.log("EMAIL_PASS exists:", process.env.EMAIL_PASS ? "YES" : "NO");
+    
     await transporter.sendMail({
       from: `"Autonex" <${process.env.EMAIL_USER}>`,
       to: email,
@@ -24,7 +27,6 @@ export const sendOTPEmail = async (email, otp) => {
     });
 
     console.log("OTP Email Sent");
-
   } catch (error) {
     console.error(error);
     throw new Error("Failed to send OTP email");
