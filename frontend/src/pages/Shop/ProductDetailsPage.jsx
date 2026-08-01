@@ -53,10 +53,7 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
         id: found._id,
         title: found.name || "Untitled Product",
         price: found.price || 0,
-        oldPrice:
-          found.discountPrice > 0 && found.discountPrice < found.price
-            ? found.price
-            : null,
+        discountPrice: found.discountPrice || 0,
         rating: found.rating || 5,
         category:
           typeof found.category === "object" ? found.category?.name : "General",
@@ -74,7 +71,7 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
       id: productId,
       title: "Zerex G05 Phosphate Free Antifreeze Coolant Concentrate 1 GA",
       price: 33.43,
-      oldPrice: 48.55,
+      discountPrice: 0,
       rating: 5,
       category: "Oils and fluids",
       brand: "Castrol",
@@ -94,6 +91,22 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
     return ["Asset 1", "Asset 2", "Asset 3"];
   }, [currentProduct]);
 
+  const hasDiscount =
+    currentProduct.discountPrice > 0 &&
+    currentProduct.discountPrice < currentProduct.price;
+
+  const displayPrice = hasDiscount
+    ? currentProduct.discountPrice
+    : currentProduct.price;
+
+  const discountPercentage = hasDiscount
+    ? Math.round(
+        ((currentProduct.price - currentProduct.discountPrice) /
+          currentProduct.price) *
+          100,
+      )
+    : 0;
+
   // Extract related items (excluding current product)
   const relatedProducts = useMemo(() => {
     const rawList = Array.isArray(data?.data) ? data.data : [];
@@ -101,17 +114,13 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
       .filter((item) => item._id !== productId)
       .slice(0, 5)
       .map((product) => ({
-        id: product._id,
-        sku: product.sku || product._id?.substring(0, 8),
+        id: product.id,
+        sku: product.sku || product.id?.substring(0, 8),
         title: product.name || "Untitled Product",
         price: product.price ? `$${product.price}` : "$0.00",
-        oldPrice: product.discountPrice ? `$${product.discountPrice}` : null,
+
         rating: product.rating || 4,
         reviewsCount: product.reviewsCount || 0,
-        discount:
-          product.discountPrice && product.price
-            ? `${Math.round(((product.price - product.discountPrice) / product.price) * 100)}%`
-            : null,
       }));
   }, [data, productId]);
 
@@ -142,8 +151,8 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
       <div className="max-w-6xl mx-auto bg-white rounded-2xl p-4 sm:p-6 shadow-xs">
         {/* Breadcrumbs */}
         <nav className="flex text-xs text-slate-400 mb-4 items-center gap-1.5 flex-wrap">
-          <Link to="/" className="hover:underline cursor-pointer">
-            Home
+          <Link to="/shop" className="hover:underline cursor-pointer">
+            Shop
           </Link>{" "}
           /
           <span className="hover:underline cursor-pointer shrink-0">
@@ -195,9 +204,11 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
           {/* Left Column: Image Area */}
           <div className="md:col-span-5 flex flex-col gap-4">
             <div className="w-full border border-slate-100 aspect-square bg-white rounded-md flex items-center justify-center overflow-hidden relative">
-              <span className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-[#0062bd] text-white text-[11px] font-bold px-2 py-0.5 rounded shadow-xs z-10">
-                22%
-              </span>
+              {hasDiscount && (
+                <span className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-[#0062bd] text-white text-[11px] font-bold px-2 py-0.5 rounded shadow-xs z-10">
+                  {discountPercentage}%
+                </span>
+              )}
 
               {imageGallery[selectedImage]?.startsWith("http") ? (
                 <img
@@ -252,11 +263,12 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
               {/* Price Metrics */}
               <div className="flex items-baseline gap-3 mb-4">
                 <span className="text-2xl sm:text-3xl font-bold text-[#00a062] tracking-tight">
-                  ${Number(currentProduct.price).toFixed(2)}
+                  ${displayPrice.toFixed(2)}
                 </span>
-                {currentProduct.oldPrice && (
+
+                {hasDiscount && (
                   <span className="text-xs sm:text-sm text-slate-400 line-through font-normal">
-                    ${Number(currentProduct.oldPrice).toFixed(2)}
+                    ${currentProduct.price.toFixed(2)}
                   </span>
                 )}
               </div>
@@ -310,7 +322,17 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
                     if (isCurrentWishlisted) {
                       removeFromWishlist(currentProduct.id);
                     } else {
-                      addToWishlist(currentProduct.id);
+                      addToWishlist({
+                        _id: currentProduct.id,
+                        name: currentProduct.title,
+                        price: currentProduct.price,
+                        discountPrice: currentProduct.discountPrice,
+                        stock: currentProduct.inStock ? 1 : 0,
+                        images:
+                          currentProduct.images?.map((url) => ({ url })) || [],
+                        brand: currentProduct.brand,
+                        category: currentProduct.category,
+                      });
                     }
                   }}
                   className={`flex items-center gap-1.5 transition-colors cursor-pointer ${

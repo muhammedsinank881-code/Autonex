@@ -12,7 +12,7 @@ export default function ProductListingPage({
 }) {
   // --- Filter States ---
   const [selectedCategories, setSelectedCategories] = useState(
-    defaultCategory ? [defaultCategory] : []
+    defaultCategory ? [defaultCategory] : [],
   );
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 860 });
@@ -52,7 +52,7 @@ export default function ProductListingPage({
       case "rating":
         return { sortBy: "rating", order: "desc" };
       default:
-        return { sortBy: "createdAt", order: "desc" };
+        return { sortBy: "default", order: "desc" };
     }
   }, [sortOption]);
 
@@ -107,16 +107,7 @@ export default function ProductListingPage({
       title: product.name || "Untitled Product",
       image: product.images?.[0]?.url || "",
       price: product.price || 0,
-      oldPrice:
-        product.discountPrice > 0 && product.discountPrice < product.price
-          ? product.price
-          : null,
-      discount:
-        product.discountPrice > 0 && product.price > 0
-          ? `${Math.round(
-              ((product.price - product.discountPrice) / product.price) * 100
-            )}% OFF`
-          : null,
+      discountPrice: product.discountPrice,
       rating: product.rating || 0,
       reviewsCount: product.reviewsCount || 0,
       description: product.description || "",
@@ -138,10 +129,7 @@ export default function ProductListingPage({
 
   const indexOfFirstProduct =
     totalResults === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
-  const indexOfLastProduct = Math.min(
-    currentPage * itemsPerPage,
-    totalResults
-  );
+  const indexOfLastProduct = Math.min(currentPage * itemsPerPage, totalResults);
 
   return (
     <div className="bg-white min-h-screen text-slate-800 font-sans antialiased overflow-x-hidden">
@@ -207,20 +195,22 @@ export default function ProductListingPage({
                 </p>
               </div>
             ) : products.length > 0 ? (
-              <div
-                className={
-                  viewMode === "grid"
-                    ? "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-6 mt-4 sm:mt-6"
-                    : "flex flex-col gap-3 sm:gap-4 mt-4 sm:mt-6"
-                }
-              >
-                {products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    viewMode={viewMode}
-                  />
-                ))}
+              <div className=" h-[calc(100vh-100px)] overflow-y-auto hide-scrollbar">
+                <div
+                  className={
+                    viewMode === "grid"
+                      ? "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-6 mt-4 sm:mt-6 overflow-y-auto hide-scrollbar"
+                      : "flex flex-col gap-3 sm:gap-4 mt-4 sm:mt-6 overflow-y-auto hide-scrollbar"
+                  }
+                >
+                  {products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      viewMode={viewMode}
+                    />
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="text-center py-16 sm:py-20 border border-dashed border-slate-200 rounded-lg mt-6">

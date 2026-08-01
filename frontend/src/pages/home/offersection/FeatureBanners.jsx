@@ -178,7 +178,7 @@ const FeatureBanners = () => {
           />
 
           {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-black/10" />
+          <div className="absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-black/10" />
 
           {/* Content */}
           <div className="absolute inset-0 z-10 px-8 pt-8">
