@@ -7,6 +7,17 @@ export const findWishlistByUserId = (userId) => {
     match: {
       isActive: true,
     },
+    select: "name price discountPrice stock images brand category variants",
+    populate: [
+      {
+        path: "brand",
+        select: "name",
+      },
+      {
+        path: "category",
+        select: "name",
+      },
+    ],
   });
 };
 
