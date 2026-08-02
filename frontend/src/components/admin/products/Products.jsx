@@ -42,8 +42,12 @@ const Products = () => {
     search: debouncedSearch,
     page,
   });
-  const { data: brandsData } = useBrands();
-  const { data: categoriesData } = useCategories();
+  const { data: brandsData } = useBrands({
+    limit:100
+  });
+  const { data: categoriesData } = useCategories({
+    limit : 100
+  });
 
   const products = productsData?.data || [];
   const pagination = productsData?.pagination || {

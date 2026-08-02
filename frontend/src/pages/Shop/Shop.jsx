@@ -4,16 +4,31 @@ import SidebarFilter from "../Shop/SidebarFilter.jsx";
 import ProductGridHeader from "../Shop/ProductGridHeader.jsx";
 import ProductCard from "../Shop/ProductCard.jsx";
 import Pagination from "../Shop/Pagination.jsx";
+import { useSearchParams } from "react-router-dom";
 import { useProducts } from "../../hooks/products/useProducts.js";
+import { useCategories } from "../../hooks/categories/useCategories.js";
 
-export default function ProductListingPage({
-  pageTitle = "Shop",
-  defaultCategory = null,
-}) {
+export default function ProductListingPage({ pageTitle = "Shop" }) {
+  const { data: categoryData } = useCategories({
+    page: 1,
+    search: "",
+  });
+
+  const allCategories = categoryData?.data || [];
+
+  const [searchParams] = useSearchParams();
+
+  // Get category from URL (comma-separated names)
+  const categoryParam = searchParams.get("category");
+
+  const categoryNames = useMemo(() => {
+    return categoryParam
+      ? categoryParam.split(",").map((name) => name.trim())
+      : [];
+  }, [categoryParam]);
+
   // --- Filter States ---
-  const [selectedCategories, setSelectedCategories] = useState(
-    defaultCategory ? [defaultCategory] : [],
-  );
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 860 });
   const [debouncedPrice, setDebouncedPrice] = useState(priceRange);
@@ -27,6 +42,26 @@ export default function ProductListingPage({
   const [itemsPerPage, setItemsPerPage] = useState(12);
   const [viewMode, setViewMode] = useState("grid");
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Convert category names from the URL into their corresponding IDs
+  const categoryIdsFromUrl = useMemo(() => {
+    if (!allCategories.length) return [];
+    return allCategories
+      .filter((cat) =>
+        categoryNames.some(
+          (name) => name.toLowerCase() === cat.name.toLowerCase()
+        )
+      )
+      .map((cat) => cat._id);
+  }, [allCategories, categoryNames]);
+
+  // Sync URL categories to selectedCategories once categories have loaded
+  useEffect(() => {
+    if (!allCategories.length) return;
+
+    setSelectedCategories(categoryParam ? categoryIdsFromUrl : []);
+    setCurrentPage(1);
+  }, [allCategories, categoryParam, categoryIdsFromUrl]);
 
   // Debounce price slider updates to prevent excessive API hits while sliding
   useEffect(() => {

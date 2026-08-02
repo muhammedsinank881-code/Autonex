@@ -22,7 +22,7 @@ export const useClearWishlist = () => {
 
       return clearWishlist();
     },
-
+ 
     onSuccess: (data) => {
       toast.success(data?.message || "Wishlist cleared successfully.");
 

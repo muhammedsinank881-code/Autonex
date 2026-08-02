@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import {
   Search,
   User,
@@ -8,11 +8,9 @@ import {
   ShoppingCart,
   Menu,
   ChevronDown,
-  Car,
   X,
-  Warehouse, // Placeholder if custom Garage icon is not available
+  Warehouse,
 } from "lucide-react";
-import { Garage } from "../../assets/icon.js";
 import Logo from "../../assets/icons/AutonexLogo.png";
 import WhiteLogo from "../../assets/icons/whiteLogo.png";
 import { useCart } from "../../hooks/cart/useCart.js";
@@ -31,11 +29,11 @@ const navItems = [
   },
   {
     name: "Tires & Wheels",
-    path: "/category/tires-wheels",
+    path: "/shop?category=Tyre,Wheel",
   },
   {
     name: "Headlights & Lighting",
-    path: "/category/headlights-lighting",
+    path: "/shop?category=Tail Lights,Head Lights",
   },
   {
     name: "Blog",
@@ -54,6 +52,9 @@ const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const activeCategory = new URLSearchParams(location.search).get("category");
 
   const cartCount =
     cart?.data?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
@@ -256,20 +257,36 @@ const Navbar = () => {
             <span className="text-gray-300 font-normal">|</span>
 
             <nav className="flex items-center gap-6">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `flex items-center gap-1 transition-colors ${
+              {navItems.map((item) => {
+                let isActive = false;
+
+                if (item.path === "/") {
+                  isActive = location.pathname === "/";
+                } else if (item.path === "/shop") {
+                  // Shop should only be active when no category is selected
+                  isActive = location.pathname === "/shop" && !activeCategory;
+                } else if (item.path.startsWith("/shop?")) {
+                  // Compare the complete query string
+                  isActive =
+                    location.pathname === "/shop" &&
+                    location.search === item.path.replace("/shop", "");
+                } else {
+                  isActive = location.pathname === item.path;
+                }
+
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center gap-1 transition-colors ${
                       isActive ? "text-blue-600" : "hover:text-blue-600"
-                    }`
-                  }
-                >
-                  {item.name}
-                  {item.hasDropdown && <ChevronDown size={11} />}
-                </NavLink>
-              ))}
+                    }`}
+                  >
+                    {item.name}
+                    {item.hasDropdown && <ChevronDown size={11} />}
+                  </Link>
+                );
+              })}
             </nav>
           </div>
 

@@ -30,7 +30,7 @@ export const useRemoveWishlist = () => {
         queryKey: ["wishlist"],
       });
     },
-
+ 
     onError: (error) => {
       toast.error(
         error.response?.data?.message || "Failed to remove from wishlist."

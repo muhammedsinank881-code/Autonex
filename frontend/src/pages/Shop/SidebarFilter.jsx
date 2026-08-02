@@ -16,8 +16,8 @@ export default function SidebarFilter({
 }) {
   const [isOpenMobile, setIsOpenMobile] = useState(false);
 
-  const { data: categoryData } = useCategories();
-const { data: brandData } = useBrands();
+  const { data: categoryData } = useCategories({limit:100});
+const { data: brandData } = useBrands({limit : 100});
 
 const categories = categoryData?.data || [];
 const brands = brandData?.data || [];

@@ -45,7 +45,7 @@ const BrandBanner = () => {
         .animate-marquee {
           display: flex;
           width: max-content;
-          animation: marquee 30s linear infinite;
+          animation: marquee 60s linear infinite;
         }
         .animate-marquee:hover {
           animation-play-state: paused;

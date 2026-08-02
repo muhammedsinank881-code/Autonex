@@ -15,7 +15,7 @@ export const useAddWishlist = () => {
       if (!accessToken) {
         addLocalWishlist(product);
 
-        return Promise.resolve({
+        return Promise.resolve({ 
           message: "Added to wishlist.",
         });
       }
