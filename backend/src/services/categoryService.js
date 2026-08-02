@@ -6,6 +6,7 @@ import {
   findAllCategories,
   createCategory,
   saveCategory,
+  updateCategory,
 } from "../repositories/category.repository.js";
 
 export const createCategoryService = async (data) => {
