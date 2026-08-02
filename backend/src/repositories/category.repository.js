@@ -137,3 +137,10 @@ export const createCategory = (data) => {
 export const saveCategory = (category) => {
   return category.save();
 };
+
+export const updateCategory = (id, data) => {
+  return Category.findByIdAndUpdate(id, data, {
+    new: true,
+    runValidators: true,
+  });
+};

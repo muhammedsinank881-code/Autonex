@@ -1,8 +1,21 @@
 import React from "react";
 
 const DealCard = ({ item }) => {
-  const total = item.available + item.sold;
-  const progressPercentage = (item.sold / total) * 100;
+  const available = item.available || 0;
+  const sold = item.sold || 0;
+
+  const total = available + sold;
+
+  const progressPercentage = total > 0 ? (sold / total) * 100 : 0;
+
+  const discountPercentage = item.discountPrice
+    ? Math.round(((item.price - item.discountPrice) / item.price) * 100)
+    : 0;
+
+  const hasDiscount =
+    item.discountPrice != null &&
+    item.discountPrice > 0 &&
+    item.discountPrice < item.price;
   return (
     <div>
       <div
@@ -10,9 +23,11 @@ const DealCard = ({ item }) => {
         className="flex items-center gap-4 bg-white p-3 rounded-lg border border-gray-100 hover:shadow-md transition-shadow relative"
       >
         {/* Discount Badge */}
-        <span className="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded z-10">
-          {item.discount}
-        </span>
+        {discountPercentage > 0 && (
+          <span className="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded z-10">
+            -{discountPercentage}%
+          </span>
+        )}
 
         {/* Product Image */}
         <div className="w-24 h-24 shrink-0 bg-gray-50 rounded flex items-center justify-center p-1">
@@ -35,11 +50,14 @@ const DealCard = ({ item }) => {
           {/* Price */}
           <div className="flex items-center gap-2">
             <span className="text-sm font-bold text-[#00A651]">
-              {item.price}
+              ${hasDiscount ? item.discountPrice : item.price}
             </span>
-            <span className="text-xs text-gray-400 line-through">
-              {item.originalPrice}
-            </span>
+
+            {hasDiscount && (
+              <span className="text-xs text-gray-400 line-through">
+                {item.price}
+              </span>
+            )}
           </div>
 
           {/* Progress Bar & Availability */}

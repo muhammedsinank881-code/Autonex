@@ -195,22 +195,20 @@ export default function ProductListingPage({
                 </p>
               </div>
             ) : products.length > 0 ? (
-              <div className=" h-[calc(100vh-100px)] overflow-y-auto hide-scrollbar">
-                <div
-                  className={
-                    viewMode === "grid"
-                      ? "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-6 mt-4 sm:mt-6 overflow-y-auto hide-scrollbar"
-                      : "flex flex-col gap-3 sm:gap-4 mt-4 sm:mt-6 overflow-y-auto hide-scrollbar"
-                  }
-                >
-                  {products.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      viewMode={viewMode}
-                    />
-                  ))}
-                </div>
+              <div
+                className={
+                  viewMode === "grid"
+                    ? "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-6 mt-4 sm:mt-6 overflow-y-auto hide-scrollbar"
+                    : "flex flex-col gap-3 sm:gap-4 mt-4 sm:mt-6 overflow-y-auto hide-scrollbar"
+                }
+              >
+                {products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    viewMode={viewMode}
+                  />
+                ))}
               </div>
             ) : (
               <div className="text-center py-16 sm:py-20 border border-dashed border-slate-200 rounded-lg mt-6">
