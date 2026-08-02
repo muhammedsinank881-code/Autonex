@@ -1,3 +1,4 @@
+import Category from "../models/Category.js";
 import {
   createCategoryService,
   getAllCategoriesService,
@@ -11,6 +12,7 @@ import {
   deleteFromCloudinary,
   uploadToCloudinary,
 } from "../utils/cloudinary.helper.js";
+
 
 export const createCategory = async (req, res) => {
   let uploadedImage = null;
@@ -163,9 +165,6 @@ export const updateCategory = async (req, res) => {
       data: updatedCategory,
     });
   } catch (error) {
-    console.error("========== CATEGORY UPDATE ERROR ==========");
-    console.error(error);
-    console.error(error.stack);
     // Database failed after uploading new image
     if (uploadedImage?.publicId) {
       await deleteFromCloudinary(uploadedImage.publicId);
