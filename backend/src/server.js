@@ -16,6 +16,7 @@
   import wishRoutes from "./routes/whishlist.routes.js";
   import addressRoutes from "./routes/address.routes.js";
   import dashboardRoutes from "./routes/dashboard.routes.js"
+  import contactRoutes from "./routes/contact.routes.js"
   import app from "./app.js";
   import { errorHandler } from "./middlewares/error.middleware.js";
 
@@ -36,6 +37,7 @@
   app.use("/api/wishlist", wishRoutes);
   app.use("/api/address", addressRoutes);
   app.use("/api/dashboard", dashboardRoutes );
+  app.use("/api/contact", contactRoutes);
 
 
   app.use(errorHandler);

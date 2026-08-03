@@ -14,7 +14,7 @@ const MainLayout = () => {
         {categoryDrawerOpen && (
           <>
             {/* Drawer */}
-            <div className="w-[320px] h-[calc(100vh-var(--navbar-height))] flex flex-col bg-slate-50">
+            <div className=" absolute top-full left-0 z-50 ">
               <AllCategorySidebar
                 onClose={() => setCategoryDrawerOpen(false)}
               />

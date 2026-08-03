@@ -32,6 +32,7 @@ import Dashboard from "./components/admin/Dashboard.jsx";
 import MainLoader from "./components/layout.jsx/MainLoader.jsx";
 import Blog from "./pages/blog&contact/Blog.jsx";
 import AllCategoryPage from "./pages/home/AllCategoryPage.jsx";
+import ContactPage from "./pages/blog&contact/ContactPage.jsx";
 
 const App = () => {
   useInitializeAuth();
@@ -78,6 +79,8 @@ const App = () => {
           />
           <Route path="/compare" element={<ComparePage />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/contact" element={<ContactPage/>} />
+
         </Route>
 
         <Route element={<AdminRoute />}>
