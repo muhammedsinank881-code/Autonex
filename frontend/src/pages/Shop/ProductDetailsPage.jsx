@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   Heart,
   Star,
@@ -23,8 +23,10 @@ import { useAddWishlist } from "../../hooks/wishlist/useAddWishlist";
 import { useRemoveWishlist } from "../../hooks/wishlist/useRemoveWishlist";
 import { useProduct } from "../../hooks/products/useProduct.js";
 import { useAddToCart } from "../../hooks/cart/useAddToCart";
+import { useCompare } from "../../context/CompareContext";
 
 const ProductDetailsPage = ({ productId: propProductId }) => {
+  const navigate = useNavigate();
   const params = useParams();
   const productId = propProductId || params.id;
 
@@ -37,6 +39,8 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
   const { data, isLoading, isError } = useProduct(productId);
 
   const { mutate: addToCart, isPending } = useAddToCart();
+
+  const { addToCompare } = useCompare();
 
   // UI Interactive States
   const [quantity, setQuantity] = useState(1);
@@ -133,6 +137,24 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
       productId: currentProduct.id,
       quantity,
     });
+  };
+
+  const handleCompare = () => {
+    addToCompare({
+      id: currentProduct.id,
+      name: currentProduct.title,
+      image: currentProduct.images?.[0] || "",
+      price: displayPrice,
+      originalPrice: currentProduct.price,
+      rating: currentProduct.rating,
+      availability: currentProduct.inStock ? "In Stock" : "Out Of Stock",
+      sku: currentProduct.sku,
+      brand: currentProduct.brand,
+      category: currentProduct.category,
+      specs: data?.data?.specifications || {},
+    });
+
+    navigate("/compare");
   };
 
   if (isLoading) {
@@ -350,7 +372,10 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
 
                   {isCurrentWishlisted ? "In Wishlist" : "Add to Wishlist"}
                 </button>
-                <button className="flex items-center gap-1.5 hover:text-[#006bc0] transition-colors cursor-pointer">
+                <button
+                  onClick={handleCompare}
+                  className="flex items-center gap-1.5 hover:text-[#006bc0] transition-colors cursor-pointer"
+                >
                   <RefreshCw size={14} /> Compare
                 </button>
               </div>

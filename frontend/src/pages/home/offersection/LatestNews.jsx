@@ -1,5 +1,6 @@
 import React from "react";
 import { ArrowUpRight, Calendar, User } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const articles = [
   {
@@ -54,13 +55,13 @@ export default function LatestNews() {
           </span>
         </div>
 
-        <a
-          href="#"
+        <Link
+          to={"/blog"}
           className="group inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-200"
         >
           View All
           <ArrowUpRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-        </a>
+        </Link>
       </div>
 
       {/* Responsive Grid Layout */}

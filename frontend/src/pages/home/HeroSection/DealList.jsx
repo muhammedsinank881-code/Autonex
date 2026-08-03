@@ -7,7 +7,7 @@ const DealList = () => {
   const { data: categoryData } = useCategories();
 
   const alloyCategory = categoryData?.data?.find(
-    (category) => category.name === "Wheel",
+    (category) => category.name === "wheel",
   );
 
   const { data, isLoading, isError } = useProducts({

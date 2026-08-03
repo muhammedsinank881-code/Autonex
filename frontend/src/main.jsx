@@ -10,6 +10,7 @@ import { WishlistProvider } from "./context/WishlistContext.jsx";
 import { store } from "./redux/store.js";
 import { queryClient } from "./hooks/queryClient.js";
 import AuthProvider from "./providers/AuthProvider.jsx";
+import { CompareProvider } from "./context/CompareContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -17,7 +18,9 @@ createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <WishlistProvider>
           <AuthProvider>
-            <App />
+            <CompareProvider>
+              <App />
+            </CompareProvider>
             <Toaster />
           </AuthProvider>
         </WishlistProvider>

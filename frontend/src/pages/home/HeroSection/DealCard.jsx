@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const DealCard = ({ item }) => {
   const available = item.available || 0;
@@ -17,7 +18,9 @@ const DealCard = ({ item }) => {
     item.discountPrice > 0 &&
     item.discountPrice < item.price;
   return (
-    <div>
+    <Link 
+    to={`/product/${item.id}`}
+    >
       <div
         key={item.id}
         className="flex items-center gap-4 bg-white p-3 rounded-lg border border-gray-100 hover:shadow-md transition-shadow relative"
@@ -80,7 +83,7 @@ const DealCard = ({ item }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

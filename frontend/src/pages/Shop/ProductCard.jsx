@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { Heart, Star, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useWishlist } from "../../hooks/wishlist/useWishlist";
@@ -238,4 +238,4 @@ const ProductCard = ({ product, viewMode = "grid" }) => {
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

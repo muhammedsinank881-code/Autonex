@@ -43,8 +43,8 @@ const BestSeller = () => {
     return allCategories
       .filter((cat) =>
         activeTab.categoryNames.some(
-          (name) => name.toLowerCase() === cat.name?.toLowerCase()
-        )
+          (name) => name.toLowerCase() === cat.name?.toLowerCase(),
+        ),
       )
       .map((cat) => cat._id);
   }, [allCategories, activeTab]);
@@ -57,15 +57,11 @@ const BestSeller = () => {
     limit: 5,
   });
 
-  const wishlistItems = wishlistData?.data || [];
+  const wishlistItems = wishlistData?.data || wishlistData?.products || [];
   const products = Array.isArray(data) ? data : data?.data || [];
 
-  // Fixed handleWishlist — now correctly receives the product object
-  const handleWishlist = (product) => {
+  const handleWishlist = (product, isLiked) => {
     const id = product._id || product.id;
-    const isLiked = wishlistItems.some(
-      (item) => item._id === id || item.product?._id === id
-    );
 
     if (isLiked) {
       removeWishlist(id);
@@ -74,13 +70,11 @@ const BestSeller = () => {
 
     addWishlist({
       _id: id,
-      name: product.name || product.title,
+      name: product.title || product.name,
       price: product.price,
       discountPrice: product.discountPrice,
-      stock: product.stock ?? (product.inStock ? 1 : 0),
-      images: product.images?.length
-        ? product.images
-        : [{ url: product.image || "" }],
+      stock: product.stock,
+      images: product.images,
       brand: product.brand,
       category: product.category,
     });
@@ -114,12 +108,12 @@ const BestSeller = () => {
         </div>
 
         {/* View All Link */}
-        <a
-          href="#"
-          className="text-xs font-semibold text-[#0066CC] hover:underline shrink-0 hidden sm:block"
+        <Link
+          to="/shop"
+          className="text-xs font-semibold text-[#0066CC] hover:underline"
         >
           View All
-        </a>
+        </Link>
       </div>
 
       {/* PRODUCTS CONTAINER */}
@@ -168,7 +162,7 @@ const BestSeller = () => {
             const id = product._id || product.id;
 
             const isLiked = wishlistItems.some(
-              (item) => item._id === id || item.product?._id === id
+              (item) => item._id === id || item.product?._id === id,
             );
             const title = product.title || product.name;
             const image =
@@ -186,7 +180,16 @@ const BestSeller = () => {
                 : product.originalPrice;
             const rating = product.rating || 4.5;
             const reviews = product.reviews || product.reviewCount || 0;
-            const discount = product.discountPrice || null;
+            const hasDiscount =
+              Number(product.discountPrice) > 0 &&
+              Number(product.discountPrice) < Number(product.price);
+
+            const discountPercentage = hasDiscount
+              ? Math.round(
+                  ((product.price - product.discountPrice) / product.price) *
+                    100,
+                )
+              : 0;
 
             return (
               <Link
@@ -197,21 +200,21 @@ const BestSeller = () => {
                 {/* Image & Badges Container */}
                 <div className="relative w-full aspect-square bg-gray-50 rounded-lg p-2 flex items-center justify-center mb-2">
                   {/* Discount Badge */}
-                  {discount && (
-                    <span className="absolute top-1.5 left-1.5 bg-[#0066CC] text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded z-10">
-                      {discount}
+                  {hasDiscount && (
+                    <span className="absolute top-1.5 left-1.5 bg-[#0066CC] text-white text-[10px] px-2 py-1 rounded z-50">
+                      -{discountPercentage}%
                     </span>
                   )}
 
                   {/* Wishlist Button */}
                   <button
                     onClick={(e) => {
-                      e.preventDefault();
                       e.stopPropagation();
-                      handleWishlist(product);
+                      e.preventDefault();
+                      handleWishlist(product, isLiked);
                     }}
-                    className="absolute top-1.5 right-1.5 p-1 rounded-full bg-white/80 hover:bg-white text-gray-400 hover:text-red-500 transition-colors shadow-sm z-10"
                     aria-label="Add to wishlist"
+                    className="absolute top-1.5 right-1.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/90 backdrop-blur-md border border-slate-100 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-white transition-all z-10 shadow-xs cursor-pointer"
                   >
                     <Heart
                       size={13}

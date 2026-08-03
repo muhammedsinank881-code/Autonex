@@ -20,13 +20,14 @@ const FeaturedProducts = () => {
     limit: 7,
   });
 
-  const wishlistItems = wishlistData?.data || [];
+  const wishlistItems = wishlistData?.data || wishlistData?.products || [];
+
   const products = Array.isArray(data) ? data : data?.data || [];
 
   const handleWishlist = (product) => {
     const id = product._id || product.id;
     const isLiked = wishlistItems.some(
-      (item) => item._id === id || item.product?._id === id
+      (item) => item._id === id || item.product?._id === id,
     );
 
     if (isLiked) {
@@ -101,7 +102,7 @@ const FeaturedProducts = () => {
         : null;
 
     const isLiked = wishlistItems.some(
-      (item) => item._id === id || item.product?._id === id
+      (item) => item._id === id || item.product?._id === id,
     );
 
     return (
@@ -168,7 +169,8 @@ const FeaturedProducts = () => {
             </div>
             <div className="flex justify-between items-center text-[9px] sm:text-[10px] text-gray-400 font-medium">
               <span>
-                Available:<strong className="text-gray-700 ml-0.5">{available}</strong>
+                Available:
+                <strong className="text-gray-700 ml-0.5">{available}</strong>
               </span>
               <span>
                 Sold:<strong className="text-gray-700 ml-0.5">{sold}</strong>
@@ -185,13 +187,18 @@ const FeaturedProducts = () => {
     return (
       <section className="w-full max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between pb-2 border-b border-gray-100 mb-3">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900">Featured Products</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+            Featured Products
+          </h2>
         </div>
         <div className="lg:grid lg:grid-cols-3 gap-3 lg:h-[75vh] hidden">
           {[...Array(3)].map((_, col) => (
             <div key={col} className="flex flex-col gap-2 h-full">
               {[...Array(3)].map((_, row) => (
-                <div key={row} className="flex-1 bg-white rounded-xl border border-gray-100 p-2 animate-pulse flex items-center gap-2">
+                <div
+                  key={row}
+                  className="flex-1 bg-white rounded-xl border border-gray-100 p-2 animate-pulse flex items-center gap-2"
+                >
                   <div className="w-24 bg-gray-200 rounded-lg h-full" />
                   <div className="flex-1 space-y-2">
                     <div className="h-3 bg-gray-200 rounded w-3/4" />
@@ -211,12 +218,18 @@ const FeaturedProducts = () => {
     return (
       <section className="w-full max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between pb-2 border-b border-gray-100 mb-3">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900">Featured Products</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+            Featured Products
+          </h2>
         </div>
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <AlertCircle className="text-red-500 mb-2" size={32} />
-          <p className="text-sm font-medium text-gray-700">Failed to load featured products.</p>
-          <p className="text-xs text-gray-400 mb-4">{error?.message || "Something went wrong."}</p>
+          <p className="text-sm font-medium text-gray-700">
+            Failed to load featured products.
+          </p>
+          <p className="text-xs text-gray-400 mb-4">
+            {error?.message || "Something went wrong."}
+          </p>
           <button
             onClick={() => refetch()}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#0066CC] bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
@@ -235,7 +248,8 @@ const FeaturedProducts = () => {
 
   // Spotlight product derived values
   const spotlightId = spotlightProduct?._id || spotlightProduct?.id;
-  const spotlightTitle = spotlightProduct?.name || spotlightProduct?.title || "";
+  const spotlightTitle =
+    spotlightProduct?.name || spotlightProduct?.title || "";
   const spotlightImage =
     spotlightProduct?.images?.[0]?.url ||
     spotlightProduct?.images?.[0] ||
@@ -246,9 +260,10 @@ const FeaturedProducts = () => {
       ? `$${spotlightProduct.price.toFixed(2)}`
       : spotlightProduct?.price || "";
   const spotlightRating = spotlightProduct?.rating || 4.5;
-  const spotlightReviews = spotlightProduct?.reviewCount || spotlightProduct?.reviews || 0;
+  const spotlightReviews =
+    spotlightProduct?.reviewCount || spotlightProduct?.reviews || 0;
   const spotlightIsLiked = wishlistItems.some(
-    (item) => item._id === spotlightId || item.product?._id === spotlightId
+    (item) => item._id === spotlightId || item.product?._id === spotlightId,
   );
 
   return (
@@ -314,7 +329,9 @@ const FeaturedProducts = () => {
                 >
                   <Heart
                     size={15}
-                    className={spotlightIsLiked ? "fill-red-500 text-red-500" : ""}
+                    className={
+                      spotlightIsLiked ? "fill-red-500 text-red-500" : ""
+                    }
                   />
                 </button>
 

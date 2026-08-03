@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import {useInitializeAuth} from "./hooks/auth/useInitializeAuth.js"
+import { useInitializeAuth } from "./hooks/auth/useInitializeAuth.js";
 
 import MainLayout from "./Layouts/MainLayout";
 import Home from "./pages/home/Home";
@@ -17,7 +17,7 @@ import ProfileLayout from "./pages/Login/profile/ProfileLayout";
 import ComparePage from "./pages/cart/ComparePage";
 import AdminLayout from "./components/admin/AdminLayout";
 import Categories from "./components/admin/category/Categories.jsx";
-import Products from "./components/admin/products/Products.jsx"
+import Products from "./components/admin/products/Products.jsx";
 import Brands from "./components/admin/brand/Brands.jsx";
 import Orders from "./components/admin/Orders";
 import UsersView from "./components/admin/users/UsersView.jsx";
@@ -30,6 +30,8 @@ import PublicRoute from "./routes/PublicRoute";
 import AdminRoute from "./routes/AdminRoute";
 import Dashboard from "./components/admin/Dashboard.jsx";
 import MainLoader from "./components/layout.jsx/MainLoader.jsx";
+import Blog from "./pages/blog&contact/Blog.jsx";
+import AllCategoryPage from "./pages/home/AllCategoryPage.jsx";
 
 const App = () => {
   useInitializeAuth();
@@ -44,13 +46,14 @@ const App = () => {
   const authInitialized = useSelector((state) => state.auth.authInitialized);
 
   if (!authInitialized) {
-    return <MainLoader/>
+    return <MainLoader />;
   }
   return (
     <>
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
+          <Route path="/categories" element={<AllCategoryPage />} />
           <Route path="/shop" element={<Shop />} />
 
           <Route path="/product/:id" element={<ProductDetailsPage />} />
@@ -74,6 +77,7 @@ const App = () => {
             element={<Wishlist onReturnToShop={handleReturnToShop} />}
           />
           <Route path="/compare" element={<ComparePage />} />
+          <Route path="/blog" element={<Blog />} />
         </Route>
 
         <Route element={<AdminRoute />}>
