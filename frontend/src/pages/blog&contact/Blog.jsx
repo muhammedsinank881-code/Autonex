@@ -91,7 +91,7 @@ const Blog = () => {
   const featuredPost = BLOG_POSTS.find((post) => post.featured);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-20">
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans pb-20">
       {/* --- HERO SECTION --- */}
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 pt-16 pb-12 border-b border-slate-800">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent pointer-events-none" />
