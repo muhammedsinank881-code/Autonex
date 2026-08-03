@@ -139,7 +139,7 @@ export default function AllCategorySidebar({ onClose }) {
               Loading...
             </div>
           ) : (
-            <div className="space-y-1.5 max-h-[200px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
+            <div className="space-y-1.5 max-h-[150px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
               {categories.map((cat) => {
                 const isSelected = selectedCategories.includes(cat._id);
                 return (
@@ -185,7 +185,7 @@ export default function AllCategorySidebar({ onClose }) {
               Loading...
             </div>
           ) : (
-            <div className="space-y-1 max-h-[180px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
+            <div className="space-y-1 max-h-[150px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
               {brands.map((brand) => {
                 const isSelected = selectedBrands.includes(brand._id);
                 return (
