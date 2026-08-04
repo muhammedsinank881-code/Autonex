@@ -1,4 +1,4 @@
-import { checkoutService } from "../services/checkout.service";
+import { checkoutService } from "../services/checkout.service.js";
 
 export const checkout = async (req, res, next) => {
     try {
