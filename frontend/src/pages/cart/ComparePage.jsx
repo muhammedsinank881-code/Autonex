@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useCompare } from "../../context/CompareContext";
+import { useAddToCart } from "../../hooks/cart/useAddToCart";
 import {
   ShoppingCart,
   Trash2,
@@ -14,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 const ComparePage = () => {
   const navigate = useNavigate()
   const { compareProducts, removeFromCompare, clearCompare } = useCompare();
+  const { mutate: addToCart, isPending } = useAddToCart();
 
   const MAX_SLOTS = 2;
 
@@ -36,7 +38,7 @@ const ComparePage = () => {
     <div className="min-h-screen bg-gray-50 text-slate-800 font-sans">
       {/* ----------------- BREADCRUMBS ----------------- */}
       <div className="max-w-7xl mx-auto px-4 py-3 text-xs text-gray-400">
-        <span onClick={()=>navigate("/shop")}>Shop</span> <span className="mx-1">/</span>{" "}
+        <span onClick={() => navigate("/shop")}>Shop</span> <span className="mx-1">/</span>{" "}
         <span className="text-gray-600 font-medium">Compare Products</span>
       </div>
 
@@ -65,8 +67,8 @@ const ComparePage = () => {
               Add items from the store to compare their features and specs.
             </p>
             <button
-            onClick={()=>navigate("/shop")}
-             className="mt-4 bg-[#0066B2] hover:bg-[#005290] text-white text-xs font-bold px-5 py-2.5 rounded transition">
+              onClick={() => navigate("/shop")}
+              className="mt-4 bg-[#0066B2] hover:bg-[#005290] text-white text-xs font-bold px-5 py-2.5 rounded transition">
               Continue Shopping
             </button>
           </div>
@@ -135,9 +137,23 @@ const ComparePage = () => {
                             </div>
 
                             {/* Add to Cart CTA */}
-                            <button className="w-full bg-[#0066B2] hover:bg-[#005290] text-white font-bold py-2 px-3 rounded text-xs flex items-center justify-center gap-1.5 transition">
-                              <ShoppingCart className="w-3.5 h-3.5" /> Add to
-                              cart
+                            <button
+                              disabled={isPending}
+                              onClick={() =>
+                                addToCart({
+                                  productId: product.id,
+                                  quantity: 1,
+                                },
+                                  {
+                                    onSuccess: () => {
+                                      toast.success("Product added to cart");
+                                    },
+                                    onError: () => {
+                                      toast.error("Failed to add product to cart");
+                                    },
+                                  })}
+                              className="w-full bg-[#0066B2] hover:bg-[#005290] text-white font-bold py-2 px-3 rounded text-xs flex items-center justify-center gap-1.5 transition">
+                              <ShoppingCart className="w-3.5 h-3.5" />  {isPending ? "Adding..." : "Add to Cart"}
                             </button>
                           </div>
                         </>
@@ -145,8 +161,8 @@ const ComparePage = () => {
                         /* Empty Slot Placeholder */
                         <div className="h-full min-h-[260px] flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-lg p-6 bg-gray-50/50 hover:bg-gray-50 transition">
                           <div
-                          onClick={()=>navigate("/shop")}
-                           className="w-10 h-10 rounded-full bg-blue-50 text-[#0066B2] flex items-center justify-center mb-2">
+                            onClick={() => navigate("/shop")}
+                            className="w-10 h-10 rounded-full bg-blue-50 text-[#0066B2] flex items-center justify-center mb-2">
                             <Plus className="w-5 h-5" />
                           </div>
                           <span className="text-xs font-semibold text-gray-600 mb-1">
@@ -155,9 +171,9 @@ const ComparePage = () => {
                           <p className="text-[11px] text-gray-400 text-center mb-3">
                             Select an item to compare side-by-side
                           </p>
-                          <button 
-                          onClick={()=>navigate("/shop")}
-                           className="border border-[#0066B2] text-[#0066B2] hover:bg-blue-50 text-xs font-semibold px-3 py-1.5 rounded transition">
+                          <button
+                            onClick={() => navigate("/shop")}
+                            className="border border-[#0066B2] text-[#0066B2] hover:bg-blue-50 text-xs font-semibold px-3 py-1.5 rounded transition">
                             Browse Products
                           </button>
                         </div>

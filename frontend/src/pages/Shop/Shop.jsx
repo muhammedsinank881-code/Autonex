@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { Helmet } from "react-helmet-async";
 import FeatureHeader from "../Shop/FeatureHeader.jsx";
 import SidebarFilter from "../Shop/SidebarFilter.jsx";
 import ProductGridHeader from "../Shop/ProductGridHeader.jsx";
@@ -7,6 +8,7 @@ import Pagination from "../Shop/Pagination.jsx";
 import { useSearchParams } from "react-router-dom";
 import { useProducts } from "../../hooks/products/useProducts.js";
 import { useCategories } from "../../hooks/categories/useCategories.js";
+import { useBrands } from "../../hooks/brands/useBrands.js";
 
 export default function ProductListingPage({ pageTitle = "Shop" }) {
   const { data: categoryData } = useCategories({
@@ -14,18 +16,32 @@ export default function ProductListingPage({ pageTitle = "Shop" }) {
     search: "",
   });
 
+  const { data: brandData } = useBrands({ limit: 100 });
+
   const allCategories = categoryData?.data || [];
+  const allBrands = brandData?.data || [];
 
   const [searchParams] = useSearchParams();
 
-  // Get category from URL (comma-separated names)
+  // Get category and brand from URL (comma-separated names)
   const categoryParam = searchParams.get("category");
+  const brandParam = searchParams.get("brand");
+  const minPriceParam = searchParams.get("minPrice");
+  const maxPriceParam = searchParams.get("maxPrice");
+  const inStockParam = searchParams.get("inStock");
+  const onSaleParam = searchParams.get("onSale");
 
   const categoryNames = useMemo(() => {
     return categoryParam
       ? categoryParam.split(",").map((name) => name.trim())
       : [];
   }, [categoryParam]);
+
+  const brandNames = useMemo(() => {
+    return brandParam
+      ? brandParam.split(",").map((name) => name.trim())
+      : [];
+  }, [brandParam]);
 
   // --- Filter States ---
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -55,6 +71,18 @@ export default function ProductListingPage({ pageTitle = "Shop" }) {
       .map((cat) => cat._id);
   }, [allCategories, categoryNames]);
 
+  // Convert brand names from the URL into their corresponding IDs
+  const brandIdsFromUrl = useMemo(() => {
+    if (!allBrands.length) return [];
+    return allBrands
+      .filter((brand) =>
+        brandNames.some(
+          (name) => name.toLowerCase() === brand.name.toLowerCase()
+        )
+      )
+      .map((brand) => brand._id);
+  }, [allBrands, brandNames]);
+
   // Sync URL categories to selectedCategories once categories have loaded
   useEffect(() => {
     if (!allCategories.length) return;
@@ -62,6 +90,29 @@ export default function ProductListingPage({ pageTitle = "Shop" }) {
     setSelectedCategories(categoryParam ? categoryIdsFromUrl : []);
     setCurrentPage(1);
   }, [allCategories, categoryParam, categoryIdsFromUrl]);
+
+  // Sync URL brands to selectedBrands once brands have loaded
+  useEffect(() => {
+    if (!allBrands.length) return;
+
+    setSelectedBrands(brandParam ? brandIdsFromUrl : []);
+    setCurrentPage(1);
+  }, [allBrands, brandParam, brandIdsFromUrl]);
+
+  // Sync price range from URL params
+  useEffect(() => {
+    const newMin = minPriceParam ? Number(minPriceParam) : 0;
+    const newMax = maxPriceParam ? Number(maxPriceParam) : 860;
+    setPriceRange({ min: newMin, max: newMax });
+  }, [minPriceParam, maxPriceParam]);
+
+  // Sync status filters from URL params
+  useEffect(() => {
+    setStatusFilters({
+      inStock: inStockParam === "true",
+      onSale: onSaleParam === "true",
+    });
+  }, [inStockParam, onSaleParam]);
 
   // Debounce price slider updates to prevent excessive API hits while sliding
   useEffect(() => {
@@ -167,102 +218,107 @@ export default function ProductListingPage({ pageTitle = "Shop" }) {
   const indexOfLastProduct = Math.min(currentPage * itemsPerPage, totalResults);
 
   return (
-    <div className="bg-white min-h-screen text-slate-800 font-sans antialiased overflow-x-hidden">
-      {/* Page Header */}
-      <div className="py-4 sm:py-8 border-b border-slate-100 bg-slate-50/50">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex justify-between">
-          <h1 className="text-xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-            {pageTitle}
-          </h1>
+    <>
+      <Helmet>
+        <title>Shop | Autonex</title>
+      </Helmet>
+      <div className="bg-white min-h-screen text-slate-800 font-sans antialiased overflow-x-hidden">
+        {/* Page Header */}
+        <div className="py-4 sm:py-8 border-b border-slate-100 bg-slate-50/50">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex justify-between">
+            <h1 className="text-xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+              {pageTitle}
+            </h1>
+          </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8">
-        <FeatureHeader />
+        <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8">
+          <FeatureHeader />
 
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 pb-16 sm:pb-24">
-          <aside className="w-full lg:w-1/4 shrink-0">
-            <SidebarFilter
-              selectedCategories={selectedCategories}
-              setSelectedCategories={setSelectedCategories}
-              selectedBrands={selectedBrands}
-              setSelectedBrands={setSelectedBrands}
-              priceRange={priceRange}
-              setPriceRange={setPriceRange}
-              statusFilters={statusFilters}
-              setStatusFilters={setStatusFilters}
-              onFilterChange={handleFilterChange}
-            />
-          </aside>
-
-          <main className="w-full lg:w-3/4">
-            <ProductGridHeader
-              totalResults={totalResults}
-              indexOfFirstProduct={indexOfFirstProduct}
-              indexOfLastProduct={indexOfLastProduct}
-              sortOption={sortOption}
-              setSortOption={(option) => {
-                setSortOption(option);
-                handleFilterChange();
-              }}
-              itemsPerPage={itemsPerPage}
-              setItemsPerPage={(limit) => {
-                setItemsPerPage(limit);
-                handleFilterChange();
-              }}
-              viewMode={viewMode}
-              setViewMode={setViewMode}
-            />
-
-            {isLoading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
-                {[...Array(itemsPerPage)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-64 bg-slate-100 animate-pulse rounded-xl"
-                  />
-                ))}
-              </div>
-            ) : isError ? (
-              <div className="text-center py-16 border border-red-200 rounded-lg mt-6">
-                <p className="text-red-500 text-sm">
-                  Failed to load products. Please try refreshing the page.
-                </p>
-              </div>
-            ) : products.length > 0 ? (
-              <div
-                className={
-                  viewMode === "grid"
-                    ? "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-6 mt-4 sm:mt-6 overflow-y-auto hide-scrollbar"
-                    : "flex flex-col gap-3 sm:gap-4 mt-4 sm:mt-6 overflow-y-auto hide-scrollbar"
-                }
-              >
-                {products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    viewMode={viewMode}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-16 sm:py-20 border border-dashed border-slate-200 rounded-lg mt-6">
-                <p className="text-slate-400 text-xs sm:text-sm">
-                  No products found matching those filter selections.
-                </p>
-              </div>
-            )}
-
-            {!isLoading && totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={(pageNumber) => setCurrentPage(pageNumber)}
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 pb-16 sm:pb-24">
+            <aside className="w-full lg:w-1/4 shrink-0">
+              <SidebarFilter
+                selectedCategories={selectedCategories}
+                setSelectedCategories={setSelectedCategories}
+                selectedBrands={selectedBrands}
+                setSelectedBrands={setSelectedBrands}
+                priceRange={priceRange}
+                setPriceRange={setPriceRange}
+                statusFilters={statusFilters}
+                setStatusFilters={setStatusFilters}
+                onFilterChange={handleFilterChange}
               />
-            )}
-          </main>
+            </aside>
+
+            <main className="w-full lg:w-3/4">
+              <ProductGridHeader
+                totalResults={totalResults}
+                indexOfFirstProduct={indexOfFirstProduct}
+                indexOfLastProduct={indexOfLastProduct}
+                sortOption={sortOption}
+                setSortOption={(option) => {
+                  setSortOption(option);
+                  handleFilterChange();
+                }}
+                itemsPerPage={itemsPerPage}
+                setItemsPerPage={(limit) => {
+                  setItemsPerPage(limit);
+                  handleFilterChange();
+                }}
+                viewMode={viewMode}
+                setViewMode={setViewMode}
+              />
+
+              {isLoading ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
+                  {[...Array(itemsPerPage)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-64 bg-slate-100 animate-pulse rounded-xl"
+                    />
+                  ))}
+                </div>
+              ) : isError ? (
+                <div className="text-center py-16 border border-red-200 rounded-lg mt-6">
+                  <p className="text-red-500 text-sm">
+                    Failed to load products. Please try refreshing the page.
+                  </p>
+                </div>
+              ) : products.length > 0 ? (
+                <div
+                  className={
+                    viewMode === "grid"
+                      ? "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-6 mt-4 sm:mt-6 overflow-y-auto hide-scrollbar"
+                      : "flex flex-col gap-3 sm:gap-4 mt-4 sm:mt-6 overflow-y-auto hide-scrollbar"
+                  }
+                >
+                  {products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      viewMode={viewMode}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16 sm:py-20 border border-dashed border-slate-200 rounded-lg mt-6">
+                  <p className="text-slate-400 text-xs sm:text-sm">
+                    No products found matching those filter selections.
+                  </p>
+                </div>
+              )}
+
+              {!isLoading && totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(pageNumber) => setCurrentPage(pageNumber)}
+                />
+              )}
+            </main>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

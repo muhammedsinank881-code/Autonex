@@ -15,7 +15,7 @@ import Logo from "../../assets/icons/AutonexLogo.png";
 import WhiteLogo from "../../assets/icons/whiteLogo.png";
 import { useCart } from "../../hooks/cart/useCart.js";
 import { useWishlist } from "../../hooks/wishlist/useWishlist";
-import AllCategorySidebar from "../../pages/home/AllCategoryPage.jsx";
+
 
 const navItems = [
   {
@@ -52,7 +52,6 @@ const Navbar = ({onOpenCategory }) => {
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const [categoryDrawerOpen, setCategoryDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 

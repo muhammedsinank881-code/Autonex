@@ -13,10 +13,10 @@ import {
 import { useCategories } from "../../hooks/categories/useCategories.js";
 import { useBrands } from "../../hooks/brands/useBrands.js";
 
-export default function AllCategorySidebar({ onClose }) {
+const AllCategoryPage =({ onClose })=> {
   const navigate = useNavigate();
 
-  // Selected State
+  // Selected State — store names (not IDs) so they match Shop.jsx URL params
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 860 });
@@ -36,16 +36,16 @@ export default function AllCategorySidebar({ onClose }) {
   const categories = categoryData?.data || [];
   const brands = brandData?.data || [];
 
-  // Toggle Handlers
-  const handleCategoryToggle = (id) => {
+  // Toggle Handlers — use category/brand name as key (not ID)
+  const handleCategoryToggle = (name) => {
     setSelectedCategories((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+      prev.includes(name) ? prev.filter((item) => item !== name) : [...prev, name],
     );
   };
 
-  const handleBrandToggle = (id) => {
+  const handleBrandToggle = (name) => {
     setSelectedBrands((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+      prev.includes(name) ? prev.filter((item) => item !== name) : [...prev, name],
     );
   };
 
@@ -56,15 +56,17 @@ export default function AllCategorySidebar({ onClose }) {
     setStatusFilters({ inStock: false, onSale: false });
   };
 
-  // Navigate to Shop page with filters passed as Query Parameters
+  // Navigate to Shop page with filters as Query Parameters matching Shop.jsx expectations
   const handleApplyFilters = () => {
     const params = new URLSearchParams();
 
+    // Shop.jsx reads ?category=Name1,Name2 (category names, not IDs)
     if (selectedCategories.length > 0) {
-      params.append("categories", selectedCategories.join(","));
+      params.append("category", selectedCategories.join(","));
     }
+    // Shop.jsx reads ?brand=Name1,Name2 (brand names)
     if (selectedBrands.length > 0) {
-      params.append("brands", selectedBrands.join(","));
+      params.append("brand", selectedBrands.join(","));
     }
     if (priceRange.min > 0) {
       params.append("minPrice", priceRange.min);
@@ -141,11 +143,11 @@ export default function AllCategorySidebar({ onClose }) {
           ) : (
             <div className="space-y-1.5 max-h-[150px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
               {categories.map((cat) => {
-                const isSelected = selectedCategories.includes(cat._id);
+                const isSelected = selectedCategories.includes(cat.name);
                 return (
                   <div
                     key={cat._id}
-                    onClick={() => handleCategoryToggle(cat._id)}
+                    onClick={() => handleCategoryToggle(cat.name)}
                     className={`p-2 rounded-lg border cursor-pointer transition-all flex items-center justify-between text-xs ${
                       isSelected
                         ? "border-[#006bc0] bg-blue-50/60 text-[#006bc0] font-semibold"
@@ -187,7 +189,7 @@ export default function AllCategorySidebar({ onClose }) {
           ) : (
             <div className="space-y-1 max-h-[150px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
               {brands.map((brand) => {
-                const isSelected = selectedBrands.includes(brand._id);
+                const isSelected = selectedBrands.includes(brand.name);
                 return (
                   <label
                     key={brand._id}
@@ -197,7 +199,7 @@ export default function AllCategorySidebar({ onClose }) {
                       <input
                         type="checkbox"
                         checked={isSelected}
-                        onChange={() => handleBrandToggle(brand._id)}
+                        onChange={() => handleBrandToggle(brand.name)}
                         className="rounded border-slate-300 text-[#006bc0] focus:ring-[#006bc0]/20 w-3.5 h-3.5 cursor-pointer"
                       />
                       <span
@@ -304,3 +306,5 @@ export default function AllCategorySidebar({ onClose }) {
     </div>
   );
 }
+
+export default AllCategoryPage

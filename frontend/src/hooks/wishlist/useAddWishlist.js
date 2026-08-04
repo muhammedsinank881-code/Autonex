@@ -3,8 +3,6 @@ import { addToWishlist } from "../../api/wishlist.api";
 import { useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
 
-import { addLocalWishlist } from "../../utils/localWishlist";
-
 export const useAddWishlist = () => {
   const queryClient = useQueryClient();
 
@@ -13,11 +11,7 @@ export const useAddWishlist = () => {
   return useMutation({
     mutationFn: (product) => {
       if (!accessToken) {
-        addLocalWishlist(product);
-
-        return Promise.resolve({ 
-          message: "Added to wishlist.",
-        });
+        throw new Error("Please login to add items to your wishlist.");
       }
 
       return addToWishlist(product._id);
@@ -32,7 +26,11 @@ export const useAddWishlist = () => {
     },
 
     onError: (error) => {
-      toast.error(error.response?.data?.message || "Failed to add wishlist.");
+      toast.error(
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to add wishlist."
+      );
     },
   });
 };

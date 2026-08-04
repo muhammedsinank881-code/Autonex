@@ -1,16 +1,16 @@
 import React, { useState } from "react";
+import { useContact } from "../../hooks/contact/useContact";
 import { toast } from "react-toastify";
-import { sendContactMessage } from "../../services/contactService"; 
 
 const ContactForm = () => {
+  const { mutate, isPending } = useContact();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     subject: "",
     message: "",
   });
-
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,27 +21,27 @@ const ContactForm = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    setLoading(true);
+    mutate(formData, {
+      onSuccess: (data) => {
+        toast.success(data.message);
 
-    try {
-      const res = await sendContactMessage(formData);
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+      },
 
-      toast.success(res.message);
-
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-      });
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to send message");
-    } finally {
-      setLoading(false);
-    }
+      onError: (error) => {
+        toast.error(
+          error?.response?.data?.message || "Failed to send message"
+        );
+      },
+    });
   };
 
   return (
@@ -123,10 +123,10 @@ const ContactForm = () => {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={isPending}
             className="bg-[#0066CC] hover:bg-[#0052A3] disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold px-6 py-3 rounded-lg transition"
           >
-            {loading ? "Sending..." : "Send Message"}
+            {isPending ? "Sending..." : "Send Message"}
           </button>
         </form>
       </div>

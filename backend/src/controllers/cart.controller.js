@@ -1,5 +1,5 @@
 import Cart from "../models/Cart.js";
-import Product from "../models/Product.js";
+import Product from "../models/";
 import { recalculateCart } from "../utils/recalculateCart.js";
 
 export const addToCart = async (req, res) => {
@@ -19,7 +19,7 @@ export const addToCart = async (req, res) => {
 
     if (!product.isActive) {
       return res.status(400).json({
-        success: false, 
+        success: false,
         message: "Product is inactive",
       });
     }
@@ -148,7 +148,7 @@ export const getCart = async (req, res) => {
     });
   }
 };
-  
+
 export const updateCartItem = async (req, res) => {
   try {
     const { quantity } = req.body;
@@ -230,7 +230,7 @@ export const updateCartItem = async (req, res) => {
       message: error.message,
     });
   }
-}; 
+};
 
 export const removeCartItem = async (req, res) => {
   try {

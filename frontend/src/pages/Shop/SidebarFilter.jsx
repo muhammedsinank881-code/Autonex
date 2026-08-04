@@ -196,7 +196,7 @@ const brands = brandData?.data || [];
         {/* Brands */}
         <div>
           <h3 className="font-bold text-xs sm:text-sm text-slate-900 mb-3 pb-1 border-b border-slate-100">Brands</h3>
-          <div className="space-y-2.5">
+          <div className="space-y-2.5 max-h-52 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
             {brands.map((brand, idx) => (
               <label key={idx} className="flex items-center justify-between text-xs text-slate-600 cursor-pointer hover:text-[#006bc0] transition-colors">
                 <div className="flex items-center gap-3">

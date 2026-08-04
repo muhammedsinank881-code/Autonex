@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { useContact } from "../../../hooks/contact/useContact";
 
 const ContactSection = () => {
+
+  const { mutate, isPending } = useContact();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,7 +18,23 @@ const ContactSection = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
+
+    mutate(formData, {
+      onSuccess: (data) => {
+        console.log(data);
+
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+      },
+
+      onError: (error) => {
+        console.error(error);
+      },
+    });
   };
 
   return (
@@ -139,9 +158,10 @@ const ContactSection = () => {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="bg-[#0066CC] hover:bg-[#0052A3] text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-lg transition-colors shadow-sm active:scale-98"
+                  disabled={isPending}
+                  className="bg-[#0066CC] hover:bg-[#0052A3] disabled:opacity-50 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-lg"
                 >
-                  Send Message
+                  {isPending ? "Sending..." : "Send Message"}
                 </button>
               </div>
             </form>
