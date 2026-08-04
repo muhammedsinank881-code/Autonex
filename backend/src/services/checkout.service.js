@@ -7,6 +7,7 @@ const GST_PERCENT = Number(process.env.GST_PERCENT || 18);
 
 const COUPON_CODE = process.env.COUPON_CODE;
 const COUPON_DISCOUNT = Number(process.env.COUPON_DISCOUNT || 0);
+const COUPON_ENABLED = process.env.COUPON_ENABLED === "true";
 
 export const checkoutService = async (userId, body) => {
 
