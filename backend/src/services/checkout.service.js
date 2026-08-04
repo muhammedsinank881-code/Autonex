@@ -132,28 +132,37 @@ export const checkoutService = async (userId, body) => {
     let discount = 0;
     let appliedCoupon = null;
 
-    if (couponCode && couponCode.trim() !== "") {
+    // 1. Admin disabled coupons
+    if (!COUPON_ENABLED) {
 
-        if (!COUPON_ENABLED) {
-            throw new Error("Coupons are currently unavailable");
+        discount = 0;
+        appliedCoupon = null;
+
+    }
+    else {
+
+        if (!couponCode || couponCode.trim() === "") {
+
+            discount = 0;
+            appliedCoupon = null;
+
         }
+        else {
 
-        if (
-            !COUPON_CODE ||
-            couponCode.trim().toUpperCase() !== COUPON_CODE.toUpperCase()
-        ) {
-            throw new Error("Invalid coupon");
+            if (couponCode.trim().toUpperCase() !== COUPON_CODE.toUpperCase()) {
+                throw new Error("Wrong coupon code");
+            }
+
+            discount = Number(
+                ((subtotal * COUPON_DISCOUNT) / 100).toFixed(2)
+            );
+
+            appliedCoupon = {
+                code: COUPON_CODE,
+                percentage: COUPON_DISCOUNT,
+            };
         }
-
-        discount = Number(
-            ((subtotal * COUPON_DISCOUNT) / 100).toFixed(2)
-        );
-
-        appliedCoupon = {
-            code: COUPON_CODE,
-            percentage: COUPON_DISCOUNT,
-        };
-    }  
+    }
 
     // Total
 
