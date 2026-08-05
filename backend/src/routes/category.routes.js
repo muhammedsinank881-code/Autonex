@@ -7,7 +7,7 @@ import {
   deleteCategory,
   restoreCategory,
   getActiveCategories,
-} from "../controllers/category.cotroller.js";
+} from "../controllers/category.controller.js";
 
 import { protect } from "../middlewares/auth.middleware.js";
 import { adminOnly } from "../middlewares/role.middleware.js";

@@ -81,7 +81,8 @@ const checkoutSchema = new mongoose.Schema(
 
             razorpayOrderId: String,
 
-            razorpayPaymentId: String
+            razorpayPaymentId: String,
+            razorpaySignature: String,
         },
 
         coupon: {

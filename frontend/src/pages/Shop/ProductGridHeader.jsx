@@ -13,7 +13,7 @@ export default function ProductGridHeader({
   setViewMode
 }) {
   const currentMax = Math.min(indexOfLastProduct, totalResults);
-  const currentMin = totalResults > 0 ? indexOfFirstProduct + 1 : 0;
+  const currentMin = totalResults > 0 ? indexOfFirstProduct : 0;
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-slate-100">
