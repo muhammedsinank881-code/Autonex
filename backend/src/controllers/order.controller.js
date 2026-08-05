@@ -1,9 +1,14 @@
 import Order from "../models/Order.js";
-import { createOrder } from "../services/order.service.js"; 
+import { createOrder } from "../services/order.service.js";
 
 export const createOrderController = async (req, res) => {
     try {
-        const order = await createOrder(req.user.id);
+        const { checkoutId, paymentDetails } = req.body;
+
+        const order = await createOrder(
+            checkoutId,
+            paymentDetails
+        );
 
         return res.status(201).json({
             success: true,
