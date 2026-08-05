@@ -99,7 +99,7 @@ export const createOrder = async (
 
                     shippingAddress: checkout.shippingAddress,
 
-                    paymentMethod: checkout.method,
+                    paymentMethod: checkout.payment.method,
 
                     paymentStatus: isCOD
                         ? "PENDING"
