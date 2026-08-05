@@ -108,11 +108,6 @@ const checkoutSchema = new mongoose.Schema(
                 default: 0
             },
 
-            tax: {
-                type: Number,
-                default: 0
-            },
-
             discount: {
                 type: Number,
                 default: 0

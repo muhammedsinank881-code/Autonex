@@ -86,6 +86,11 @@ export const createOrder = async (
             ? "PLACED"
             : "CONFIRMED";
 
+        const subtotal = Math.round(checkout.summary.subtotal);
+        const shippingCharge = Math.round(checkout.summary.shipping);
+        const discount = Math.round(checkout.summary.discount);
+        const totalAmount = Math.round(checkout.summary.total);
+
         const order = await Order.create(
             [
                 {
@@ -113,15 +118,10 @@ export const createOrder = async (
                             razorpaySignature: paymentDetails.razorpaySignature,
                         },
 
-                    subtotal: checkout.summary.subtotal,
-
-                    shippingCharge: checkout.summary.shipping,
-
-                    tax: checkout.summary.tax,
-
-                    discount: checkout.summary.discount,
-
-                    totalAmount: checkout.summary.total,
+                    subtotal,
+                    shippingCharge,
+                    discount,
+                    totalAmount,
 
                     orderStatus,
                 },
@@ -152,14 +152,116 @@ export const createOrder = async (
         );
 
         await session.commitTransaction();
-        await session.endSession();
-
         return order[0];
     } catch (error) {
         await session.abortTransaction();
-
-        session.endSession();
-
         throw error;
+    } finally {
+        await session.endSession();
     }
+};
+
+export const updateOrderStatus = async (orderId, status) => {
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+        throw new Error("Invalid Order ID");
+    }
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+        throw new Error("Order not found");
+    }
+
+    const validTransitions = {
+        Pending: ["Confirmed", "Cancelled"],
+        Confirmed: ["Processing", "Cancelled"],
+        Processing: ["Shipped", "Cancelled"],
+        Shipped: ["Out for Delivery"],
+        "Out for Delivery": ["Delivered"],
+        Delivered: [],
+        Cancelled: [],
+    };
+
+    const allowedStatuses = validTransitions[order.orderStatus];
+
+    if (!allowedStatuses.includes(status)) {
+        throw new Error(
+            `Cannot change status from ${order.orderStatus} to ${status}`
+        );
+    }
+
+    order.orderStatus = status;
+
+    if (status === "Delivered") {
+        order.deliveredAt = new Date();
+    }
+
+    await order.save();
+
+    return order;
+};
+
+export const cancelOrder = async (orderId, user) => {
+    // Validate Order ID
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+        throw new Error("Invalid Order ID");
+    }
+
+    // Find Order
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+        throw new Error("Order not found");
+    }
+
+    // Check Permission
+    const isOwner = order.user.toString() === user._id.toString();
+    const isAdmin = user.role === "admin";
+
+    if (!isOwner && !isAdmin) {
+        throw new Error("You are not authorized to cancel this order");
+    }
+
+    // Already cancelled
+    if (order.orderStatus === "CANCELLED") {
+        throw new Error("Order is already cancelled");
+    }
+
+    // Delivered orders cannot be cancelled
+    if (order.orderStatus === "DELIVERED") {
+        throw new Error("Delivered orders cannot be cancelled");
+    }
+
+    // Customer can cancel only before shipping
+    if (
+        isOwner &&
+        ["SHIPPED", "OUT_FOR_DELIVERY"].includes(order.orderStatus)
+    ) {
+        throw new Error("Order cannot be cancelled after shipping");
+    }
+
+    // Restore Product Stock
+    for (const item of order.items) {
+        await Product.findByIdAndUpdate(
+            item.productId,
+            {
+                $inc: {
+                    stock: item.quantity,
+                },
+            }
+        );
+    }
+
+    // Update Order
+    order.orderStatus = "CANCELLED";
+    order.cancelledAt = new Date();
+
+    // Refund Status
+    if (order.paymentMethod === "RAZORPAY") {
+        order.refundStatus = "PENDING";
+    }
+
+    await order.save();
+
+    return order;
 };

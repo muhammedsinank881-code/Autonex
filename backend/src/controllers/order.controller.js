@@ -1,5 +1,5 @@
 import Order from "../models/Order.js";
-import { createOrder } from "../services/order.service.js";
+import { createOrder, updateOrderStatus } from "../services/order.service.js";
 
 export const createOrderController = async (req, res) => {
     try {
@@ -88,6 +88,28 @@ export const getAllOrders = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: error.message,
+        });
+    }
+};
+
+export const updateOrderStatusController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const order = await updateOrderStatus(id, status);
+
+        return res.status(200).json({
+            success: true,
+            message: "Order status updated successfully",
+            data: order,
+        });
+    } catch (error) {
+        console.error("Update Order Status Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Failed to update order status",
         });
     }
 };

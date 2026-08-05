@@ -82,11 +82,6 @@ const orderSchema = new mongoose.Schema(
             default: 0,
         },
 
-        tax: {
-            type: Number,
-            default: 0,
-        },
-
         discount: {
             type: Number,
             default: 0,
@@ -114,7 +109,18 @@ const orderSchema = new mongoose.Schema(
         },
 
         deliveredAt: Date,
-        cancelledAt: Date,
+        cancelledAt: {
+            type: Date,
+            default: null
+        },
+
+        refundStatus: {
+            type: String,
+            enum: ["NOT_REQUIRED",
+                "PENDING",
+                "COMPLETED"],
+            default: "NOT_REQUIRED",
+        },
     },
     {
         timestamps: true,
