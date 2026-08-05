@@ -38,7 +38,7 @@ export const createOrder = async (
             throw new Error("Order already created");
         }
 
-        const isCOD = checkout.method === "COD";
+        const isCOD = checkout.payment.method === "COD";
 
         if (!isCOD && checkout.payment.status !== "PAID") {
             throw new Error("Payment is not completed");
