@@ -124,12 +124,6 @@ const checkoutSchema = new mongoose.Schema(
             }
         },
 
-        method: {
-            type: String,
-            enum: ["COD", "RAZORPAY"],
-            required: true
-        },
-
         checkoutStatus: {
             type: String,
             enum: [
