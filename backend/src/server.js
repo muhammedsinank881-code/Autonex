@@ -6,7 +6,6 @@ import corsOptions from "./config/cors.js";
 
 import connectDB from "./config/db.js";
 import helmet from "helmet";
-import mongoSanitize from "express-mongo-sanitize";
 
 import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";

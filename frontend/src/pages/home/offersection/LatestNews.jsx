@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowUpRight, Calendar, User } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const articles = [
   {
@@ -42,26 +43,66 @@ const articles = [
 ];
 
 export default function LatestNews() {
+
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const articles = [
+    {
+      id: 1,
+      title: t("latestNews.articles.article1.title"),
+      excerpt: t("latestNews.articles.article1.excerpt"),
+      author: "Sinan",
+      date: "20 May 2025",
+      image:
+        "https://res.cloudinary.com/p61kdb2x/image/upload/v1785223498/Buying_cheap_used_transmissions_isn_t_as_risky_as_you_think_pom1yu.jpg",
+      alt: t("latestNews.articles.article1.alt"),
+      url: "#",
+    },
+    {
+      id: 2,
+      title: t("latestNews.articles.article2.title"),
+      excerpt: t("latestNews.articles.article2.excerpt"),
+      author: "Sinan",
+      date: "20 May 2025",
+      image:
+        "https://res.cloudinary.com/p61kdb2x/image/upload/v1785223498/What_to_Do_When_Your_Car_Parts_Start_Wearing_Out_ju8xu5.jpg",
+      alt: t("latestNews.articles.article2.alt"),
+      url: "#",
+    },
+    {
+      id: 3,
+      title: t("latestNews.articles.article3.title"),
+      excerpt: t("latestNews.articles.article3.excerpt"),
+      author: "Sinan",
+      date: "20 May 2025",
+      image:
+        "https://res.cloudinary.com/p61kdb2x/image/upload/v1785223497/304_aoit7a.jpg",
+      alt: t("latestNews.articles.article3.alt"),
+      url: "#",
+    },
+  ];
   return (
     <section className="w-full max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-baseline justify-between mb-8 gap-3">
         <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-            Our Latest News
+            {t("latestNews.title")}
           </h2>
           <span className="text-sm font-normal text-slate-500">
-            Our most ordered products.
+            {t("latestNews.subtitle")}
           </span>
         </div>
 
-        <Link
-          to={"/blog"}
+        <button
+          onClick={() => navigate("/blog")}
+          href="#"
           className="group inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-200"
         >
-          View All
+          {t("latestNews.viewAll")}
           <ArrowUpRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-        </Link>
+        </button>
       </div>
 
       {/* Responsive Grid Layout */}
@@ -96,7 +137,7 @@ export default function LatestNews() {
               <div className="mt-4 pt-2 flex items-center gap-3 text-xs text-slate-400 font-medium">
                 <span className="inline-flex items-center gap-1.5">
                   <User className="w-3.5 h-3.5 text-slate-400" />
-                  by{" "}
+                  {t("latestNews.by")}{" "}
                   <strong className="font-semibold text-slate-700">
                     {article.author}
                   </strong>

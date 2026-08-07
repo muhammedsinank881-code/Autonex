@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 const banners = [
@@ -51,6 +52,8 @@ const FeatureBanners = () => {
   const [isPaused, setIsPaused] = useState(false);
   const navidate = useNavigate();
 
+  const { t } = useTranslation();
+
   // AUTO-SCROLL FUNCTIONALITY (Active only on Mobile & Tablet)
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -101,24 +104,24 @@ const FeatureBanners = () => {
           {/* Content */}
           <div className="absolute inset-0 z-10 px-8 pt-8">
             <p className="uppercase tracking-[3px] text-xs font-semibold text-slate-500">
-              YOUR RIDE, OUR PARTS
+              {t("featureBanners.card1.tagline")}
             </p>
 
             <h2 className="mt-3 text-slate-900 font-black text-4xl leading-[1.1] max-w-[380px]">
-              Save Your Vehicle.
+              {t("featureBanners.card1.title1")}
               <br />
-              Shop Smarter.
+              {t("featureBanners.card1.title2")}
             </h2>
 
             <p className="mt-4 text-slate-700 text-[15px] leading-6">
-              Get the part. Make the fix. Enjoy the drive.
+              {t("featureBanners.card1.description")}
             </p>
 
             <button
               onClick={() => navidate("/shop")}
               className="mt-6 rounded-full bg-blue-600 px-8 py-3 font-semibold text-white transition hover:bg-blue-700"
             >
-              Shop Now
+              {t("featureBanners.button")}
             </button>
           </div>
         </div>
@@ -142,24 +145,24 @@ const FeatureBanners = () => {
           {/* Content */}
           <div className="absolute inset-0 z-10 px-8 pt-8">
             <p className="uppercase tracking-[3px] text-xs font-semibold text-white">
-              YOUR RIDE, OUR PARTS
+              {t("featureBanners.card2.tagline")}
             </p>
 
             <h2 className="mt-3 text-white font-black text-4xl leading-[1.1] max-w-[380px]">
-              Save Your Vehicle.
+              {t("featureBanners.card2.title1")}
               <br />
-              Shop Smarter.
+              {t("featureBanners.card2.title2")}
             </h2>
 
-            <p className="mt-4 text-white  text-[15px] leading-6">
-              Get the part. Make the fix. Enjoy the drive.
+            <p className="mt-4 text-white text-[15px] leading-6">
+              {t("featureBanners.card2.description")}
             </p>
 
             <button
               onClick={() => navidate("/category/tires-wheels")}
-              className="mt-6 rounded-full bg-white px-8 py-3 font-semibold text- transition hover:bg-gray-200"
+              className="mt-6 rounded-full bg-white px-8 py-3 font-semibold transition hover:bg-gray-200"
             >
-              Shop Now
+              {t("featureBanners.button")}
             </button>
           </div>
         </div>
@@ -178,30 +181,27 @@ const FeatureBanners = () => {
           />
 
           {/* Overlay */}
-          <div className="absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-black/10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-black/10" />
 
           {/* Content */}
           <div className="absolute inset-0 z-10 px-8 pt-8">
             <p className="uppercase tracking-[3px] text-xs font-semibold text-white">
-              YOUR RIDE, OUR PARTS
+              {t("featureBanners.card3.tagline")}
             </p>
-
             <h2 className="mt-3 text-white font-black text-4xl leading-[1.1] max-w-[380px]">
-              Save Your Vehicle.
+              {t("featureBanners.card3.title1")}
               <br />
-              Shop Smarter.
+              {t("featureBanners.card3.title2")}
             </h2>
-
-            <p className="mt-4 text-white  text-[15px] leading-6">
-              Get the part. Make the fix. Enjoy the drive.
+            <p className="mt-4 text-white text-[15px] leading-6">
+              {t("featureBanners.card3.description")}
             </p>
-
             <button
               onClick={() => navidate("/category/headlights-lighting")}
-              className="mt-6 rounded-full bg-white px-8 py-3 font-semibold text- transition hover:bg-gray-200"
+              className="mt-6 rounded-full bg-white px-8 py-3 font-semibold transition hover:bg-gray-200"
             >
-              Shop Now
-            </button>
+              {t("featureBanners.button")}
+            </button>{" "}
           </div>
         </div>
       </div>

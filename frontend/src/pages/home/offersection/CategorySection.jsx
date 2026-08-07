@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import {Medal , Affordable , WideVeriety } from "../../../assets/icon.js"
+import { Medal, Affordable, WideVeriety } from "../../../assets/icon.js"
 import Airconditioner from "../../../assets/folder/airconditioner.png"
 import Bearings from "../../../assets/folder/Bearings.png"
 import Brakes from "../../../assets/folder/Brakes.png"
 import CarAccessories from "../../../assets/folder/Car-Accessories.png"
 import Engine from "../../../assets/folder/engine.png"
 import EngineCoolingSystem from "../../../assets/folder/Engine-cooling-system.png"
+import { useTranslation } from "react-i18next";
 
 // Feature Icons Section Data
 const features = [
@@ -32,13 +33,13 @@ const categories = [
     id: 1,
     title: "Air Condition",
     count: 1,
-    image:Airconditioner,
+    image: Airconditioner,
   },
   {
     id: 2,
     title: "Bearings",
     count: 2,
-    image:Bearings,
+    image: Bearings,
   },
   {
     id: 3,
@@ -50,25 +51,82 @@ const categories = [
     id: 4,
     title: "Car Accessories",
     count: 5,
-    image:  CarAccessories,
+    image: CarAccessories,
   },
   {
     id: 5,
     title: "Engine",
     count: 4,
-    image:Engine
-    },
+    image: Engine
+  },
   {
     id: 6,
     title: "Engine cooling system",
     count: 2,
-    image:EngineCoolingSystem,
+    image: EngineCoolingSystem,
   },
 ];
 
 const CategorySection = () => {
   const scrollRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
+  const { t } = useTranslation();
+  const features = [
+    {
+      icon: Medal,
+      title: t("categorySection.features.original.title"),
+      desc: t("categorySection.features.original.desc"),
+    },
+    {
+      icon: Affordable,
+      title: t("categorySection.features.affordable.title"),
+      desc: t("categorySection.features.affordable.desc"),
+    },
+    {
+      icon: WideVeriety,
+      title: t("categorySection.features.variety.title"),
+      desc: t("categorySection.features.variety.desc"),
+    },
+  ];
+
+  const categories = [
+    {
+      id: 1,
+      title: t("categorySection.categories.airCondition"),
+      count: 1,
+      image: Airconditioner,
+    },
+    {
+      id: 2,
+      title: t("categorySection.categories.bearings"),
+      count: 2,
+      image: Bearings,
+    },
+    {
+      id: 3,
+      title: t("categorySection.categories.brakes"),
+      count: 5,
+      image: Brakes,
+    },
+    {
+      id: 4,
+      title: t("categorySection.categories.carAccessories"),
+      count: 5,
+      image: CarAccessories,
+    },
+    {
+      id: 5,
+      title: t("categorySection.categories.engine"),
+      count: 4,
+      image: Engine,
+    },
+    {
+      id: 6,
+      title: t("categorySection.categories.engineCooling"),
+      count: 2,
+      image: EngineCoolingSystem,
+    },
+  ];
 
   // Auto-scroll logic active only on small mobile screens (< md)
   useEffect(() => {
@@ -101,16 +159,16 @@ const CategorySection = () => {
       <div className="w-full bg-[#0066CC] rounded-xl px-6 py-6 md:py-8 flex flex-col md:flex-row items-center justify-between gap-6 text-white shadow-sm">
         <div className="text-center md:text-left space-y-1">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
-            Need Help Finding the Right Product?
+            {t("categorySection.cta.title")}
           </h2>
           <p className="text-xs sm:text-sm text-blue-100 font-normal">
-            Our Parts Experts Can Help, Call for immediate assistance.
+            {t("categorySection.cta.description")}
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0">
           <button className="bg-white text-[#0066CC] font-bold text-xs sm:text-sm px-6 py-2.5 rounded-lg hover:bg-blue-50 transition-colors shadow-sm">
-            Request a Call
+            {t("categorySection.cta.button")}
           </button>
           <div className="text-center sm:text-left">
             <a
@@ -120,7 +178,7 @@ const CategorySection = () => {
               +(800) 1234 5678 90
             </a>
             <span className="text-[10px] text-blue-100 block">
-              You can contact us 24/7.
+              {t("categorySection.cta.support")}
             </span>
           </div>
         </div>
@@ -133,11 +191,10 @@ const CategorySection = () => {
           return (
             <div
               key={idx}
-              className={`flex items-center gap-4 px-2 ${
-                idx !== features.length - 1
+              className={`flex items-center gap-4 px-2 ${idx !== features.length - 1
                   ? "md:border-r md:border-gray-100"
                   : ""
-              }`}
+                }`}
             >
               <div className="w-12 h-12 rounded-full bg-blue-50 text-[#0066CC] flex items-center justify-center shrink-0">
                 <Icon size={24} />

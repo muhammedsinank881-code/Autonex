@@ -15,6 +15,9 @@ import Logo from "../../assets/icons/AutonexLogo.png";
 import WhiteLogo from "../../assets/icons/whiteLogo.png";
 import { useCart } from "../../hooks/cart/useCart.js";
 import { useWishlist } from "../../hooks/wishlist/useWishlist";
+import LanguageSelector from "../common/LanguageSelector.jsx";
+import CurrencySelector from "../common/CurrencySelector.jsx";
+import { useTranslation } from "react-i18next";
 
 
 const navItems = [
@@ -46,9 +49,19 @@ const navItems = [
   },
 ];
 
-const Navbar = ({onOpenCategory }) => {
+const navTranslations = {
+  Home: "navbar.home",
+  Shop: "navbar.shop",
+  "Tires & Wheels": "navbar.tyres",
+  "Headlights & Lighting": "navbar.headlights",
+  Blog: "navbar.blog",
+  Contact: "navbar.contact",
+};
+
+const Navbar = ({ onOpenCategory }) => {
   const { data: cart } = useCart();
   const { data: wishlist } = useWishlist();
+  const { t } = useTranslation();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -70,26 +83,25 @@ const Navbar = ({onOpenCategory }) => {
       <div className="hidden md:block bg-[#0067B2] border-b border-gray-200/60">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between text-[11px] text-white h-8">
           <div className="flex items-center gap-5">
-            <Link to="/about" className="hover:text-gray-900 transition-colors">
-              About Us
+            <Link
+              to="/contact"
+              className="hover:text-gray-900 transition-colors"
+            >
+              {t("navbar.about")}
             </Link>
             <Link to="/faq" className="hover:text-gray-900 transition-colors">
-              FAQ
+              {t("navbar.faq")}
             </Link>
             <Link
               to="/orders/track"
               className="hover:text-gray-900 transition-colors"
             >
-              Order Tracking
+              {t("navbar.orderTracking")}
             </Link>
           </div>
           <div className="flex items-center gap-4">
-            <button className="flex items-center gap-1 hover:text-gray-900 transition-colors">
-              English <ChevronDown size={11} />
-            </button>
-            <button className="flex items-center gap-1 hover:text-gray-900 transition-colors">
-              INR <ChevronDown size={11} />
-            </button>
+            <LanguageSelector />
+            <CurrencySelector />
           </div>
         </div>
       </div>
@@ -119,9 +131,9 @@ const Navbar = ({onOpenCategory }) => {
             </div>
             <div className="text-xs">
               <span className="text-white block text-[10px] leading-tight">
-                Add Vehicle
+                {t("garage.addVehicle")}
               </span>
-              <span className="font-bold text-white text-xs">My Garage</span>
+              <span className="font-bold text-white text-xs">{t("garage.myGarage")}</span>
             </div>
           </button>
 
@@ -129,7 +141,7 @@ const Navbar = ({onOpenCategory }) => {
           <div className="flex-1 max-w-2xl relative">
             <input
               type="text"
-              placeholder="Search popular products..."
+              placeholder={t("search.placeholder")}
               className="w-full bg-white border border-gray-200 rounded-lg py-2.5 pl-5 pr-11 text-xs text-gray-700 outline-none focus:border-blue-500 transition-colors shadow-sm"
             />
             <button
@@ -147,30 +159,27 @@ const Navbar = ({onOpenCategory }) => {
               {({ isActive }) => (
                 <div className="flex items-center gap-2 text-xs">
                   <div
-                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${
-                      isActive
-                        ? "bg-[#288ED8] text-white"
-                        : "bg-[#1977BB] border border-[#288ED8] text-white hover:bg-gray-300/60"
-                    }`}
+                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${isActive
+                      ? "bg-[#288ED8] text-white"
+                      : "bg-[#1977BB] border border-[#288ED8] text-white hover:bg-gray-300/60"
+                      }`}
                   >
                     <User size={18} />
                   </div>
 
                   <div className="text-left hidden xl:block">
                     <span
-                      className={`block text-[10px] leading-tight ${
-                        isActive ? "text-blue-500" : "text-white"
-                      }`}
+                      className={`block text-[10px] leading-tight ${isActive ? "text-blue-500" : "text-white"
+                        }`}
                     >
-                      Sign In
+                      {t("account.signIn")}
                     </span>
 
                     <span
-                      className={`font-bold ${
-                        isActive ? "text-blue-600" : "text-white"
-                      }`}
+                      className={`font-bold ${isActive ? "text-blue-600" : "text-white"
+                        }`}
                     >
-                      Account
+                      {t("account.account")}
                     </span>
                   </div>
                 </div>
@@ -179,12 +188,11 @@ const Navbar = ({onOpenCategory }) => {
 
             {/* Wishlist */}
             <NavLink
-              to="/wish-list"
+              to="/whishlist"
               className={({ isActive }) =>
-                `relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
-                  isActive
-                    ? "bg-blue-100 text-blue-600"
-                    : "bg-[#1977BB] border border-[#288ED8] text-white hover:bg-gray-300/60"
+                `relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${isActive
+                  ? "bg-blue-100 text-blue-600"
+                  : "bg-[#1977BB] border border-[#288ED8] text-white hover:bg-gray-300/60"
                 }`
               }
             >
@@ -205,10 +213,9 @@ const Navbar = ({onOpenCategory }) => {
             <NavLink
               to="/compare" // Change this to your route
               className={({ isActive }) =>
-                `relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
-                  isActive
-                    ? "bg-blue-100 text-blue-600"
-                    : "bg-[#1977BB] border border-[#288ED8] text-white hover:bg-gray-300/60"
+                `relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${isActive
+                  ? "bg-blue-100 text-blue-600"
+                  : "bg-[#1977BB] border border-[#288ED8] text-white hover:bg-gray-300/60"
                 }`
               }
             >
@@ -223,10 +230,9 @@ const Navbar = ({onOpenCategory }) => {
             <NavLink
               to="/cart"
               className={({ isActive }) =>
-                `relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
-                  isActive
-                    ? "bg-blue-100 text-blue-600"
-                    : "bg-[#1977BB] border border-[#288ED8] text-white hover:bg-gray-300/60"
+                `relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${isActive
+                  ? "bg-blue-100 text-blue-600"
+                  : "bg-[#1977BB] border border-[#288ED8] text-white hover:bg-gray-300/60"
                 }`
               }
             >
@@ -255,7 +261,7 @@ const Navbar = ({onOpenCategory }) => {
               className="flex items-center gap-2 hover:text-blue-600 transition-colors"
             >
               <Menu size={16} />
-              <span>All Categories</span>
+              <span>{t("navbar.allCategories")}</span>
             </button>
 
             <span className="text-gray-300 font-normal">|</span>
@@ -282,11 +288,10 @@ const Navbar = ({onOpenCategory }) => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center gap-1 transition-colors ${
-                      isActive ? "text-blue-600" : "hover:text-blue-600"
-                    }`}
+                    className={`flex items-center gap-1 transition-colors ${isActive ? "text-blue-600" : "hover:text-blue-600"
+                      }`}
                   >
-                    {item.name}
+                    {t(navTranslations[item.name])}
                     {item.hasDropdown && <ChevronDown size={11} />}
                   </Link>
                 );
@@ -295,9 +300,9 @@ const Navbar = ({onOpenCategory }) => {
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="font-bold text-gray-900">Best Seller</span>
+            <span className="font-bold text-gray-900">{t("navbar.bestSeller")}</span>
             <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
-              Sale
+              {t("navbar.sale")}
             </span>
           </div>
         </div>
@@ -329,10 +334,9 @@ const Navbar = ({onOpenCategory }) => {
           <NavLink
             to="/cart"
             className={({ isActive }) =>
-              `relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
-                isActive
-                  ? "bg-[#1977BB] border border-[#288ED8] text-white"
-                  : "bg-[#1977BB] border border-[#288ED8] text-white"
+              `relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${isActive
+                ? "bg-[#1977BB] border border-[#288ED8] text-white"
+                : "bg-[#1977BB] border border-[#288ED8] text-white"
               }`
             }
           >
@@ -357,14 +361,14 @@ const Navbar = ({onOpenCategory }) => {
             className="flex items-center justify-center gap-2 py-2.5 hover:bg-gray-50"
           >
             <Warehouse size={15} />
-            My Garage
+            {t("garage.myGarage")}
           </button>
           <button
             onClick={() => setMobileSearchOpen((prev) => !prev)}
             className="flex items-center justify-center gap-2 py-2.5 hover:bg-gray-50"
           >
             <Search size={15} />
-            Search Product
+            {t("search.product")}
           </button>
         </div>
 
@@ -375,7 +379,7 @@ const Navbar = ({onOpenCategory }) => {
               <input
                 type="text"
                 autoFocus
-                placeholder="Search popular products..."
+                placeholder={t("search.placeholder")}
                 className="w-full bg-white border border-gray-300 rounded-full py-2 pl-4 pr-10 text-xs outline-none focus:border-blue-500"
               />
               <button
@@ -423,14 +427,14 @@ const Navbar = ({onOpenCategory }) => {
                 onClick={() => setDrawerOpen(false)}
                 className="flex items-center gap-3 py-2 font-medium"
               >
-                <User size={16} /> Sign In / Account
+                <User size={16} /> {t("account.signIn")} / {t("account.account")}
               </NavLink>
               <NavLink
-                to="/wish-list"
+                to="/whishlist"
                 onClick={() => setDrawerOpen(false)}
                 className="flex items-center gap-3 py-2 font-medium"
               >
-                <Heart size={16} /> Wishlist ({wishlistCount})
+                <Heart size={16} /> {t("wishlist")} ({wishlistCount})
               </NavLink>
 
               <div className="border-t border-gray-100 my-2" />
@@ -440,42 +444,42 @@ const Navbar = ({onOpenCategory }) => {
                 onClick={() => setDrawerOpen(false)}
                 className="py-2 font-bold text-gray-900"
               >
-                Home
+                {t("navbar.home")}
               </Link>
               <Link
                 to="/shop"
                 onClick={() => setDrawerOpen(false)}
                 className="py-2 font-bold text-gray-900"
               >
-                Shop
+                {t("navbar.shop")}
               </Link>
               <Link
                 to="/category/tires-wheels"
                 onClick={() => setDrawerOpen(false)}
                 className="py-2"
               >
-                Tires &amp; Wheels
+                {t("navbar.tiresWheels")}
               </Link>
               <Link
                 to="/category/headlights-lighting"
                 onClick={() => setDrawerOpen(false)}
                 className="py-2"
               >
-                Headlights &amp; Lighting
+                {t("navbar.headlightsLighting")}
               </Link>
               <Link
                 to="/blog"
                 onClick={() => setDrawerOpen(false)}
                 className="py-2"
               >
-                Blog
+                {t("navbar.blog")}
               </Link>
               <Link
                 to="/contact"
                 onClick={() => setDrawerOpen(false)}
                 className="py-2"
               >
-                Contact
+                {t("navbar.contact")}
               </Link>
 
               <div className="border-t border-gray-100 my-2" />
@@ -485,21 +489,21 @@ const Navbar = ({onOpenCategory }) => {
                 onClick={() => setDrawerOpen(false)}
                 className="py-2 text-gray-500"
               >
-                About Us
+                {t("navbar.about")}
               </Link>
               <Link
                 to="/faq"
                 onClick={() => setDrawerOpen(false)}
                 className="py-2 text-gray-500"
               >
-                FAQ
+                {t("navbar.faq")}
               </Link>
               <Link
                 to="/orders/track"
                 onClick={() => setDrawerOpen(false)}
                 className="py-2 text-gray-500"
               >
-                Order Tracking
+                {t("navbar.orderTracking")}
               </Link>
             </nav>
           </div>

@@ -3,6 +3,7 @@ import { Tag, Info, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useGetDefaultAddress } from "../../hooks/address/useGetDefaultAddress";
 import { useCart } from "../../hooks/cart/useCart";
+import { useCheckout } from "../../hooks/checkout/useCheckout";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ const CheckoutPage = () => {
   // Custom Hooks Data
   const { data: defaultAddress } = useGetDefaultAddress();
   const { data: cartData, isLoading: isCartLoading } = useCart();
+  const { mutate: checkout, isPending } = useCheckout();
 
   const cart = cartData?.data;
 
@@ -25,7 +27,7 @@ const CheckoutPage = () => {
     addressLine2: "",
     city: "",
     state: "Kerala",
-    PinCod: "",
+    postalCode: "",
     country: "India",
     landmark: "",
     addressType: "Home",
@@ -35,7 +37,7 @@ const CheckoutPage = () => {
   });
 
   // Payment & Shipping method state
-  const [paymentMethod, setPaymentMethod] = useState("bank_transfer");
+  const [paymentMethod, setPaymentMethod] = useState("RAZORPAY");
   const [shippingMethod, setShippingMethod] = useState("flat_rate");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
@@ -53,7 +55,7 @@ const CheckoutPage = () => {
         defaultAddress.streetAddress2 || defaultAddress.addressLine2 || "",
       city: defaultAddress.city || "",
       state: defaultAddress.state || "Kerala",
-      PinCod: defaultAddress.zipCode || defaultAddress.PinCod || "",
+      postalCode: defaultAddress.postalCode || "",
       country: defaultAddress.country || "India",
       landmark: defaultAddress.landmark || "",
       addressType: defaultAddress.addressType || "Home",
@@ -74,7 +76,7 @@ const CheckoutPage = () => {
   const total = subtotal + shippingCost;
 
   // Free shipping banner logic
-  const freeShippingThreshold = 500;
+  const freeShippingThreshold = 1000;
   const amountNeededForFreeShipping = Math.max(
     0,
     freeShippingThreshold - subtotal,
@@ -102,14 +104,10 @@ const CheckoutPage = () => {
     const payload = {
       shippingAddress: formData,
       paymentMethod,
-      shippingMethod,
-      orderItems: cartItems,
-      subtotal,
-      shippingCost,
-      total,
+      couponCode,
     };
 
-    console.log("Order submitted:", payload);
+    checkout(payload);
   };
 
   if (isCartLoading) {
@@ -331,9 +329,9 @@ const CheckoutPage = () => {
                 </label>
                 <input
                   type="text"
-                  name="PinCod"
+                  name="postalCode"
                   required
-                  value={formData.PinCod}
+                  value={formData.postalCode}
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 rounded-md p-2.5 text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 />
@@ -483,37 +481,22 @@ const CheckoutPage = () => {
                     <input
                       type="radio"
                       name="payment"
-                      value="bank_transfer"
-                      checked={paymentMethod === "bank_transfer"}
-                      onChange={() => setPaymentMethod("bank_transfer")}
+                      value="RAZORPAY"
+                      checked={paymentMethod === "RAZORPAY"}
+                      onChange={() => setPaymentMethod("RAZORPAY")}
                       className="text-blue-600 focus:ring-0"
                     />
-                    <span>Direct Bank Transfer</span>
+                    <span>Online Payment</span>
                   </label>
 
-                  {paymentMethod === "bank_transfer" && (
+                  {paymentMethod === "RAZORPAY" && (
                     <div className="bg-gray-50 p-3 rounded text-[11px] text-gray-500 leading-relaxed border border-gray-100">
-                      Make your payment directly into our bank account. Please
+                      Make your payment directly into our Razorpay account. Please
                       use your Order ID as the payment reference. Your order
                       will not be shipped until the funds have cleared in our
                       account.
                     </div>
                   )}
-                </div>
-
-                {/* Check Payments */}
-                <div>
-                  <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-gray-800">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="check"
-                      checked={paymentMethod === "check"}
-                      onChange={() => setPaymentMethod("check")}
-                      className="text-blue-600 focus:ring-0"
-                    />
-                    <span>Check Payments</span>
-                  </label>
                 </div>
 
                 {/* Cash On Delivery */}
@@ -522,9 +505,9 @@ const CheckoutPage = () => {
                     <input
                       type="radio"
                       name="payment"
-                      value="cod"
-                      checked={paymentMethod === "cod"}
-                      onChange={() => setPaymentMethod("cod")}
+                      value="COD"
+                      checked={paymentMethod === "COD"}
+                      onChange={() => setPaymentMethod("COD")}
                       className="text-blue-600 focus:ring-0"
                     />
                     <span>Cash On Delivery</span>

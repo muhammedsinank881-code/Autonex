@@ -26,23 +26,21 @@ const DealList = () => {
   }
 
   return (
-    <div>
-      <div className="lg:col-span-5 space-y-4">
-        {deals.map((products) => (
-          <DealCard
-            key={products._id}
-            item={{
-              id: products._id,
-              title: products.name,
-              image: products.images?.[0]?.url || "",
-              price: products.price,
-              discountPrice: products.discountPrice,
-              available: products.stock,
-              sold: products.totalSold,
-            }}
-          />
-        ))}
-      </div>
+    <div className="lg:col-span-5 flex flex-col gap-4">
+      {deals.map((products) => (
+        <DealCard
+          key={products._id}
+          item={{
+            id: products._id,
+            title: products.name,
+            image: products.images?.[0]?.url || "",
+            price: products.price,
+            discountPrice: products.discountPrice,
+            available: products.stock,
+            sold: products.totalSold,
+          }}
+        />
+      ))}
     </div>
   );
 };

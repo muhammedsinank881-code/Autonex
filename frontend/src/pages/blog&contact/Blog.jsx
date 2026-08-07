@@ -12,8 +12,17 @@ import {
   Wrench,
   Sparkles,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
-const CATEGORIES = ["All", "Maintenance", "Upgrades", "Guides", "Engine Care"];
+
+const CATEGORIES = [
+  t("blog.categories.all"),
+  t("blog.categories.maintenance"),
+  t("blog.categories.upgrades"),
+  t("blog.categories.guides"),
+  t("blog.categories.engineCare"),
+];
 
 const BLOG_POSTS = [
   {
@@ -78,6 +87,7 @@ const BLOG_POSTS = [
 const Blog = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const { t } = useTranslation();
 
   // Filter posts based on category and search query
   const filteredPosts = BLOG_POSTS.filter((post) => {
@@ -108,14 +118,13 @@ const Blog = () => {
               transition={{ duration: 0.5 }}
             >
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs font-semibold uppercase tracking-widest mb-4">
-                <Wrench className="w-3.5 h-3.5" /> AUTONEX Garage Insights
+                <Wrench className="w-3.5 h-3.5" /> {t("blog.hero.badge")}
               </span>
               <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
-                Performance, Precision & Maintenance
+                {t("blog.hero.title")}
               </h1>
               <p className="max-w-2xl mx-auto text-slate-400 text-lg">
-                Expert guides, DIY installation tutorials, and the latest auto
-                parts technology to keep your ride performing at its peak.
+                {t("blog.hero.description")}
               </p>
             </motion.div>
 
@@ -129,7 +138,7 @@ const Blog = () => {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search parts guides, tutorials, maintenance..."
+                placeholder={t("blog.hero.search")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm transition-all"
@@ -154,7 +163,7 @@ const Blog = () => {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-md uppercase tracking-wider flex items-center gap-1">
-                  <Sparkles className="w-3.5 h-3.5" /> Featured Article
+                  <Sparkles className="w-3.5 h-3.5" /> {t("blog.featured")}
                 </div>
               </div>
 
@@ -189,7 +198,7 @@ const Blog = () => {
                     }
                     className="inline-flex items-center gap-2 text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors"
                   >
-                    Read Article{" "}
+                    {t("blog.readArticle")}{" "}
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </a>
                 </div>
@@ -206,8 +215,8 @@ const Blog = () => {
                 key={category}
                 onClick={() => setActiveCategory(category)}
                 className={`relative px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap ${activeCategory === category
-                    ? "text-white"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                  ? "text-white"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
                   }`}
               >
                 {activeCategory === category && (
@@ -228,7 +237,7 @@ const Blog = () => {
           {filteredPosts.length === 0 ? (
             <div className="text-center py-16 bg-slate-900/50 rounded-2xl border border-slate-800">
               <p className="text-slate-400 text-lg">
-                No articles found matching your query.
+                {t("blog.noArticles")}
               </p>
               <button
                 onClick={() => {
@@ -237,7 +246,7 @@ const Blog = () => {
                 }}
                 className="mt-4 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-sm font-semibold text-white rounded-lg transition-colors"
               >
-                Reset Filters
+                {t("blog.reset")}
               </button>
             </div>
           ) : (
@@ -296,7 +305,7 @@ const Blog = () => {
                           href={post.link}
                           className="text-blue-400 font-semibold flex items-center gap-1 group-hover:gap-2 transition-all"
                         >
-                          Read More <ArrowRight className="w-3.5 h-3.5" />
+                          {t("blog.readMore")} <ArrowRight className="w-3.5 h-3.5" />
                         </a>
                       </div>
                     </div>
@@ -312,24 +321,22 @@ const Blog = () => {
           <div className="relative rounded-2xl bg-gradient-to-r from-red-600 to-rose-700 p-8 sm:p-10 overflow-hidden shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="relative z-10 text-center md:text-left">
               <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-red-200 bg-red-950/40 px-3 py-1 rounded-full mb-3">
-                <ShieldCheck className="w-3.5 h-3.5" /> Exclusive Reader Offer
+                <ShieldCheck className="w-3.5 h-3.5" /> {t("blog.offer.badge")}
               </span>
               <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
-                Save 35% On Your Next Part Purchase
+                {t("blog.offer.title")}
               </h3>
               <p className="text-red-100 text-sm mt-1 max-w-xl">
-                Use discount code{" "}
-                <span className="font-mono bg-black/30 px-2 py-0.5 rounded text-white font-bold">
-                  HELLO45872
-                </span>{" "}
-                at checkout. Guaranteed fitment with My Garage tool.
+                {t("blog.offer.description")}
+                <span>HELLO45872</span>
+                {t("blog.offer.description2")}
               </p>
             </div>
             <a
               href="/shop"
               className="relative z-10 whitespace-nowrap bg-white hover:bg-slate-100 text-slate-950 font-bold px-6 py-3.5 rounded-xl shadow-lg transition-colors duration-200 text-sm"
             >
-              Shop Discounted Parts
+              {t("blog.offer.button")}
             </a>
           </div>
         </section>

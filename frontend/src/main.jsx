@@ -12,6 +12,8 @@ import { queryClient } from "./hooks/queryClient.js";
 import AuthProvider from "./providers/AuthProvider.jsx";
 import { CompareProvider } from "./context/CompareContext.jsx";
 
+import "./i18n";
+
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Provider store={store}>

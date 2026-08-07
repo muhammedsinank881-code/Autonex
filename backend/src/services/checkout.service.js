@@ -201,6 +201,14 @@ export const checkoutService = async (userId, body) => {
         }
     );
 
-    return checkout;
+    return {
+        success: true,
+        nextStep:
+            paymentMethod === "RAZORPAY"
+                ? "PAYMENT"
+                : "CREATE_ORDER",
+
+        checkout,
+    }
 
 };

@@ -29,7 +29,7 @@ const HeroSection = () => {
             <FeaturedBanner />
           </div>
 
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-4 ">
             <DealList />
           </div>
 

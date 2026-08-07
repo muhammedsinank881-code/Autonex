@@ -1,51 +1,45 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-const faqs = [
-    {
-        question: "How do I know if a part is compatible with my vehicle?",
-        answer:
-            "Use our search filters or vehicle selection tool to find compatible parts. If you're unsure, contact our support team with your vehicle make, model, and year, and we'll help you choose the correct part.",
-    },
-    {
-        question: "Are your products genuine?",
-        answer:
-            "Yes. We offer genuine and high-quality aftermarket automotive parts sourced from trusted manufacturers to ensure reliability and performance.",
-    },
-    {
-        question: "How long does shipping take?",
-        answer:
-            "Orders are typically delivered within 3–7 business days depending on your location and product availability.",
-    },
-    {
-        question: "Can I track my order?",
-        answer:
-            "Yes. Once your order is shipped, you'll receive a tracking number via email, and you can also track your order from your AutoNex account.",
-    },
-    {
-        question: "What payment methods do you accept?",
-        answer:
-            "We support secure payments through UPI, debit cards, credit cards, net banking, and other available payment options during checkout.",
-    },
-    {
-        question: "Can I return a product?",
-        answer:
-            "Yes. Products can be returned within our return period if they are unused, in their original packaging, and meet our return policy.",
-    },
-    {
-        question: "What should I do if I receive a damaged or incorrect item?",
-        answer:
-            "Contact our support team immediately with your order number and photos of the product. We'll resolve the issue as quickly as possible.",
-    },
-    {
-        question: "Can I cancel my order?",
-        answer:
-            "Orders can be cancelled before they are shipped. Once shipped, you can initiate a return according to our return policy.",
-    },
-];
 
 const FAQPage = () => {
     const [open, setOpen] = useState(0);
+    const { t } = useTranslation();
+    const faqs = [
+        {
+            question: t("faq.questions.compatibility.question"),
+            answer: t("faq.questions.compatibility.answer"),
+        },
+        {
+            question: t("faq.questions.genuine.question"),
+            answer: t("faq.questions.genuine.answer"),
+        },
+        {
+            question: t("faq.questions.shipping.question"),
+            answer: t("faq.questions.shipping.answer"),
+        },
+        {
+            question: t("faq.questions.tracking.question"),
+            answer: t("faq.questions.tracking.answer"),
+        },
+        {
+            question: t("faq.questions.payment.question"),
+            answer: t("faq.questions.payment.answer"),
+        },
+        {
+            question: t("faq.questions.return.question"),
+            answer: t("faq.questions.return.answer"),
+        },
+        {
+            question: t("faq.questions.damaged.question"),
+            answer: t("faq.questions.damaged.answer"),
+        },
+        {
+            question: t("faq.questions.cancel.question"),
+            answer: t("faq.questions.cancel.answer"),
+        },
+    ];
 
     return (
         <section className="bg-gray-50 py-20">
@@ -57,16 +51,15 @@ const FAQPage = () => {
 
                     <span className="inline-flex items-center gap-2 text-[#0066CC] text-sm font-bold uppercase tracking-[0.25em]">
                         <span className="w-10 h-[2px] bg-[#0066CC]"></span>
-                        Support
+                        {t("faq.badge")}
                     </span>
 
                     <h2 className="mt-5 text-4xl lg:text-5xl font-black text-slate-900">
-                        Frequently Asked Questions
+                        {t("faq.title")}
                     </h2>
 
                     <p className="mt-5 max-w-2xl mx-auto text-slate-500 leading-7">
-                        Find answers to the most common questions about AutoNex,
-                        our products, shipping, payments, and returns.
+                        {t("faq.description")}
                     </p>
 
                 </div>

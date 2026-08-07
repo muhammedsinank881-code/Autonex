@@ -9,6 +9,7 @@ import { sendOrderStatusEmail } from "./email/order.email.js";
 const generateOrderNumber = () => {
     return `ORD-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
 };
+
 const generateUniqueTrackingId = async () => {
     while (true) {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
