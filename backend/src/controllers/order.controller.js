@@ -1,5 +1,6 @@
 import Order from "../models/Order.js";
-import { createOrder, updateOrderStatus } from "../services/order.service.js";
+import { cancelOrder, createOrder, getOrderInvoice, updateOrderStatus } from "../services/order.service.js";
+import { generateInvoice } from "../utils/invoiceGenerator.js";
 
 export const createOrderController = async (req, res) => {
     try {
@@ -110,6 +111,45 @@ export const updateOrderStatusController = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to update order status",
+        });
+    }
+};
+
+export const cancelOrderController = async (req, res) => {
+    try {
+        const order = await cancelOrder({
+            orderId: req.params.id,
+            user: req.user,
+            ipAddress: req.ip,
+            userAgent: req.get("User-Agent"),
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Order cancelled successfully.",
+            order,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const downloadInvoiceController = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const order = await getOrderInvoice(id, req.user);
+
+        generateInvoice(order, res);
+    } catch (error) {
+        console.error("Download Invoice Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Failed to generate invoice",
         });
     }
 };

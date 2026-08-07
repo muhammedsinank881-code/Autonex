@@ -1,5 +1,13 @@
 import express from "express";
-import { createOrderController, getAllOrders, getMyOrders, getOrderById, updateOrderStatusController } from "../controllers/order.controller.js";
+import {
+    cancelOrderController,
+    createOrderController,
+    downloadInvoiceController,
+    getAllOrders,
+    getMyOrders,
+    getOrderById,
+    updateOrderStatusController
+} from "../controllers/order.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
 import { adminOnly } from "../middlewares/role.middleware.js";
 
@@ -21,8 +29,15 @@ router.get("/", protect, adminOnly, getAllOrders);
 router.patch(
     "/:id/status",
     protect,
-    adminOnly,
     updateOrderStatusController
 );
+
+router.patch(
+    "/:id/cancel",
+    protect,
+    cancelOrderController
+);
+
+router.get("/:id/invoice", protect, downloadInvoiceController);
 
 export default router;

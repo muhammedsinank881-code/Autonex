@@ -108,6 +108,57 @@ const orderSchema = new mongoose.Schema(
             default: "PLACED",
         },
 
+        statusHistory: [
+            {
+                status: {
+                    type: String,
+                    enum: [
+                        "PLACED",
+                        "CONFIRMED",
+                        "PROCESSING",
+                        "SHIPPED",
+                        "OUT_FOR_DELIVERY",
+                        "DELIVERED",
+                        "CANCELLED",
+                        "RETURN_REQUESTED",
+                        "RETURNED",
+                    ],
+                    required: true,
+                },
+
+                updatedBy: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                    default: null,
+                },
+
+                role: {
+                    type: String,
+                    enum: ["ADMIN", "EMPLOYEE", "SYSTEM", "USER"],
+                    default: "SYSTEM",
+                },
+                ipAddress: {
+                    type: String,
+                    default: "",
+                },
+                userAgent: {
+                    type: String,
+                    default: "",
+                },
+
+                note: {
+                    type: String,
+                    default: "",
+                },
+
+                updatedAt: {
+                    type: Date,
+                    default: Date.now,
+                },
+            },
+        ],
+
+
         deliveredAt: Date,
         cancelledAt: {
             type: Date,
@@ -120,6 +171,27 @@ const orderSchema = new mongoose.Schema(
                 "PENDING",
                 "COMPLETED"],
             default: "NOT_REQUIRED",
+        },
+
+        refund: {
+            razorpayRefundId: String,
+            amount: Number,
+            processedAt: Date,
+        },
+
+        trackingId: {
+            type: String,
+            unique: true,
+            required: true,
+        },
+
+        qrCode: {
+            type: String,
+        },
+
+        courier: {
+            company: String,
+            trackingNumber: String,
         },
     },
     {

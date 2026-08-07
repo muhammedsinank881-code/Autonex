@@ -3,14 +3,33 @@ import Checkout from "../models/Checkout.js";
 import Order from "../models/Order.js";
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
+import { generateQRCode } from "../utils/generateQRCode.js";
+import { sendOrderDeliveredEmail, sendOrderShippedEmail } from "./email/order.email.js";
 
 const generateOrderNumber = () => {
     return `ORD-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
 };
+const generateUniqueTrackingId = async () => {
+    while (true) {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+        let id = "TRK-";
+
+        for (let i = 0; i < 8; i++) {
+            id += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+
+        const exists = await Order.exists({ trackingId: id });
+
+        if (!exists) {
+            return id;
+        }
+    }
+};
 
 export const createOrder = async (
     checkoutId,
-    paymentDetails
+    paymentDetails,
 ) => {
     const session = await mongoose.startSession();
 
@@ -91,6 +110,9 @@ export const createOrder = async (
         const discount = Math.round(checkout.summary.discount);
         const totalAmount = Math.round(checkout.summary.total);
 
+        const trackingId = await generateUniqueTrackingId();
+        const qrCode = await generateQRCode(trackingId);
+
         const order = await Order.create(
             [
                 {
@@ -99,6 +121,8 @@ export const createOrder = async (
                     checkout: checkout._id,
 
                     orderNumber: generateOrderNumber(),
+                    trackingId,
+                    qrCode,
 
                     items: checkout.items,
 
@@ -124,6 +148,17 @@ export const createOrder = async (
                     totalAmount,
 
                     orderStatus,
+
+                    statusHistory: [
+                        {
+                            status: orderStatus,
+                            updatedBy: checkout.user,
+                            role: "SYSTEM",
+                            note: isCOD
+                                ? "Order placed successfully."
+                                : "Payment verified and order confirmed.",
+                        },
+                    ],
                 },
             ],
             { session }
@@ -152,7 +187,17 @@ export const createOrder = async (
         );
 
         await session.commitTransaction();
-        return order[0];
+
+        const createdOrder = await Order.findById(order[0]._id)
+            .populate("user", "fullName email");
+
+        try {
+            await sendOrderConfirmationEmail(createdOrder);
+        } catch (error) {
+            console.error("Failed to send order confirmation email:", error);
+        }
+
+        return createdOrder;
     } catch (error) {
         await session.abortTransaction();
         throw error;
@@ -161,7 +206,13 @@ export const createOrder = async (
     }
 };
 
-export const updateOrderStatus = async (orderId, status) => {
+export const updateOrderStatus = async ({
+    orderId,
+    status,
+    employeeId,
+    ipAddress,
+    userAgent,
+}) => {
     if (!mongoose.Types.ObjectId.isValid(orderId)) {
         throw new Error("Invalid Order ID");
     }
@@ -173,16 +224,18 @@ export const updateOrderStatus = async (orderId, status) => {
     }
 
     const validTransitions = {
-        Pending: ["Confirmed", "Cancelled"],
-        Confirmed: ["Processing", "Cancelled"],
-        Processing: ["Shipped", "Cancelled"],
-        Shipped: ["Out for Delivery"],
-        "Out for Delivery": ["Delivered"],
-        Delivered: [],
-        Cancelled: [],
+        PLACED: ["CONFIRMED", "CANCELLED"],
+        CONFIRMED: ["PROCESSING", "CANCELLED"],
+        PROCESSING: ["SHIPPED", "CANCELLED"],
+        SHIPPED: ["OUT_FOR_DELIVERY"],
+        OUT_FOR_DELIVERY: ["DELIVERED"],
+        DELIVERED: [],
+        CANCELLED: [],
+        RETURN_REQUESTED: ["RETURNED"],
+        RETURNED: [],
     };
 
-    const allowedStatuses = validTransitions[order.orderStatus];
+    const allowedStatuses = validTransitions[order.orderStatus] || [];
 
     if (!allowedStatuses.includes(status)) {
         throw new Error(
@@ -190,78 +243,200 @@ export const updateOrderStatus = async (orderId, status) => {
         );
     }
 
+    const oldStatus = order.orderStatus;
+
+    // Update current status
     order.orderStatus = status;
 
-    if (status === "Delivered") {
+    // Special timestamps
+    if (status === "DELIVERED") {
         order.deliveredAt = new Date();
     }
 
+    if (status === "CANCELLED") {
+        order.cancelledAt = new Date();
+    }
+
+    // Timeline / Audit
+    order.statusHistory.push({
+        status,
+        updatedBy: employeeId,
+        role: "EMPLOYEE",
+        ipAddress,
+        userAgent,
+        note: `Status changed from ${oldStatus} to ${status}`,
+    });
+
     await order.save();
 
-    return order;
+    const updatedOrder = await Order.findById(order._id)
+        .populate("user", "name email");
+
+    if (status === "SHIPPED") {
+        sendOrderShippedEmail(updatedOrder)
+            .catch(console.error);
+    }
+
+    if (status === "DELIVERED") {
+        sendOrderDeliveredEmail(updatedOrder)
+            .catch(console.error);
+    }
+
+    const nextStatus =
+        validTransitions[order.orderStatus]?.[0] || null;
+
+    return {
+        order,
+        currentStatus: order.orderStatus,
+        nextStatus,
+    };
 };
 
-export const cancelOrder = async (orderId, user) => {
-    // Validate Order ID
+export const cancelOrder = async ({
+    orderId,
+    user,
+    ipAddress,
+    userAgent,
+}) => {
     if (!mongoose.Types.ObjectId.isValid(orderId)) {
         throw new Error("Invalid Order ID");
     }
 
-    // Find Order
-    const order = await Order.findById(orderId);
+    const session = await mongoose.startSession();
+
+    session.startTransaction();
+
+    try {
+        const order = await Order.findById(orderId).session(session);
+
+        if (!order) {
+            throw new Error("Order not found");
+        }
+
+        // Permission
+        const isOwner = order.user.toString() === user._id.toString();
+        const isAdmin = user.role === "admin";
+
+        if (!isOwner && !isAdmin) {
+            throw new Error("You are not authorized to cancel this order");
+        }
+
+        // Already cancelled
+        if (order.orderStatus === "CANCELLED") {
+            throw new Error("Order is already cancelled");
+        }
+
+        // Allowed statuses for cancellation
+        const cancellableStatuses = [
+            "PLACED",
+            "CONFIRMED",
+            "PROCESSING",
+        ];
+
+        if (isOwner && !cancellableStatuses.includes(order.orderStatus)) {
+            throw new Error(
+                "Order cannot be cancelled after it has been shipped."
+            );
+        }
+        // Razorpay Refund (Future Step)
+
+        let refund = null;
+
+        if (
+            order.paymentMethod === "RAZORPAY" &&
+            order.paymentStatus === "PAID"
+        ) {
+            refund = await refundPayment(
+                order.payment.razorpayPaymentId,
+                Math.round(order.totalAmount * 100)
+            );
+
+            order.paymentStatus = "REFUNDED";
+            order.refundStatus = "COMPLETED";
+        }
+
+        // Restore Inventory
+        for (const item of order.items) {
+            await Product.findByIdAndUpdate(
+                item.productId,
+                {
+                    $inc: {
+                        stock: item.quantity,
+                        totalSold: -item.quantity,
+                    },
+                },
+                { session }
+            );
+        }
+
+        // Update Order
+        order.orderStatus = "CANCELLED";
+        order.cancelledAt = new Date();
+
+        // refund
+        if (refund) {
+            order.refund = {
+                razorpayRefundId: refund.id,
+                amount: refund.amount,
+                processedAt: new Date(),
+            };
+        }
+
+        // Timeline
+        order.statusHistory.push({
+            status: "CANCELLED",
+            updatedBy: user._id,
+            role: isAdmin ? "ADMIN" : "USER",
+            ipAddress,
+            userAgent,
+            note: isAdmin
+                ? "Order cancelled by admin."
+                : "Order cancelled by customer.",
+        });
+
+        await order.save({ session });
+
+        await session.commitTransaction();
+
+        const cancelledOrder = await Order.findById(order._id)
+            .populate("user", "name email");
+
+        sendOrderCancelledEmail(cancelledOrder)
+            .catch((error) => {
+                console.error(
+                    `Failed to send cancellation email for order ${cancelledOrder.orderNumber}:`,
+                    error
+                );
+            });
+
+        return cancelledOrder;
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    } finally {
+        await session.endSession();
+    }
+};
+
+export const getOrderInvoice = async (orderId, user) => {
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+        throw new Error("Invalid Order ID");
+    }
+
+    const order = await Order.findById(orderId)
+        .populate("user", "name email");
 
     if (!order) {
         throw new Error("Order not found");
     }
 
     // Check Permission
-    const isOwner = order.user.toString() === user._id.toString();
+    const isOwner = order.user._id.toString() === user._id.toString();
     const isAdmin = user.role === "admin";
 
     if (!isOwner && !isAdmin) {
-        throw new Error("You are not authorized to cancel this order");
+        throw new Error("You are not authorized to view this invoice");
     }
-
-    // Already cancelled
-    if (order.orderStatus === "CANCELLED") {
-        throw new Error("Order is already cancelled");
-    }
-
-    // Delivered orders cannot be cancelled
-    if (order.orderStatus === "DELIVERED") {
-        throw new Error("Delivered orders cannot be cancelled");
-    }
-
-    // Customer can cancel only before shipping
-    if (
-        isOwner &&
-        ["SHIPPED", "OUT_FOR_DELIVERY"].includes(order.orderStatus)
-    ) {
-        throw new Error("Order cannot be cancelled after shipping");
-    }
-
-    // Restore Product Stock
-    for (const item of order.items) {
-        await Product.findByIdAndUpdate(
-            item.productId,
-            {
-                $inc: {
-                    stock: item.quantity,
-                },
-            }
-        );
-    }
-
-    // Update Order
-    order.orderStatus = "CANCELLED";
-    order.cancelledAt = new Date();
-
-    // Refund Status
-    if (order.paymentMethod === "RAZORPAY") {
-        order.refundStatus = "PENDING";
-    }
-
-    await order.save();
 
     return order;
 };

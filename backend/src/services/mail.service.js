@@ -1,13 +1,5 @@
-import axios from "axios";
+import { brevoAPI } from "./email/brevo.service.js";
 
-const brevoAPI = axios.create({
-  baseURL: "https://api.brevo.com/v3",
-  headers: {
-    "api-key": process.env.BREVO_API_KEY,
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
 
 export const sendOTPEmail = async (email, otp) => {
   if (!process.env.BREVO_API_KEY) {

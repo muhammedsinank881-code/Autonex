@@ -88,7 +88,7 @@ const Navbar = ({onOpenCategory }) => {
               English <ChevronDown size={11} />
             </button>
             <button className="flex items-center gap-1 hover:text-gray-900 transition-colors">
-              USD <ChevronDown size={11} />
+              INR <ChevronDown size={11} />
             </button>
           </div>
         </div>
