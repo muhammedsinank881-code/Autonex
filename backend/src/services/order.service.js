@@ -4,7 +4,7 @@ import Order from "../models/Order.js";
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 import { generateQRCode } from "../utils/generateQRCode.js";
-import { sendOrderDeliveredEmail, sendOrderShippedEmail } from "./email/order.email.js";
+import { sendOrderStatusEmail } from "./email/order.email.js";
 
 const generateOrderNumber = () => {
     return `ORD-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
