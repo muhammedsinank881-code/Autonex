@@ -27,10 +27,7 @@ const generateUniqueTrackingId = async () => {
     }
 };
 
-export const createOrder = async (
-    checkoutId,
-    paymentDetails,
-) => {
+export const createOrder = async (checkoutId, paymentDetails ) => {
     const session = await mongoose.startSession();
 
     session.startTransaction();
@@ -192,7 +189,12 @@ export const createOrder = async (
             .populate("user", "fullName email");
 
         try {
-            await sendOrderConfirmationEmail(createdOrder);
+            await sendOrderStatusEmail({
+                order: createdOrder,
+                title: "Order Confirmation",
+                subject: `Order ${createdOrder.orderNumber} Confirmed`,
+                message: "Your order has been placed successfully.",
+            });
         } catch (error) {
             console.error("Failed to send order confirmation email:", error);
         }
@@ -273,21 +275,38 @@ export const updateOrderStatus = async ({
         .populate("user", "name email");
 
     if (status === "SHIPPED") {
-        sendOrderShippedEmail(updatedOrder)
-            .catch(console.error);
+        sendOrderStatusEmail({
+            order: updatedOrder,
+            title: "Order Shipped",
+            subject: `Order ${updatedOrder.orderNumber} Shipped`,
+            message: "Great news! Your order has been shipped."
+        }).catch((error) => {
+            console.error(
+                `Failed to send shipped email for order ${updatedOrder.orderNumber}:`,
+                error
+            )
+        })
     }
 
     if (status === "DELIVERED") {
-        sendOrderDeliveredEmail(updatedOrder)
-            .catch(console.error);
+        sendOrderStatusEmail({
+            order: updatedOrder,
+            title: "Order Delivered",
+            subject: `Order ${updatedOrder.orderNumber} Delivered`,
+            message: "Your order has been delivered successfully."
+        }).catch((error) => {
+            console.error(
+                `Failed to send delivered email for order ${updatedOrder.orderNumber}:`,
+                error
+            )
+        })
     }
 
-    const nextStatus =
-        validTransitions[order.orderStatus]?.[0] || null;
+    const nextStatus = validTransitions[order.orderStatus]?.[0] || null;
 
     return {
-        order,
-        currentStatus: order.orderStatus,
+        order: updatedOrder,
+        currentStatus: updatedOrder.orderStatus,
         nextStatus,
     };
 };
@@ -401,13 +420,17 @@ export const cancelOrder = async ({
         const cancelledOrder = await Order.findById(order._id)
             .populate("user", "name email");
 
-        sendOrderCancelledEmail(cancelledOrder)
-            .catch((error) => {
-                console.error(
-                    `Failed to send cancellation email for order ${cancelledOrder.orderNumber}:`,
-                    error
-                );
-            });
+        sendOrderStatusEmail({
+            order: cancelledOrder,
+            title: "Order Cancelled",
+            subject: `Order ${cancelledOrder.orderNumber} Cancelled`,
+            message: "Your order has been cancelled successfully.",
+        }).catch((error) => {
+            console.error(
+                `Failed to send cancellation email for order ${cancelledOrder.orderNumber}:`,
+                error
+            );
+        });
 
         return cancelledOrder;
     } catch (error) {
