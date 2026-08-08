@@ -2,7 +2,7 @@ import API from "./axios";
 
 export const createPaymentOrder = async (data) => {
     const response = await API.post(
-        "/payment/create-order",
+        "/payments/create-order",
         data
     );
 

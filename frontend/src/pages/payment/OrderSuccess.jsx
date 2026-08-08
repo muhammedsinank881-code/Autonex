@@ -131,7 +131,7 @@ const OrderSuccess = () => {
                             </button>
 
                             <Link
-                                to="/account?tab=orders"
+                                to="/auth?tab=orders"
                                 className="flex items-center justify-center gap-2 w-full bg-[#0066b2] hover:bg-[#005290] text-white text-xs font-semibold py-3 px-4 rounded-md transition-colors"
                             >
                                 <Package className="w-3.5 h-3.5" />

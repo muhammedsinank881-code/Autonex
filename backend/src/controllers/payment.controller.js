@@ -2,7 +2,7 @@ import { createPaymentOrderService, verifyPaymentService } from "../services/pay
 
 export const createPaymentOrder = async (req, res) => {
     try {
-        const paymentOrder = await createPaymentOrderService(req.user.id);
+        const paymentOrder = await createPaymentOrderService(req.user.id, req.body.checkoutId);
 
         return res.status(200).json({
             success: true,

@@ -2,10 +2,14 @@ import crypto from "crypto";
 import Checkout from "../models/Checkout.js";
 import razorpay from "../config/razorpay.js";
 
-export const createPaymentOrderService = async (userId) => {
+export const createPaymentOrderService = async (userId, checkoutId) => {
 
     // Find checkout
-    const checkout = await Checkout.findOne({ user: userId, checkoutStatus: "ACTIVE" });
+    const checkout = await Checkout.findOne({
+        _id: checkoutId,
+        user: userId,
+        checkoutStatus: "ACTIVE",
+    });
 
     if (!checkout) {
         throw new Error("Checkout not found");

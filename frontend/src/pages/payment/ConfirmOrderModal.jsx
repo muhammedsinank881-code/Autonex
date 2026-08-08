@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { AlertCircle, ShieldCheck, X } from "lucide-react";
 import { useCreateOrder } from "../../hooks/checkout/useCreateOrder";
 
@@ -11,27 +12,30 @@ import { useCreateOrder } from "../../hooks/checkout/useCreateOrder";
  * @param {boolean} isProcessing - Loading state during payment execution
  * @param {object} orderDetails - Object containing bill breakdown & payment info
  */
-const ConfirmOrderModal = ({
-    isOpen = true,
-    onClose,
-    onConfirm,
-    isProcessing = false,
-    orderDetails = {
-        invoiceId: "INV-2026-0891",
-        description: "Account Renewal & Premium Plan",
-        totalAmount: 53.99,
-        paymentMethod: "Credit Card (ending in 4242)",
-    },
-}) => {
+const ConfirmOrderModal = () => {
 
+    const location = useLocation();
     const createOrderMutation = useCreateOrder();
 
+    const checkoutData = location.state?.checkoutData;
+
+    if (!checkoutData) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p>Checkout information not found.</p>
+            </div>
+        );
+    }
     const handleSubmitOrder = () => {
+        if (!checkoutData._id) {
+            console.error("Checkout ID is missing");
+            return;
+        }
+
         createOrderMutation.mutate({
             checkoutId: checkoutData._id,
         });
     };
-    if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-xs transition-opacity font-sans">
@@ -48,8 +52,6 @@ const ConfirmOrderModal = ({
                     </h2>
                     <button
                         type="button"
-                        onClick={onClose}
-                        disabled={isProcessing}
                         className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-md disabled:opacity-50"
                     >
                         <X className="w-4 h-4" />
@@ -67,21 +69,21 @@ const ConfirmOrderModal = ({
                         <div className="flex justify-between items-center text-xs">
                             <span className="text-gray-500">Invoice Number</span>
                             <span className="font-semibold text-gray-800">
-                                #{orderDetails.invoiceId}
+                                #{checkoutData._id}
                             </span>
                         </div>
 
                         <div className="flex justify-between items-center text-xs">
                             <span className="text-gray-500">Description</span>
                             <span className="font-medium text-gray-700 truncate max-w-[180px]">
-                                {orderDetails.description}
+                                { }
                             </span>
                         </div>
 
                         <div className="flex justify-between items-center text-xs">
                             <span className="text-gray-500">Payment Method</span>
                             <span className="font-medium text-gray-700">
-                                {orderDetails.paymentMethod}
+                                {checkoutData.payment.method}
                             </span>
                         </div>
 
@@ -90,7 +92,7 @@ const ConfirmOrderModal = ({
                                 Total Charge
                             </span>
                             <span className="text-base font-bold text-[#0066b2]">
-                                ${orderDetails.totalAmount?.toFixed(2)}
+                                ${checkoutData.summary.total}
                             </span>
                         </div>
                     </div>
@@ -99,7 +101,7 @@ const ConfirmOrderModal = ({
                     <div className="flex items-start gap-2.5 p-3 rounded-md bg-amber-50/60 border border-amber-200/60 text-amber-800 text-[11px] leading-tight">
                         <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                         <span>
-                            By clicking confirm, your payment method will be charged immediately.
+                            By clicking confirm, your order will be placed using your selected payment method.
                         </span>
                     </div>
                 </div>
@@ -109,8 +111,6 @@ const ConfirmOrderModal = ({
                     <div className="flex gap-3">
                         <button
                             type="button"
-                            onClick={onClose}
-                            disabled={isProcessing}
                             className="w-1/2 border border-gray-200 hover:bg-gray-100 text-gray-700 text-xs font-semibold py-2.5 px-4 rounded-md transition-colors disabled:opacity-50"
                         >
                             Cancel
