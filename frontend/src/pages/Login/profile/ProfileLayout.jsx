@@ -16,13 +16,17 @@ import OrderTracking from "./OrderTracking";
 
 import { useCurrentUser } from "../../../hooks/mutations/useCurrentUser.js";
 import { useLogout } from "../../../hooks/mutations/useLogout";
+import { useSearchParams } from "react-router-dom";
 
 const ProfileLayout = () => {
   const { data: user, isLoading, isError } = useCurrentUser();
   const logoutMutation = useLogout();
 
-  const [activeTab, setActiveTab] = useState("profile");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const activeTab = searchParams.get("tab") || "profile";
 
   const menuItems = [
     { id: "profile", label: "Personal Information", icon: User },
@@ -46,7 +50,7 @@ const ProfileLayout = () => {
       case "address":
         return <ManageAddress />;
       case "orders":
-        return <Orders setActiveTab={setActiveTab} />;
+        return <Orders handleTabSelect={handleTabSelect} />;
       case "tracking":
         return <OrderTracking />;
       default:
@@ -55,7 +59,7 @@ const ProfileLayout = () => {
   };
 
   const handleTabSelect = (id) => {
-    setActiveTab(id);
+    setSearchParams({ tab: id });
     setIsMobileMenuOpen(false);
   };
 
@@ -98,11 +102,10 @@ const ProfileLayout = () => {
                   <button
                     key={item.id}
                     onClick={() => handleTabSelect(item.id)}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                      isActive
-                        ? "bg-[#0067B2]/10 text-[#0067B2] font-semibold"
-                        : "text-gray-600 hover:bg-gray-50"
-                    }`}
+                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${isActive
+                      ? "bg-[#0067B2]/10 text-[#0067B2] font-semibold"
+                      : "text-gray-600 hover:bg-gray-50"
+                      }`}
                   >
                     <Icon className="w-5 h-5" />
                     <span>{item.label}</span>
@@ -152,12 +155,11 @@ const ProfileLayout = () => {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    isActive
-                      ? "bg-[#0067B2]/10 text-[#0067B2] font-semibold shadow-xs"
-                      : "text-gray-600 hover:bg-[#0067B2]/5 hover:text-[#0067B2]"
-                  }`}
+                  onClick={() => handleTabSelect(item.id)}
+                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive
+                    ? "bg-[#0067B2]/10 text-[#0067B2] font-semibold shadow-xs"
+                    : "text-gray-600 hover:bg-[#0067B2]/5 hover:text-[#0067B2]"
+                    }`}
                 >
                   <Icon className="w-5 h-5" />
                   <span>{item.label}</span>

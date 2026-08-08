@@ -8,23 +8,32 @@ export const useCheckout = () => {
     return useMutation({
         mutationFn: checkout,
 
-        onSuccess: (data) => {
-            switch (data.nextStep) {
+        onSuccess: (response) => {
+            const checkoutResult = response.data;
+
+            switch (checkoutResult.nextStep) {
+
                 case "PAYMENT":
                     navigate("/payment", {
                         state: {
-                            checkoutData: data.checkout,
+                            checkoutData: checkoutResult.checkout,
                         },
                     });
                     break;
 
                 case "CREATE_ORDER":
-                    navigate("/order-success", {
+                    navigate("/confirm-order", {
                         state: {
-                            order: data.order,
-                        }
-                    })
+                            checkoutData: checkoutResult.checkout,
+                        },
+                    });
                     break;
+
+                default:
+                    console.error(
+                        "Unknown checkout nextStep:",
+                        checkoutResult.nextStep
+                    );
             }
         },
 

@@ -196,7 +196,7 @@ export const checkoutService = async (userId, body) => {
         },
         {
             upsert: true,
-            new: true,
+            returnDocument: "after",
             runValidators: true,
         }
     );
