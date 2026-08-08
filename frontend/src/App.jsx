@@ -34,6 +34,7 @@ import Blog from "./pages/blog&contact/Blog.jsx";
 import AllCategoryPage from "./pages/home/AllCategoryPage.jsx";
 import ContactPage from "./pages/blog&contact/ContactPage.jsx";
 import FAQPage from "./pages/blog&contact/FAQPage.jsx";
+import Payment from "./pages/payment/Payment.jsx";
 
 const App = () => {
   useInitializeAuth();
@@ -82,6 +83,8 @@ const App = () => {
           <Route path="/blog" element={<Blog />} />
           <Route path="/contact" element={<ContactPage/>} />
           <Route path="/faq" element={<FAQPage/>} />
+
+          <Route path="/payment" element={<Payment/>} />
 
 
         </Route>

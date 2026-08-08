@@ -454,14 +454,14 @@ const Navbar = ({ onOpenCategory }) => {
                 {t("navbar.shop")}
               </Link>
               <Link
-                to="/category/tires-wheels"
+                to="/shop?category=Tyre,Wheel"
                 onClick={() => setDrawerOpen(false)}
                 className="py-2"
               >
                 {t("navbar.tiresWheels")}
               </Link>
               <Link
-                to="/category/headlights-lighting"
+                to="/shop?category=Tail Lights,Head Lights"
                 onClick={() => setDrawerOpen(false)}
                 className="py-2"
               >
