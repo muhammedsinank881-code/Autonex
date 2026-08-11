@@ -28,7 +28,7 @@ const generateUniqueTrackingId = async () => {
     }
 };
 
-export const createOrder = async (checkoutId, paymentDetails ) => {
+export const createOrder = async (checkoutId, paymentDetails) => {
     const session = await mongoose.startSession();
 
     session.startTransaction();
@@ -448,14 +448,24 @@ export const getOrderInvoice = async (orderId, user) => {
     }
 
     const order = await Order.findById(orderId)
-        .populate("user", "name email");
+        .populate("user", "fullName email");
 
     if (!order) {
         throw new Error("Order not found");
     }
 
-    // Check Permission
-    const isOwner = order.user._id.toString() === user._id.toString();
+    if (!order.user) {
+        throw new Error("Order owner not found");
+    }
+
+    if (!user?._id) {
+        throw new Error("User information not found");
+    }
+
+    // Permission
+    const isOwner =
+        order.user._id.toString() === user._id.toString();
+
     const isAdmin = user.role === "admin";
 
     if (!isOwner && !isAdmin) {
