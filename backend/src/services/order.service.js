@@ -453,11 +453,6 @@ export const getOrderInvoice = async (orderId, user) => {
     if (!order) {
         throw new Error("Order not found");
     }
-    console.log("Invoice Request User:", user);
-
-    if (!order.user) {
-        throw new Error("Order owner not found");
-    }
 
     if (!user?._id) {
         throw new Error("User information not found");
@@ -465,7 +460,7 @@ export const getOrderInvoice = async (orderId, user) => {
 
     // Permission
     const isOwner =
-        order.user._id.toString() === user._id.toString();
+        order.user._id.toString() === user.id.toString();
 
     const isAdmin = user.role === "admin";
 
