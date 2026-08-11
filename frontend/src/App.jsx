@@ -37,6 +37,7 @@ import FAQPage from "./pages/blog&contact/FAQPage.jsx";
 import Payment from "./pages/payment/Payment.jsx";
 import OrderSuccess from "./pages/payment/OrderSuccess.jsx";
 import ConfirmOrderModal from "./pages/payment/ConfirmOrderModal.jsx";
+import OrderDetailsPage from "./pages/Login/profile/OrderDetailsPage.jsx";
 
 const App = () => {
   useInitializeAuth();
@@ -76,6 +77,8 @@ const App = () => {
             <Route path="/cart/checkout" element={<CheckoutPage />} />
             <Route path="/MyGaragePage" element={<MyGaragePage />} />
           </Route>
+
+          <Route path="/OrderDetail/:id" element={<OrderDetailsPage/>}/>
 
           <Route
             path="/wish-list"

@@ -93,7 +93,7 @@ const Navbar = ({ onOpenCategory }) => {
               {t("navbar.faq")}
             </Link>
             <Link
-              to="/orders/track"
+              to="/auth?tab=orders"
               className="hover:text-gray-900 transition-colors"
             >
               {t("navbar.orderTracking")}

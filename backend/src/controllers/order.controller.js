@@ -26,14 +26,85 @@ export const createOrderController = async (req, res) => {
 
 export const getMyOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ user: req.user.id })
-            .sort({ createdAt: -1 });
+        const {
+            search = "",
+            date = "",
+            page = 1,
+            limit = 10,
+        } = req.query;
+
+        const pageNumber = Math.max(Number(page), 1);
+        const limitNumber = 10; // Always allow maximum 10
+
+        const skip = (pageNumber - 1) * limitNumber;
+
+        const filter = {
+            user: req.user.id,
+        };
+
+        // Search
+        if (search.trim()) {
+            filter.$or = [
+                {
+                    orderNumber: {
+                        $regex: search.trim(),
+                        $options: "i",
+                    },
+                },
+                {
+                    trackingId: {
+                        $regex: search.trim(),
+                        $options: "i",
+                    },
+                },
+                {
+                    "items.name": {
+                        $regex: search.trim(),
+                        $options: "i",
+                    },
+                },
+            ];
+        }
+
+        // Date filter
+        if (date) {
+            const start = new Date(date);
+            start.setHours(0, 0, 0, 0);
+
+            const end = new Date(date);
+            end.setHours(23, 59, 59, 999);
+
+            filter.createdAt = {
+                $gte: start,
+                $lte: end,
+            };
+        }
+
+        // Total matching orders
+        const totalOrders = await Order.countDocuments(filter);
+
+        // Get only 10 orders
+        const orders = await Order.find(filter)
+            .sort({ createdAt: -1 }) // newest first
+            .skip(skip)
+            .limit(limitNumber);
 
         return res.status(200).json({
             success: true,
             data: orders,
+            pagination: {
+                currentPage: pageNumber,
+                totalOrders,
+                totalPages: Math.ceil(totalOrders / limitNumber),
+                limit: limitNumber,
+                hasNextPage: pageNumber < Math.ceil(totalOrders / limitNumber),
+                hasPreviousPage: pageNumber > 1,
+            },
         });
+
     } catch (error) {
+        console.error("Get My Orders Error:", error);
+
         return res.status(500).json({
             success: false,
             message: error.message,

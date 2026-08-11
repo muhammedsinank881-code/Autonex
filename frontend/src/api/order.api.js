@@ -6,10 +6,21 @@ export const createOrder = async (orderData) => {
   return data;
 };
 
-export const getMyOrders = async () => {
-  const { data } = await API.get("/orders/me");
+export const getMyOrders = async (
+  search = "",
+  date = "",
+  page = 1
+) => {
+  const response = await API.get("/api/orders", {
+    params: {
+      search,
+      date,
+      page,
+      limit: 10,
+    },
+  });
 
-  return data;
+  return response.data;
 };
 
 export const getOrderById = async (orderId) => {
