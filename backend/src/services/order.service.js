@@ -453,6 +453,7 @@ export const getOrderInvoice = async (orderId, user) => {
     if (!order) {
         throw new Error("Order not found");
     }
+    console.log("Invoice Request User:", user);
 
     if (!order.user) {
         throw new Error("Order owner not found");
