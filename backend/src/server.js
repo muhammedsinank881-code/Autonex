@@ -42,7 +42,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/checkout", checkoutRoutes);
 app.use("/api/payments", paymentRoutes);
-app.use("/api/orders", orderRoutes);
+app.use("/api/orders", orderRoutes);  
 
 
 app.use(errorHandler);

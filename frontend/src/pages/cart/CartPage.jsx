@@ -35,7 +35,7 @@ const CartPage = () => {
   const total = subtotal + shippingCost;
 
   // Free shipping progress calculation (threshold set to $500 for example)
-  const freeShippingThreshold = 500;
+  const freeShippingThreshold = 1000;
   const amountNeededForFreeShipping = Math.max(
     0,
     freeShippingThreshold - subtotal,
@@ -267,14 +267,6 @@ const CartPage = () => {
                     </div>
                     <div className="text-right text-[11px] text-gray-500 pt-1">
                       Shipping to <strong>CA</strong>.
-                    </div>
-                    <div className="text-right">
-                      <a
-                        href="#"
-                        className="text-blue-500 hover:underline text-[11px]"
-                      >
-                        Change address
-                      </a>
                     </div>
                   </div>
 

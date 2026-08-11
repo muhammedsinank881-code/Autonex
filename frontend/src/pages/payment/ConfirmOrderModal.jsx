@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { AlertCircle, ShieldCheck, X } from "lucide-react";
-import { useCreateOrder } from "../../hooks/checkout/useCreateOrder";
+import { useCreateOrder } from "../../hooks/orders/useCreateOrder"
 
 /**
  * ConfirmOrderModal Component
@@ -38,7 +38,7 @@ const ConfirmOrderModal = () => {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-xs transition-opacity font-sans">
+        <div className="flex items-center justify-center p-16 backdrop-blur-xs transition-opacity font-sans">
             {/* Modal Container */}
             <div
                 className="bg-white rounded-lg border border-gray-200 shadow-xl w-full max-w-md overflow-hidden transform transition-all"

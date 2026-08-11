@@ -169,8 +169,7 @@ export const checkoutService = async (userId, body) => {
 
     const total =
         subtotal +
-        shipping +
-        tax -
+        shipping -
         discount;
 
     // Return
