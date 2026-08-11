@@ -192,7 +192,7 @@ export const checkoutService = async (userId, body) => {
             shippingAddress,
             payment: {
                 method: paymentMethod,
-                status: "PENDING",
+                status: "ACTIVE",
             },
             coupon: appliedCoupon,
             summary: {
@@ -202,7 +202,7 @@ export const checkoutService = async (userId, body) => {
                 discount,
                 total,
             },
-            checkoutStatus: "PENDING",
+            checkoutStatus: "ACTIVE",
         });
     } else {
         // Update existing unfinished checkout
@@ -211,7 +211,7 @@ export const checkoutService = async (userId, body) => {
 
         checkout.payment = {
             method: paymentMethod,
-            status: "PENDING",
+            status: "ACTIVE",
         };
 
         checkout.coupon = appliedCoupon;
@@ -224,7 +224,7 @@ export const checkoutService = async (userId, body) => {
             total,
         };
 
-        checkout.checkoutStatus = "PENDING";
+        checkout.checkoutStatus = "ACTIVE";
 
         await checkout.save();
     }
