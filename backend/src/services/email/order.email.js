@@ -1,5 +1,6 @@
 import { sendEmail } from "./email.service.js";
 import { baseTemplate } from "./baseTemplate.js";
+import { orderTemplate } from "./orderTemplate.js";
 
 
 export const sendOrderStatusEmail = async ({
