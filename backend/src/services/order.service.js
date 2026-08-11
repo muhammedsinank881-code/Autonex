@@ -454,7 +454,11 @@ export const getOrderInvoice = async (orderId, user) => {
         throw new Error("Order not found");
     }
 
-    if (!user?._id) {
+    if (!order.user) {
+        throw new Error("Order owner not found");
+    }
+    
+    if (!user?.id) {
         throw new Error("User information not found");
     }
 
