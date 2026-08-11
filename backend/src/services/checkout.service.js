@@ -192,7 +192,7 @@ export const checkoutService = async (userId, body) => {
             shippingAddress,
             payment: {
                 method: paymentMethod,
-                status: "ACTIVE",
+                status: "PENDING",
             },
             coupon: appliedCoupon,
             summary: {
@@ -211,7 +211,7 @@ export const checkoutService = async (userId, body) => {
 
         checkout.payment = {
             method: paymentMethod,
-            status: "ACTIVE",
+            status: "PENDING",
         };
 
         checkout.coupon = appliedCoupon;
