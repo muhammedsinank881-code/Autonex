@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AlertCircle, ShieldCheck, X } from "lucide-react";
 import { useCreateOrder } from "../../hooks/orders/useCreateOrder"
 
@@ -15,6 +15,7 @@ import { useCreateOrder } from "../../hooks/orders/useCreateOrder"
 const ConfirmOrderModal = () => {
 
     const location = useLocation();
+    const navigate = useNavigate();
     const createOrderMutation = useCreateOrder();
 
     const checkoutData = location.state?.checkoutData;
@@ -52,6 +53,7 @@ const ConfirmOrderModal = () => {
                     </h2>
                     <button
                         type="button"
+                        onClick={()=>navigate(-1)}
                         className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-md disabled:opacity-50"
                     >
                         <X className="w-4 h-4" />
@@ -67,23 +69,30 @@ const ConfirmOrderModal = () => {
                     {/* Details Summary Card */}
                     <div className="bg-gray-50/80 rounded-md border border-gray-100 p-4 space-y-3">
                         <div className="flex justify-between items-center text-xs">
-                            <span className="text-gray-500">Invoice Number</span>
-                            <span className="font-semibold text-gray-800">
-                                #{checkoutData._id}
-                            </span>
-                        </div>
-
-                        <div className="flex justify-between items-center text-xs">
-                            <span className="text-gray-500">Description</span>
-                            <span className="font-medium text-gray-700 truncate max-w-[180px]">
-                                { }
-                            </span>
-                        </div>
-
-                        <div className="flex justify-between items-center text-xs">
                             <span className="text-gray-500">Payment Method</span>
-                            <span className="font-medium text-gray-700">
+                            <span className="font-semibold text-gray-800">
                                 {checkoutData.payment.method}
+                            </span>
+                        </div>
+
+                        <div className="flex justify-between items-center text-xs">
+                            <span className="text-gray-500">Items</span>
+                            <span className="font-medium text-gray-700 truncate max-w-[180px]">
+                                {checkoutData.items.length}
+                            </span>
+                        </div>
+
+                        <div className="flex justify-between items-center text-xs">
+                            <span className="text-gray-500">Subtotal</span>
+                            <span className="font-medium text-gray-700">
+                                {checkoutData.summary.subtotal}
+                            </span>
+                        </div>
+
+                        <div className="flex justify-between items-center text-xs">
+                            <span className="text-gray-500">Shipping Charge</span>
+                            <span className="font-medium text-gray-700">
+                                {checkoutData.summary.shipping}
                             </span>
                         </div>
 
@@ -92,7 +101,7 @@ const ConfirmOrderModal = () => {
                                 Total Charge
                             </span>
                             <span className="text-base font-bold text-[#0066b2]">
-                                ${checkoutData.summary.total}
+                                {checkoutData.summary.total}
                             </span>
                         </div>
                     </div>
@@ -111,6 +120,7 @@ const ConfirmOrderModal = () => {
                     <div className="flex gap-3">
                         <button
                             type="button"
+                            onClick={()=>navigate(-1)}
                             className="w-1/2 border border-gray-200 hover:bg-gray-100 text-gray-700 text-xs font-semibold py-2.5 px-4 rounded-md transition-colors disabled:opacity-50"
                         >
                             Cancel
