@@ -44,13 +44,14 @@ export const createPaymentOrderService = async (userId, checkoutId) => {
 
 export const verifyPaymentService = async ({
     userId,
+    checkoutId,
     razorpay_order_id,
     razorpay_payment_id,
     razorpay_signature,
 }) => {
-
     // Validate required fields
     if (
+        !checkoutId ||
         !razorpay_order_id ||
         !razorpay_payment_id ||
         !razorpay_signature
@@ -58,32 +59,64 @@ export const verifyPaymentService = async ({
         throw new Error("Payment details are required");
     }
 
-    // Find checkout
-    const checkout = await Checkout.findOne({ user: userId });
+    // Find the exact checkout
+    const checkout = await Checkout.findOne({
+        _id: checkoutId,
+        user: userId,
+        checkoutStatus: "ACTIVE",
+    });
 
     if (!checkout) {
         throw new Error("Checkout not found");
     }
 
-    // Ensure the order belongs to this checkout
-    if (checkout.payment.razorpayOrderId !== razorpay_order_id) {
+    console.log("========== RAZORPAY DEBUG ==========");
+    console.log("checkoutId:", checkoutId);
+    console.log(
+        "DB Razorpay Order ID:",
+        checkout.payment.razorpayOrderId
+    );
+    console.log(
+        "Received Razorpay Order ID:",
+        razorpay_order_id
+    );
+    console.log(
+        "Received Razorpay Payment ID:",
+        razorpay_payment_id
+    );
+    console.log("====================================");
+    // Ensure Razorpay order belongs to this checkout
+    if (
+        checkout.payment.razorpayOrderId !== razorpay_order_id
+    ) {
         throw new Error("Invalid Razorpay order");
     }
 
-    // Generate expected signature
+    // Generate expected Razorpay signature
     const generatedSignature = crypto
-        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-        .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+        .createHmac(
+            "sha256",
+            process.env.RAZORPAY_KEY_SECRET
+        )
+        .update(
+            `${razorpay_order_id}|${razorpay_payment_id}`
+        )
         .digest("hex");
 
     // Compare signatures
-    if (generatedSignature !== razorpay_signature) {
+    if (
+        generatedSignature !== razorpay_signature
+    ) {
         throw new Error("Payment verification failed");
     }
 
     // Update payment details
-    checkout.payment.razorpayPaymentId = razorpay_payment_id;
-    checkout.payment.razorpaySignature = razorpay_signature;
+    checkout.payment.razorpayPaymentId =
+        razorpay_payment_id;
+
+    checkout.payment.razorpaySignature =
+        razorpay_signature;
+
     checkout.payment.status = "PAID";
 
     await checkout.save();

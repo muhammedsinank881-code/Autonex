@@ -80,7 +80,7 @@ const Orders = ({ setActiveTab }) => {
   }
 
   return (
-    <div className="h-[calc(100vh-180px)] overflow-y-auto pr-2 flex flex-col justify-between">
+    <div className="h-[calc(100vh-180px)] overflow-y-auto pr-2 flex flex-col justify-between hide-scrollbar">
       <div>
         {/* Header & Clear Actions */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">

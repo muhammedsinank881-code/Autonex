@@ -1,19 +1,20 @@
 import API from "./axios";
 
-export const createPaymentOrder = async (data) => {
-    const response = await API.post(
-        "/payments/create-order",
-        data
-    );
+// Create Razorpay Order
+export const createPaymentOrder = async (checkoutId) => {
+    const { data } = await API.post("/payments/create-order", {
+        checkoutId,
+    });
 
-    return response.data;
+    return data;
 };
 
-export const verifyPayment = async (data) => {
-    const response = await API.post(
-        "/payment/verify",
-        data
+// Verify Razorpay Payment
+export const verifyPayment = async (paymentData) => {
+    const { data } = await API.post(
+        "/payments/verify",
+        paymentData
     );
 
-    return response.data;
+    return data;
 };

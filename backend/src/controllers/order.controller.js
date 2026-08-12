@@ -26,9 +26,6 @@ export const createOrderController = async (req, res) => {
 
 export const getMyOrders = async (req, res) => {
     try {
-        console.log("========== GET MY ORDERS ==========");
-        console.log("USER:", req.user.id);
-        console.log("QUERY:", req.query);
 
         const {
             search = "",
@@ -45,10 +42,6 @@ export const getMyOrders = async (req, res) => {
         const filter = {
             user: req.user.id,
         };
-
-        // =========================
-        // SEARCH
-        // =========================
 
         if (search.trim()) {
             const searchValue = search.trim();
@@ -75,10 +68,6 @@ export const getMyOrders = async (req, res) => {
             ];
         }
 
-        // =========================
-        // DATE
-        // =========================
-
         if (date) {
             const start = new Date(date);
             start.setHours(0, 0, 0, 0);
@@ -92,29 +81,12 @@ export const getMyOrders = async (req, res) => {
             };
         }
 
-        console.log(
-            "FINAL FILTER:",
-            JSON.stringify(filter, null, 2)
-        );
-
-        // =========================
-        // COUNT
-        // =========================
-
         const totalOrders = await Order.countDocuments(filter);
-
-        console.log("TOTAL MATCHING:", totalOrders);
-
-        // =========================
-        // ORDERS
-        // =========================
 
         const orders = await Order.find(filter)
             .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limitNumber);
-
-        console.log("ORDERS RETURNED:", orders.length);
+            .limit(limitNumber)
 
         return res.status(200).json({
             success: true,

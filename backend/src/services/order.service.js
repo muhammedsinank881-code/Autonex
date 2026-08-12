@@ -172,7 +172,6 @@ export const createOrder = async (checkoutId, paymentDetails) => {
         await checkout.save({ session });
 
         // Clear Cart
-
         await Cart.findOneAndUpdate(
             { userId: checkout.user },
             {
