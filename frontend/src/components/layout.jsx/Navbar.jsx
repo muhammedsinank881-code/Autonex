@@ -188,7 +188,7 @@ const Navbar = ({ onOpenCategory }) => {
 
             {/* Wishlist */}
             <NavLink
-              to="/whishlist"
+              to="/wishlist"
               className={({ isActive }) =>
                 `relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${isActive
                   ? "bg-blue-100 text-blue-600"

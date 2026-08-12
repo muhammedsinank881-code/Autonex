@@ -65,6 +65,7 @@ const OrderDetailsPage = () => {
 
     const statusSteps = [
         "PLACED",
+        "CONFIRMED",
         "SHIPPED",
         "OUT_FOR_DELIVERY",
         "DELIVERED",
@@ -165,14 +166,14 @@ const OrderDetailsPage = () => {
 
                     {!isCancelled && (
                         <div className="mt-6 pt-2">
-                            <div className="grid grid-cols-4 gap-2 text-center text-xs font-medium text-slate-400">
+                            <div className="grid grid-cols-5 gap-2 text-center text-xs font-medium text-slate-400">
 
                                 {/* Placed */}
                                 <div className="flex flex-col items-center gap-2">
                                     <div
                                         className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${currentStep >= 0
-                                            ? "bg-red-600 text-white"
-                                            : "bg-slate-100 text-slate-400 border border-gray-100"
+                                                ? "bg-green-600 text-white"
+                                                : "bg-slate-100 text-slate-400 border border-gray-100"
                                             }`}
                                     >
                                         <CheckCircle2 className="w-4 h-4" />
@@ -181,13 +182,26 @@ const OrderDetailsPage = () => {
                                     <span>Placed</span>
                                 </div>
 
+                                {/* Confirmed */}
+                                <div className="flex flex-col items-center gap-2">
+                                    <div
+                                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${currentStep >= 1
+                                                ? "bg-green-600 text-white"
+                                                : "bg-slate-100 text-slate-400 border border-gray-100"
+                                            }`}
+                                    >
+                                        <CheckCircle2 className="w-4 h-4" />
+                                    </div>
+
+                                    <span>Confirmed</span>
+                                </div>
 
                                 {/* Shipped */}
                                 <div className="flex flex-col items-center gap-2">
                                     <div
-                                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${currentStep >= 1
-                                            ? "bg-red-600 text-white"
-                                            : "bg-slate-100 text-slate-400 border border-gray-100"
+                                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${currentStep >= 2
+                                                ? "bg-green-600 text-white"
+                                                : "bg-slate-100 text-slate-400 border border-gray-100"
                                             }`}
                                     >
                                         <Truck className="w-4 h-4" />
@@ -196,13 +210,12 @@ const OrderDetailsPage = () => {
                                     <span>Shipped</span>
                                 </div>
 
-
                                 {/* Out For Delivery */}
                                 <div className="flex flex-col items-center gap-2">
                                     <div
-                                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${currentStep >= 2
-                                            ? "bg-red-600 text-white"
-                                            : "bg-slate-100 text-slate-400 border border-gray-100"
+                                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${currentStep >= 3
+                                                ? "bg-green-600 text-white"
+                                                : "bg-slate-100 text-slate-400 border border-gray-100"
                                             }`}
                                     >
                                         <Truck className="w-4 h-4" />
@@ -211,13 +224,12 @@ const OrderDetailsPage = () => {
                                     <span>Out for Delivery</span>
                                 </div>
 
-
                                 {/* Delivered */}
                                 <div className="flex flex-col items-center gap-2">
                                     <div
-                                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${currentStep >= 3
-                                            ? "bg-red-600 text-white"
-                                            : "bg-slate-100 text-slate-400 border border-gray-100"
+                                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${currentStep >= 4
+                                                ? "bg-green-600 text-white"
+                                                : "bg-slate-100 text-slate-400 border border-gray-100"
                                             }`}
                                     >
                                         <Package className="w-4 h-4" />

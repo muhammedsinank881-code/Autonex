@@ -21,10 +21,15 @@ const Orders = ({ setActiveTab }) => {
 
   const orders = data?.data || [];
   const pagination = data?.pagination || {};
+
+  // Backend pagination fields
   const totalPages = pagination?.totalPages || 1;
   const currentPage = pagination?.currentPage || page;
+  const totalOrders = pagination?.totalOrders || 0;
+  const hasNextPage = pagination?.hasNextPage ?? (currentPage < totalPages);
+  const hasPreviousPage = pagination?.hasPreviousPage ?? (currentPage > 1);
 
-  // Reset page to 1 on filter change
+  // Reset page to 1 when filters change
   useEffect(() => {
     setPage(1);
   }, [debouncedSearch, date]);
@@ -34,6 +39,28 @@ const Orders = ({ setActiveTab }) => {
     setSearch("");
     setDate("");
     setPage(1);
+  };
+
+  // Smart Pagination range builder (shows e.g. [1, 2, 3, '...', 10] when page count grows)
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push("...");
+
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = start; i <= end; i++) pages.push(i);
+
+      if (currentPage < totalPages - 2) pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
   };
 
   // Loading State
@@ -208,37 +235,47 @@ const Orders = ({ setActiveTab }) => {
       {totalPages > 1 && (
         <div className="flex items-center justify-between border-t border-gray-200 pt-4 mt-6">
           <p className="text-xs text-gray-500">
-            Page <span className="font-semibold text-gray-700">{currentPage}</span> of{" "}
-            <span className="font-semibold text-gray-700">{totalPages}</span>
+            Showing <span className="font-semibold text-gray-700">{orders.length}</span> of{" "}
+            <span className="font-semibold text-gray-700">{totalOrders}</span> orders (Page{" "}
+            <span className="font-semibold text-gray-700">{currentPage}</span> of{" "}
+            <span className="font-semibold text-gray-700">{totalPages}</span>)
           </p>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            {/* Previous Page Button */}
             <button
               onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
+              disabled={!hasPreviousPage}
               className="p-1.5 rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
               aria-label="Previous Page"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
 
-            {/* Page Buttons */}
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <button
-                key={p}
-                onClick={() => setPage(p)}
-                className={`w-7 h-7 text-xs rounded-md font-medium transition-colors ${currentPage === p
-                    ? "bg-[#0066b2] text-white"
-                    : "border border-gray-200 text-gray-600 hover:bg-gray-50"
-                  }`}
-              >
-                {p}
-              </button>
-            ))}
+            {/* Page Item Buttons */}
+            {getPageNumbers().map((p, index) =>
+              p === "..." ? (
+                <span key={`ellipsis-${index}`} className="px-2 text-xs text-gray-400">
+                  ...
+                </span>
+              ) : (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={`w-7 h-7 text-xs rounded-md font-medium transition-colors ${currentPage === p
+                      ? "bg-[#0066b2] text-white"
+                      : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                    }`}
+                >
+                  {p}
+                </button>
+              )
+            )}
 
+            {/* Next Page Button */}
             <button
               onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
+              disabled={!hasNextPage}
               className="p-1.5 rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
               aria-label="Next Page"
             >

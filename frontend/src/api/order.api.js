@@ -29,8 +29,16 @@ export const getOrderById = async (orderId) => {
   return data;
 };
 
-export const getAllOrders = async () => {
-  const { data } = await API.get("/orders");
+export const getAllOrders = async ({ page = 1, limit = 10, search = "", date = ""
+} = {}) => {
+  const { data } = await API.get("/orders", {
+    params: {
+      page,
+      limit,
+      search,
+      date,
+    },
+  });
 
   return data;
 };

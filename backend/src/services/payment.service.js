@@ -70,21 +70,6 @@ export const verifyPaymentService = async ({
         throw new Error("Checkout not found");
     }
 
-    console.log("========== RAZORPAY DEBUG ==========");
-    console.log("checkoutId:", checkoutId);
-    console.log(
-        "DB Razorpay Order ID:",
-        checkout.payment.razorpayOrderId
-    );
-    console.log(
-        "Received Razorpay Order ID:",
-        razorpay_order_id
-    );
-    console.log(
-        "Received Razorpay Payment ID:",
-        razorpay_payment_id
-    );
-    console.log("====================================");
     // Ensure Razorpay order belongs to this checkout
     if (
         checkout.payment.razorpayOrderId !== razorpay_order_id

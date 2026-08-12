@@ -148,15 +148,109 @@ export const getOrderById = async (req, res) => {
 
 export const getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find()
+        const {
+            page = 1,
+            limit = 10,
+            search = "",
+            date,
+        } = req.query;
+
+        const currentPage = Math.max(Number(page), 1);
+        const pageSize = Math.max(Number(limit), 1);
+        const skip = (currentPage - 1) * pageSize;
+
+        // BUILD FILTER
+        const filter = {};
+
+        // Search by Order ID OR User Name
+        if (search.trim()) {
+            const searchValue = search.trim();
+
+            const searchConditions = [];
+
+            // Search by Order ID
+            if (mongoose.Types.ObjectId.isValid(searchValue)) {
+                searchConditions.push({
+                    _id: searchValue,
+                });
+            }
+
+            // Search by User Name
+            const users = await User.find({
+                name: {
+                    $regex: searchValue,
+                    $options: "i",
+                },
+            }).select("_id");
+
+            if (users.length > 0) {
+                searchConditions.push({
+                    user: {
+                        $in: users.map((user) => user._id),
+                    },
+                });
+            }
+
+            // If nothing matched
+            if (searchConditions.length === 0) {
+                return res.status(200).json({
+                    success: true,
+                    data: [],
+                    pagination: {
+                        currentPage,
+                        pageSize,
+                        totalOrders: 0,
+                        totalPages: 0,
+                    },
+                });
+            }
+
+            filter.$or = searchConditions;
+        }
+
+        // SEARCH BY DATE
+        if (date) {
+            const startOfDay = new Date(date);
+            startOfDay.setHours(0, 0, 0, 0);
+
+            const endOfDay = new Date(date);
+            endOfDay.setHours(23, 59, 59, 999);
+
+            filter.createdAt = {
+                $gte: startOfDay,
+                $lte: endOfDay,
+            };
+        }
+
+        // TOTAL COUNT
+        const totalOrders = await Order.countDocuments(filter);
+
+        // FETCH ORDERS
+        const orders = await Order.find(filter)
             .populate("user", "name email")
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 }) // newest first
+            .skip(skip)
+            .limit(pageSize);
+
+        // PAGINATION
+        const totalPages = Math.ceil(totalOrders / pageSize);
 
         return res.status(200).json({
             success: true,
             data: orders,
+            pagination: {
+                currentPage,
+                pageSize,
+                totalOrders,
+                totalPages,
+                hasNextPage: currentPage < totalPages,
+                hasPreviousPage: currentPage > 1,
+            },
         });
+
     } catch (error) {
+        console.error("Get all orders error:", error);
+
         return res.status(500).json({
             success: false,
             message: error.message,

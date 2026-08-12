@@ -81,7 +81,7 @@ const App = () => {
           <Route path="/OrderDetail/:id" element={<OrderDetailsPage/>}/>
 
           <Route
-            path="/wish-list"
+            path="/wishlist"
             element={<Wishlist onReturnToShop={handleReturnToShop} />}
           />
           <Route path="/compare" element={<ComparePage />} />

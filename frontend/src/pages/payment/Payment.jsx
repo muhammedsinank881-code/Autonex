@@ -93,11 +93,6 @@ const Payment = () => {
                     },
 
                     handler: (razorpayResponse) => {
-                        console.log(
-                            "Razorpay Payment Success:",
-                            razorpayResponse
-                        );
-
                         verifyPayment(
                             {
                                 checkoutId: checkoutData._id,
