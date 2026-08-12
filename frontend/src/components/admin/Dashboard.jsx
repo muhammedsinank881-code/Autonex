@@ -1,29 +1,89 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   TrendingUp,
   Package,
   ShoppingBag,
   Users,
   ArrowUpRight,
+  Loader2,
 } from "lucide-react";
 import { useDashboardStats } from "../../hooks/dashboard/useDashboardStatus";
+import useAllOrders from "../../hooks/orders/useAllOrders";
 import DashboardSkeleton from "../layout.jsx/DashboardSkeleton";
+import { useNavigate } from "react-router-dom";
 
-export default function Dashboard() {
-  const { data, isLoading, isError, error } = useDashboardStats();
+const Dashboard = () => {
+  const navigate = useNavigate()
+  const {
+    data: statsData,
+    isLoading: isStatsLoading,
+    isError: isStatsError,
+    error: statsError
+  } = useDashboardStats();
 
-  if (isLoading) return <DashboardSkeleton/>
+  // Fetch orders (Pass a larger limit or full set if needed to calculate month-over-month stats accurately)
+  const {
+    data: ordersData,
+    isLoading: isOrdersLoading,
+    isError: isOrdersError,
+    error: ordersError
+  } = useAllOrders({ page: 1, limit: 100 });
 
-  if (isError) return <p>{error.message}</p>;
+  // 1. Extract raw order list and total count from API response
+  const allOrders = useMemo(() => ordersData?.data || ordersData?.orders || [], [ordersData]);
+  const totalOrdersCount = ordersData?.pagination?.totalOrders ?? allOrders.length;
 
-  const { totalUsers, activeProducts , thisMonthUsers , thisMonthProducts } = data.data;
+  // 2. Dynamic Month-over-Month Calculation for Orders
+  const ordersMonthOverMonthChange = useMemo(() => {
+    if (!allOrders.length) return "0.0%";
+
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+
+    // Previous month handling (handles January roll-over to December)
+    const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const prevMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+    let thisMonthCount = 0;
+    let lastMonthCount = 0;
+
+    allOrders.forEach((order) => {
+      if (!order.createdAt) return;
+      const orderDate = new Date(order.createdAt);
+      const year = orderDate.getFullYear();
+      const month = orderDate.getMonth();
+
+      if (year === currentYear && month === currentMonth) {
+        thisMonthCount++;
+      } else if (year === prevMonthYear && month === prevMonth) {
+        lastMonthCount++;
+      }
+    });
+
+    if (lastMonthCount === 0) {
+      return thisMonthCount > 0 ? `+100%` : `0.0%`;
+    }
+
+    const diff = thisMonthCount - lastMonthCount;
+    const percentage = ((diff / lastMonthCount) * 100).toFixed(1);
+    const sign = percentage >= 0 ? "+" : "";
+
+    return `${sign}${percentage}%`;
+  }, [allOrders]);
+
+  if (isStatsLoading) return <DashboardSkeleton />;
+  if (isStatsError) return <p className="p-4 text-red-500">{statsError.message}</p>;
+
+  const { totalUsers, activeProducts, thisMonthUsers, thisMonthProducts } = statsData?.data || {};
+  const recentOrders = allOrders.slice(0, 5); // Take top 5 for table display
+
   return (
     <div className="flex flex-col min-h-full bg-[#F8FAFC] font-sans antialiased text-slate-800">
       <div className="flex-1 flex flex-col min-w-0">
         <main className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 max-w-7xl w-full mx-auto">
-          {/* 1. HERO BANNER */}
+          {/* HERO BANNER */}
           <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-slate-900 text-white shadow-xl flex flex-col lg:flex-row items-stretch min-h-[320px] sm:min-h-[380px]">
-            {/* Background Gradient & Image */}
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/90 to-transparent z-10 pointer-events-none" />
             <div
               className="absolute inset-0 opacity-80 bg-cover bg-center"
@@ -32,7 +92,6 @@ export default function Dashboard() {
               }}
             />
 
-            {/* Hero Text Content */}
             <div className="relative z-10 p-6 sm:p-8 lg:p-12 flex-1 flex flex-col justify-between space-y-6">
               <div>
                 <span className="text-[#0066B2] bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-3 sm:mb-4 inline-block">
@@ -61,7 +120,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* 2. OVERVIEW METRICS CARDS */}
+          {/* OVERVIEW METRICS CARDS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             {[
               {
@@ -73,22 +132,22 @@ export default function Dashboard() {
               },
               {
                 title: "Total Orders",
-                value: "1,248",
-                change: "+8.1%",
+                value: isOrdersLoading ? "..." : totalOrdersCount,
+                change: ordersMonthOverMonthChange,
                 icon: ShoppingBag,
                 color: "text-blue-600 bg-blue-50",
               },
               {
                 title: "Active Products",
-                value: isLoading ? "..." : (data?.data?.activeProducts ?? 0),
-                change: `${data?.data?.thisMonthProducts ?? 0} Active`,
+                value: isStatsLoading ? "..." : (activeProducts ?? 0),
+                change: `${thisMonthProducts ?? 0} Active`,
                 icon: Package,
                 color: "text-purple-600 bg-purple-50",
               },
               {
                 title: "Registered Users",
-                value: isLoading ? "..." : (data?.data?.totalUsers ?? 0),
-                change: `${data?.data?.thisMonthUsers ?? 0} Active`,
+                value: isStatsLoading ? "..." : (totalUsers ?? 0),
+                change: `${thisMonthUsers ?? 0} Active`,
                 icon: Users,
                 color: "text-amber-600 bg-amber-50",
               },
@@ -121,7 +180,7 @@ export default function Dashboard() {
             })}
           </div>
 
-          {/* 3. RECENT ORDERS TABLE */}
+          {/* RECENT ORDERS TABLE */}
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
             <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
               <div>
@@ -132,7 +191,9 @@ export default function Dashboard() {
                   Manage real-time customer transactions
                 </p>
               </div>
-              <button className="text-xs font-bold text-[#0066B2] hover:underline text-left sm:text-right">
+              <button
+                onClick={() => navigate("/admin/orders")}
+                className="text-xs font-bold text-[#0066B2] hover:underline text-left sm:text-right">
                 View All Orders
               </button>
             </div>
@@ -149,64 +210,65 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                  {[
-                    {
-                      id: "#ORD-9482",
-                      customer: "Marcus Vance",
-                      category: "Tires & Wheels",
-                      amount: "$420.00",
-                      status: "Completed",
-                    },
-                    {
-                      id: "#ORD-9481",
-                      customer: "Sarah Jenkins",
-                      category: "Headlights & Lighting",
-                      amount: "$185.50",
-                      status: "Processing",
-                    },
-                    {
-                      id: "#ORD-9480",
-                      customer: "David Miller",
-                      category: "Brake Systems",
-                      amount: "$310.00",
-                      status: "Completed",
-                    },
-                    {
-                      id: "#ORD-9479",
-                      customer: "Elena Rostova",
-                      category: "Engine Parts",
-                      amount: "$890.00",
-                      status: "Pending",
-                    },
-                  ].map((row, i) => (
-                    <tr key={i} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-3.5 px-4 sm:px-5 font-bold text-[#0066B2]">
-                        {row.id}
-                      </td>
-                      <td className="py-3.5 px-4 sm:px-5 text-slate-900 whitespace-nowrap">
-                        {row.customer}
-                      </td>
-                      <td className="py-3.5 px-4 sm:px-5 text-slate-500 whitespace-nowrap">
-                        {row.category}
-                      </td>
-                      <td className="py-3.5 px-4 sm:px-5 font-bold text-slate-900">
-                        {row.amount}
-                      </td>
-                      <td className="py-3.5 px-4 sm:px-5">
-                        <span
-                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold inline-block ${
-                            row.status === "Completed"
-                              ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                              : row.status === "Processing"
-                                ? "bg-blue-50 text-blue-600 border border-blue-200"
-                                : "bg-amber-50 text-amber-600 border border-amber-200"
-                          }`}
-                        >
-                          {row.status}
-                        </span>
+                  {isOrdersLoading ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-slate-400">
+                        <div className="flex items-center justify-center gap-2">
+                          <Loader2 className="animate-spin" size={18} />
+                          <span>Loading orders...</span>
+                        </div>
                       </td>
                     </tr>
-                  ))}
+                  ) : isOrdersError ? (
+                    <tr>
+                      <td colSpan={5} className="py-6 text-center text-red-500">
+                        {ordersError?.message || "Failed to load recent orders"}
+                      </td>
+                    </tr>
+                  ) : recentOrders.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-6 text-center text-slate-400">
+                        No recent orders found.
+                      </td>
+                    </tr>
+                  ) : (
+                    recentOrders.map((order, i) => {
+                      const orderId = order.orderNumber || order._id || `#ORD-${order.id}`;
+                      const customerName = order.shippingAddress?.fullName || order.user?.email || "N/A";
+                      const category = order.items?.[0]?.name || "General";
+                      const amount = typeof order.totalAmount === "number" ? `$${order.totalAmount.toFixed(2)}` : "$0.00";
+                      const status = order.orderStatus
+
+                      return (
+                        <tr key={order._id || i} className="hover:bg-slate-50 transition-colors">
+                          <td className="py-3.5 px-4 sm:px-5 font-bold text-[#0066B2]">
+                            {orderId}
+                          </td>
+                          <td className="py-3.5 px-4 sm:px-5 text-slate-900 whitespace-nowrap">
+                            {customerName}
+                          </td>
+                          <td className="py-3.5 px-4 sm:px-5 text-slate-500 whitespace-nowrap">
+                            {category}
+                          </td>
+                          <td className="py-3.5 px-4 sm:px-5 font-bold text-slate-900">
+                            {amount}
+                          </td>
+                          <td className="py-3.5 px-4 sm:px-5">
+                            <span
+                              className={`px-2.5 py-1 rounded-full text-[10px] font-bold inline-block capitalize ${["placed","completed", "shipped", "delivered"].includes(status.toLowerCase())
+                                  ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                                  : ["processing", "shipped"].includes(status.toLowerCase())
+                                    ? "bg-blue-50 text-blue-600 border border-blue-200"
+                                    : "bg-amber-50 text-amber-600 border border-amber-200"
+                                }`}
+                            >
+                              {status}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
@@ -216,3 +278,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+export default Dashboard;
