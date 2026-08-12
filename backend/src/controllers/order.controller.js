@@ -26,6 +26,10 @@ export const createOrderController = async (req, res) => {
 
 export const getMyOrders = async (req, res) => {
     try {
+        console.log("========== GET MY ORDERS ==========");
+        console.log("USER:", req.user.id);
+        console.log("QUERY:", req.query);
+
         const {
             search = "",
             date = "",
@@ -33,8 +37,8 @@ export const getMyOrders = async (req, res) => {
             limit = 10,
         } = req.query;
 
-        const pageNumber = Math.max(Number(page), 1);
-        const limitNumber = 10; // Always allow maximum 10
+        const pageNumber = Math.max(Number(page) || 1, 1);
+        const limitNumber = Math.min(Number(limit) || 10, 10);
 
         const skip = (pageNumber - 1) * limitNumber;
 
@@ -42,31 +46,39 @@ export const getMyOrders = async (req, res) => {
             user: req.user.id,
         };
 
-        // Search
+        // =========================
+        // SEARCH
+        // =========================
+
         if (search.trim()) {
+            const searchValue = search.trim();
+
             filter.$or = [
                 {
                     orderNumber: {
-                        $regex: search.trim(),
+                        $regex: searchValue,
                         $options: "i",
                     },
                 },
                 {
                     trackingId: {
-                        $regex: search.trim(),
+                        $regex: searchValue,
                         $options: "i",
                     },
                 },
                 {
                     "items.name": {
-                        $regex: search.trim(),
+                        $regex: searchValue,
                         $options: "i",
                     },
                 },
             ];
         }
 
-        // Date filter
+        // =========================
+        // DATE
+        // =========================
+
         if (date) {
             const start = new Date(date);
             start.setHours(0, 0, 0, 0);
@@ -80,14 +92,29 @@ export const getMyOrders = async (req, res) => {
             };
         }
 
-        // Total matching orders
+        console.log(
+            "FINAL FILTER:",
+            JSON.stringify(filter, null, 2)
+        );
+
+        // =========================
+        // COUNT
+        // =========================
+
         const totalOrders = await Order.countDocuments(filter);
 
-        // Get only 10 orders
+        console.log("TOTAL MATCHING:", totalOrders);
+
+        // =========================
+        // ORDERS
+        // =========================
+
         const orders = await Order.find(filter)
-            .sort({ createdAt: -1 }) // newest first
+            .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limitNumber);
+
+        console.log("ORDERS RETURNED:", orders.length);
 
         return res.status(200).json({
             success: true,
@@ -97,7 +124,8 @@ export const getMyOrders = async (req, res) => {
                 totalOrders,
                 totalPages: Math.ceil(totalOrders / limitNumber),
                 limit: limitNumber,
-                hasNextPage: pageNumber < Math.ceil(totalOrders / limitNumber),
+                hasNextPage:
+                    pageNumber < Math.ceil(totalOrders / limitNumber),
                 hasPreviousPage: pageNumber > 1,
             },
         });

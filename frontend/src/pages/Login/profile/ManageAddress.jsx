@@ -82,7 +82,7 @@ const ManageAddress = () => {
 
       {/* Addresses Grid */}
       <div className="max-h-[500px] overflow-y-auto pr-2 hide-scrollbar">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
           {addresses.map((address) => {
             const isDefault = address.isDefault;
 
