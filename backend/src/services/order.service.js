@@ -337,7 +337,7 @@ export const cancelOrder = async ({
         console.log("order._id:", order._id);
         console.log("order.user:", order.user);
         console.log("user:", user);
-        console.log("user._id:", user?._id);
+        console.log("user.id:", user?.id);
         console.log("payment:", order.payment);
         console.log("razorpayPaymentId:", order.payment?.razorpayPaymentId);
 
