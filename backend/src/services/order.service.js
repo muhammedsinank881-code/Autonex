@@ -342,7 +342,7 @@ export const cancelOrder = async ({
         console.log("razorpayPaymentId:", order.payment?.razorpayPaymentId);
 
         // Permission
-        const isOwner = order.user.toString() === user._id.toString();
+        const isOwner = order.user.toString() === user.id.toString();
         const isAdmin = user.role === "admin";
 
         if (!isOwner && !isAdmin) {
