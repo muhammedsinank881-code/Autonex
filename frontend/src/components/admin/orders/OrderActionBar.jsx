@@ -39,20 +39,11 @@ const OrderActionBar = ({ order, onCancel, onUpdateStatus }) => {
 
     return (
         <motion.div
-            className="
-        fixed
-        bottom-6
-        right-6
-        z-[120]
-        w-[250px]
-        overflow-hidden
-        rounded-2xl
-        border
-        border-white/80
-        bg-white/95
-        shadow-2xl
-        backdrop-blur-xl
-      "
+            drag
+            dragMomentum={false}
+            dragElastic={0.05}
+            className="fixed bottom-6 right-6 z-[120] w-[250px] overflow-hidden rounded-2xl border
+        border-white/80 bg-white/95 shadow-2xl backdrop-blur-xl "
             initial={{
                 opacity: 0,
                 scale: 0.65,
@@ -77,7 +68,7 @@ const OrderActionBar = ({ order, onCancel, onUpdateStatus }) => {
                 damping: 24,
             }}
         >
-            <div className="border-b border-slate-100 px-4 py-3">
+            <div className=" cursor-grab active:cursor-grabbing border-b border-slate-100 px-4 py-3">
                 <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
                     Order Actions
                 </p>

@@ -6,6 +6,7 @@ import Product from "../models/Product.js";
 import { generateQRCode } from "../utils/generateQRCode.js";
 import { sendOrderStatusEmail } from "./email/order.email.js";
 import { refundPayment } from "./refund.service.js";
+import User from "../models/User.js";
 
 const generateOrderNumber = () => {
     return `ORD-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -333,9 +334,11 @@ export const cancelOrder = async ({
             throw new Error("Order not found");
         }
 
+        const currentUser = await User.findById(user.id).select("role");
         // Permission
+
         const isOwner = order.user.toString() === user.id.toString();
-        const isAdmin = user.role === "admin";
+        const isAdmin = currentUser?.role === "admin";
 
         if (!isOwner && !isAdmin) {
             throw new Error("You are not authorized to cancel this order");
@@ -367,16 +370,6 @@ export const cancelOrder = async ({
             order.paymentStatus === "PAID"
         ) {
 
-            console.log("REFUND DEBUG");
-            console.log("Order total:", order.totalAmount);
-            console.log(
-                "Refund amount paise:",
-                Math.round(order.totalAmount * 100)
-            );
-            console.log(
-                "Razorpay payment ID:",
-                order.payment.razorpayPaymentId
-            );
             refund = await refundPayment(
                 order.payment.razorpayPaymentId,
                 Math.round(order.totalAmount * 100)
