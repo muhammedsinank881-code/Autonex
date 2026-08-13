@@ -372,7 +372,7 @@ export const cancelOrder = async ({
 
             refund = await refundPayment(
                 order.payment.razorpayPaymentId,
-                Math.round(order.totalAmount * 100)
+                Math.round(order.totalAmount)
             );
 
             order.paymentStatus = "REFUNDED";
