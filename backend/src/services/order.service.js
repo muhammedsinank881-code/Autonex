@@ -366,10 +366,6 @@ export const cancelOrder = async ({
             order.paymentMethod === "RAZORPAY" &&
             order.paymentStatus === "PAID"
         ) {
-            refund = await refundPayment(
-                order.payment.razorpayPaymentId,
-                Math.round(order.totalAmount * 100)
-            );
 
             console.log("REFUND DEBUG");
             console.log("Order total:", order.totalAmount);
@@ -380,6 +376,10 @@ export const cancelOrder = async ({
             console.log(
                 "Razorpay payment ID:",
                 order.payment.razorpayPaymentId
+            );
+            refund = await refundPayment(
+                order.payment.razorpayPaymentId,
+                Math.round(order.totalAmount * 100)
             );
 
             order.paymentStatus = "REFUNDED";
