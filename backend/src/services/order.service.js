@@ -333,15 +333,6 @@ export const cancelOrder = async ({
             throw new Error("Order not found");
         }
 
-        console.log("CANCEL ORDER DEBUG");
-        console.log("orderId:", orderId);
-        console.log("order._id:", order._id);
-        console.log("order.user:", order.user);
-        console.log("user:", user);
-        console.log("user.id:", user?.id);
-        console.log("payment:", order.payment);
-        console.log("razorpayPaymentId:", order.payment?.razorpayPaymentId);
-
         // Permission
         const isOwner = order.user.toString() === user.id.toString();
         const isAdmin = user.role === "admin";
@@ -378,6 +369,17 @@ export const cancelOrder = async ({
             refund = await refundPayment(
                 order.payment.razorpayPaymentId,
                 Math.round(order.totalAmount * 100)
+            );
+
+            console.log("REFUND DEBUG");
+            console.log("Order total:", order.totalAmount);
+            console.log(
+                "Refund amount paise:",
+                Math.round(order.totalAmount * 100)
+            );
+            console.log(
+                "Razorpay payment ID:",
+                order.payment.razorpayPaymentId
             );
 
             order.paymentStatus = "REFUNDED";
