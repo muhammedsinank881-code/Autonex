@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Eye, Search, Calendar, X, PackageSearch, ChevronLeft, ChevronRight } from "lucide-react";
-import useAllOrders from "../../hooks/orders/useAllOrders";
-import useDebounce from "../../hooks/useDebounce";
+import useAllOrders from "../../../hooks/orders/useAllOrders";
+import useDebounce from "../../../hooks/useDebounce";
+import AdminOrderDetailsModal from "./AdminOrderDetailsModal";
+
+
 
 export default function Orders() {
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [date, setDate] = useState("");
   const [page, setPage] = useState(1);
@@ -78,6 +83,16 @@ export default function Orders() {
       pages.push(totalPages);
     }
     return pages;
+  };
+
+  const handleOpenOrder = (order) => {
+    setSelectedOrder(order);
+    setIsOrderModalOpen(true);
+  };
+
+  const handleCloseOrder = () => {
+    setIsOrderModalOpen(false);
+    setSelectedOrder(null);
   };
 
   return (
@@ -207,6 +222,7 @@ export default function Orders() {
                     <td className="p-3.5 sm:p-4 text-right whitespace-nowrap">
                       <button
                         aria-label="View order details"
+                        onClick={() => handleOpenOrder(order)}
                         className="p-1.5 text-slate-400 hover:text-[#0066B2] hover:bg-slate-100 rounded-md transition"
                       >
                         <Eye className="w-4 h-4" />
@@ -251,8 +267,8 @@ export default function Orders() {
                     key={p}
                     onClick={() => setPage(p)}
                     className={`w-7 h-7 text-xs rounded-md font-semibold transition-colors ${currentPage === p
-                        ? "bg-[#0066B2] text-white"
-                        : "border border-slate-200 text-slate-600 hover:bg-slate-50"
+                      ? "bg-[#0066B2] text-white"
+                      : "border border-slate-200 text-slate-600 hover:bg-slate-50"
                       }`}
                   >
                     {p}
@@ -273,6 +289,12 @@ export default function Orders() {
           </div>
         )}
       </div>
+
+      <AdminOrderDetailsModal
+        order={selectedOrder}
+        isOpen={isOrderModalOpen}
+        onClose={handleCloseOrder}
+      />
     </div>
   );
 }

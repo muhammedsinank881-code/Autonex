@@ -25,7 +25,6 @@ export const getMyOrders = async (
 
 export const getOrderById = async (orderId) => {
   const { data } = await API.get(`/orders/${orderId}`);
-
   return data;
 };
 

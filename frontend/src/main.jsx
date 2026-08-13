@@ -13,9 +13,11 @@ import AuthProvider from "./providers/AuthProvider.jsx";
 import { CompareProvider } from "./context/CompareContext.jsx";
 
 import "./i18n";
+import ScrollToTop from "./context/ScrollToTop.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
+    <ScrollToTop />
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>

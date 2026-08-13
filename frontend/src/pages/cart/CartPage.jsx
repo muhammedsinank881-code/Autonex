@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { ShoppingCart, X, Plus, Minus, Info } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../hooks/cart/useCart";
 import { useUpdateCartItem } from "../../hooks/cart/useUpdateCartItem";
 import { useRemoveCartItem } from "../../hooks/cart/useRemoveCartItem";
@@ -70,11 +70,15 @@ const CartPage = () => {
         <div className="max-w-6xl mx-auto">
           {/* Breadcrumb */}
           <nav className="text-xs text-gray-500 mb-6">
-            <a href="#" className="hover:underline">
+            <Link to="/" className="hover:underline">
               Home
-            </a>
+            </Link>
+
             <span className="mx-1">/</span>
-            <span className="text-gray-800 font-medium">Cart</span>
+
+            <span className="text-gray-800 font-medium">
+              Cart
+            </span>
           </nav>
 
           {cartItems.length === 0 ? (
