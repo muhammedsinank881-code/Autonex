@@ -8,7 +8,7 @@ export const refundPayment = async (paymentId, amount) => {
 
         return refund;
     } catch (error) {
-        throw new Error(
+        throw new Error( 
             error.error?.description || "Refund failed"
         );
     }
