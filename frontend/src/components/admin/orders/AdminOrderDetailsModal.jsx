@@ -134,20 +134,8 @@ const AdminOrderDetailsModal = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="
-                  flex
-                  h-9
-                  w-9
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-slate-100
-                  text-slate-500
-                  transition
-                  hover:bg-slate-200
-                  hover:text-slate-800
-                "
-              >
+                className=" flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500
+                           transition hover:bg-slate-200 hover:text-slate-800 ">
                 <X className="h-4 w-4" />
               </button>
             </div>

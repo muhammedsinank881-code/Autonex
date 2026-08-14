@@ -319,7 +319,7 @@ export const cancelOrder = async ({
     ipAddress,
     userAgent,
 }) => {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
         throw new Error("Invalid Order ID");
     }
 

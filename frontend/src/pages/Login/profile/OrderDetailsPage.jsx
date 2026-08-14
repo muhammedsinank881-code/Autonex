@@ -107,17 +107,10 @@ const OrderDetailsPage = () => {
                                     cancelOrderMutation.mutate(orderData._id);
                                 }}
                                 disabled={cancelOrderMutation.isPending}
-                                className="inline-flex items-center justify-center gap-2
-                    bg-red-600 hover:bg-red-500
-                    text-white font-medium
-                    px-4 py-2.5 rounded-lg
-                    shadow-lg shadow-red-900/20
-                    transition-all text-sm
-                    disabled:opacity-60
-                    disabled:cursor-not-allowed"
-                            >
+                                className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 text-white font-medium
+                                             px-4 py-2.5 rounded-lg shadow-lg shadow-red-900/20 transition-all text-sm
+                                             disabled:opacity-60 disabled:cursor-not-allowed" >
                                 <XCircle className="w-4 h-4" />
-
                                 {cancelOrderMutation.isPending
                                     ? "Cancelling..."
                                     : "Cancel Order"}
@@ -130,15 +123,9 @@ const OrderDetailsPage = () => {
                                 downloadInvoiceMutation.mutate(orderData._id)
                             }
                             disabled={downloadInvoiceMutation.isPending}
-                            className="inline-flex items-center justify-center gap-2
-                bg-red-600 hover:bg-red-500
-                text-white font-medium
-                px-4 py-2.5 rounded-lg
-                shadow-lg shadow-red-900/20
-                transition-all text-sm
-                disabled:opacity-60
-                disabled:cursor-not-allowed"
-                        >
+                            className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500
+                                         text-white font-medium  px-4 py-2.5 rounded-lg  shadow-lg shadow-red-900/20
+                                          transition-all text-sm disabled:opacity-60 disabled:cursor-not-allowed" >
                             <Download className="w-4 h-4" />
 
                             {downloadInvoiceMutation.isPending
