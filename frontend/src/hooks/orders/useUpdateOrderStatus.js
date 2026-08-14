@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { updateOrderStatus } from "../../api/order.api";
 
 const useUpdateOrderStatus = () => {
@@ -8,17 +9,18 @@ const useUpdateOrderStatus = () => {
     mutationFn: updateOrderStatus,
 
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["orders", "all"],
-      });
+      toast.success("Order status updated successfully");
 
       queryClient.invalidateQueries({
-        queryKey: ["orders", variables.orderId],
+        queryKey: ["orders"],
       });
+    },
 
-      queryClient.invalidateQueries({
-        queryKey: ["orders", "me"],
-      });
+    onError: (error) => {
+      toast.error(
+        error.response?.data?.message ||
+        "Failed to update order status"
+      );
     },
   });
 };
