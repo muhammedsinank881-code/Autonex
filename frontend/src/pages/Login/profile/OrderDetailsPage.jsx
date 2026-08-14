@@ -141,12 +141,12 @@ const OrderDetailsPage = () => {
 
                     {/* Cancelled / Refund Banner (Conditional) */}
                     {isCancelled && (
-                        <div className="mt-4 p-4 rounded-xl bg-red-950/30 border border-red-900/50 flex items-start gap-3 text-red-300 text-sm">
-                            <XCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                        <div className="mt-4 p-4 rounded-xl bg-red-400/30 border border-red-900/50 flex items-start gap-3 text-red-500 text-sm">
+                            <XCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                             <div>
                                 <p className="font-semibold">Order Cancelled</p>
                                 {orderData.cancelledAt && (
-                                    <p className="text-xs text-red-400 mt-0.5">
+                                    <p className="text-xs text-red-600 mt-0.5">
                                         Cancelled on {formatDate(orderData.cancelledAt)}
                                     </p>
                                 )}
@@ -155,7 +155,7 @@ const OrderDetailsPage = () => {
                     )}
 
                     {showRefund && (
-                        <div className="mt-4 p-4 rounded-xl bg-amber-950/30 border border-amber-900/50 flex items-center gap-3 text-amber-300 text-sm">
+                        <div className="mt-4 p-4 rounded-xl bg-amber-400/30 border border-amber-900/50 flex items-center gap-3 text-amber-500 text-sm">
                             <Clock className="w-5 h-5 text-amber-400 shrink-0" />
                             <div>
                                 <span className="font-semibold">Refund Status: </span>

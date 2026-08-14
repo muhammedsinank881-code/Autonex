@@ -211,17 +211,17 @@ export const createOrder = async (checkoutId, paymentDetails) => {
 };
 
 export const updateOrderStatus = async ({
-    orderId,
+    id,
     status,
     employeeId,
     ipAddress,
     userAgent,
 }) => {
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
         throw new Error("Invalid Order ID");
     }
 
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(id);
 
     if (!order) {
         throw new Error("Order not found");
@@ -319,7 +319,7 @@ export const cancelOrder = async ({
     ipAddress,
     userAgent,
 }) => {
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
         throw new Error("Invalid Order ID");
     }
 

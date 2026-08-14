@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { cancelOrder } from "../../api/order.api";
+import { useNavigate } from "react-router-dom";
 
 const useCancelOrder = () => {
+  const navigate = useNavigate()
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -19,6 +21,8 @@ const useCancelOrder = () => {
       queryClient.invalidateQueries({
         queryKey: ["orders", "all"],
       });
+
+      navigate(-1)
     },
   });
 };
