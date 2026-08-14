@@ -18,10 +18,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import useOrder from "../../../hooks/orders/useOrder";
 import { useDownloadInvoice } from "../../../hooks/orders/useDownloadInvoice";
 import useCancelOrder from "../../../hooks/orders/useCancelOrder";
+import OrderProductReviewAction from "./OrderProductReviewAction";
+import OrderProductReviewInlineForm from "./OrderProductReviewInlineForm";
 
 const OrderDetailsPage = () => {
     const navigate = useNavigate()
     const { id } = useParams();
+    
+    // Track which product is currently being reviewed inline
+    const [reviewingProductId, setReviewingProductId] = React.useState(null);
 
     const downloadInvoiceMutation = useDownloadInvoice();
     const cancelOrderMutation = useCancelOrder();
@@ -292,33 +297,52 @@ const OrderDetailsPage = () => {
 
                             <div className="divide-y divide-slate-800   ">
                                 {orderData.items.map((item, idx) => (
-                                    <div key={idx} className="py-4 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
-                                        <div className="flex items-center gap-4">
-                                            {item.image ? (
-                                                <img
-                                                    src={item.image}
-                                                    alt={item.name}
-                                                    className="w-14 h-14 object-cover rounded-lg border border-gray-200 bg-gray-200 shrink-0"
-                                                />
-                                            ) : (
-                                                <div className="w-14 h-14 bg-white rounded-lg border border-gray-200 flex items-center justify-center text-[#0067B2] shrink-0">
-                                                    <Package className="w-6 h-6" />
+                                    <div key={idx} className="py-4 first:pt-0 last:pb-0 flex flex-col gap-2">
+                                        <div className="flex items-center justify-between gap-4">
+                                            <div className="flex items-center gap-4">
+                                                {item.image ? (
+                                                    <img
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        className="w-14 h-14 object-cover rounded-lg border border-gray-200 bg-gray-200 shrink-0"
+                                                    />
+                                                ) : (
+                                                    <div className="w-14 h-14 bg-white rounded-lg border border-gray-200 flex items-center justify-center text-[#0067B2] shrink-0">
+                                                        <Package className="w-6 h-6" />
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <h3 className="font-medium text-slate-600 text-sm sm:text-base">
+                                                        {item.name}
+                                                    </h3>
+                                                    <p className="text-xs text-slate-400 mt-1">
+                                                        Qty: <span className="font-semibold text-slate-500">{item.quantity}</span> × ₹{item.price}
+                                                    </p>
                                                 </div>
-                                            )}
-                                            <div>
-                                                <h3 className="font-medium text-slate-600 text-sm sm:text-base">
-                                                    {item.name}
-                                                </h3>
-                                                <p className="text-xs text-slate-400 mt-1">
-                                                    Qty: <span className="font-semibold text-slate-500">{item.quantity}</span> × ₹{item.price}
+                                            </div>
+                                            <div className="text-right flex flex-col items-end">
+                                                <p className="font-semibold text-slate-700 text-sm sm:text-base">
+                                                    ₹{item.subtotal}
                                                 </p>
+                                                {orderData.orderStatus === "DELIVERED" && (
+                                                    <OrderProductReviewAction
+                                                        item={item}
+                                                        orderId={orderData._id}
+                                                        reviewingProductId={reviewingProductId}
+                                                        setReviewingProductId={setReviewingProductId}
+                                                    />
+                                                )}
                                             </div>
                                         </div>
-                                        <div className="text-right">
-                                            <p className="font-semibold text-slate-700 text-sm sm:text-base">
-                                                ₹{item.subtotal}
-                                            </p>
-                                        </div>
+                                        
+                                        {reviewingProductId === item.productId && (
+                                            <OrderProductReviewInlineForm
+                                                item={item}
+                                                orderId={orderData._id}
+                                                onCancel={() => setReviewingProductId(null)}
+                                                onSuccess={() => setReviewingProductId(null)}
+                                            />
+                                        )}
                                     </div>
                                 ))}
                             </div>

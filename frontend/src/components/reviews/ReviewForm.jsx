@@ -3,11 +3,6 @@ import StarRating from "./StarRating";
 import useCreateReview from "../../hooks/reviews/useCreateReview";
 import useUpdateReview from "../../hooks/reviews/useUpdateReview";
 
-/**
- * Reusable review form for Create and Edit modes.
- * - Create mode: requires orderId
- * - Edit mode: accepts existingReview with pre-filled data
- */
 const ReviewForm = ({
   productId,
   eligibleOrderId,      // Required in create mode

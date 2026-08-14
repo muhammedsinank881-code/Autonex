@@ -194,8 +194,8 @@ export default function ProductListingPage({ pageTitle = "Shop" }) {
       image: product.images?.[0]?.url || "",
       price: product.price || 0,
       discountPrice: product.discountPrice,
-      rating: product.rating || 0,
-      reviewsCount: product.reviewsCount || 0,
+      rating: Number(product.averageRating || 0),
+      reviewsCount: Number(product.reviewCount || 0),
       description: product.description || "",
       brand: typeof product.brand === "object" ? product.brand?.name : "",
       category:

@@ -198,7 +198,7 @@ const ProductCard = ({ product, viewMode = "grid" }) => {
               className="fill-amber-400 text-amber-400 shrink-0"
             />
             <span className="text-[10px] font-semibold text-slate-700 leading-none">
-              {product.rating}
+              {Number(product.rating || 0).toFixed(1)}
             </span>
             <span className="text-[9px] text-slate-400 leading-none">
               ({product.reviewsCount || 0})
@@ -238,4 +238,4 @@ const ProductCard = ({ product, viewMode = "grid" }) => {
   );
 };
 
-export default memo(ProductCard);
+export default memo(ProductCard); 
