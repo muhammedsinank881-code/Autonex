@@ -24,6 +24,7 @@ import { useRemoveWishlist } from "../../hooks/wishlist/useRemoveWishlist";
 import { useProduct } from "../../hooks/products/useProduct.js";
 import { useAddToCart } from "../../hooks/cart/useAddToCart";
 import { useCompare } from "../../context/CompareContext";
+import ProductReviews from "../../components/reviews/ProductReviews";
 
 const ProductDetailsPage = ({ productId: propProductId }) => {
   const navigate = useNavigate();
@@ -58,7 +59,8 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
         title: found.name || "Untitled Product",
         price: found.price || 0,
         discountPrice: found.discountPrice || 0,
-        rating: found.rating || 5,
+        rating: found.averageRating || 0,
+        reviewCount: found.reviewCount || 0,
         category:
           typeof found.category === "object" ? found.category?.name : "General",
         brand: typeof found.brand === "object" ? found.brand?.name : "Generic",
@@ -476,7 +478,7 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
                   : "text-slate-400 hover:text-slate-600"
               }`}
             >
-              Reviews (3)
+              Reviews {currentProduct.reviewCount > 0 ? `(${currentProduct.reviewCount})` : ""}
             </button>
           </div>
 
@@ -504,10 +506,11 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
               </p>
             )}
             {activeTab === "reviews" && (
-              <p className="text-slate-600">
-                Customer feedback profiles and historic validation logs for{" "}
-                {currentProduct.title}.
-              </p>
+              <ProductReviews
+                productId={productId}
+                averageRating={currentProduct.rating}
+                reviewCount={currentProduct.reviewCount}
+              />
             )}
           </div>
         </div>

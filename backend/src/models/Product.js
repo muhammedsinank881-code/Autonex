@@ -100,6 +100,23 @@ const productSchema = new mongoose.Schema(
       default: 0,
     },
 
+    // ─── Denormalized rating fields ─────────────────────────────────────────
+    // Pre-computed from the Review collection every time a review is
+    // created, updated, or deleted. Avoids expensive per-request aggregation
+    // when listing/filtering products by rating.
+    averageRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+
+    reviewCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
     images: [
       {
         url: String,
@@ -145,5 +162,7 @@ productSchema.index({ category: 1 });
 productSchema.index({ brand: 1 });
 productSchema.index({ basePrice: 1 });
 productSchema.index({ createdAt: -1 });
+// For rating-based filtering and sorting on the product listing page
+productSchema.index({ averageRating: -1 });
 
 export default mongoose.model("Product", productSchema);

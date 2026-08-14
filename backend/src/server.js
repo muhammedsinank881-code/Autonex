@@ -19,6 +19,7 @@ import contactRoutes from "./routes/contact.routes.js"
 import checkoutRoutes from "./routes/checkout.routes.js"
 import paymentRoutes from "./routes/payment.routes.js"
 import orderRoutes from "./routes/order.routes.js"
+import reviewRoutes from "./routes/review.routes.js"
 import app from "./app.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 
@@ -43,6 +44,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/checkout", checkoutRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/orders", orderRoutes);  
+app.use("/api/reviews", reviewRoutes);
 
 
 app.use(errorHandler);

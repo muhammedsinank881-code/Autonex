@@ -20,6 +20,7 @@ import Categories from "./components/admin/category/Categories.jsx";
 import Products from "./components/admin/products/Products.jsx";
 import Brands from "./components/admin/brand/Brands.jsx";
 import Orders from "./components/admin/orders/Orders.jsx";
+import AdminReviews from "./components/admin/reviews/AdminReviews.jsx";
 import UsersView from "./components/admin/users/UsersView.jsx";
 import VerifyOTPPage from "./pages/Login/VerifyOTPPage";
 import ResetPassword from "./pages/Login/ResetPassword";
@@ -102,6 +103,7 @@ const App = () => {
             <Route path="categories" element={<Categories />} />
             <Route path="brands" element={<Brands />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="reviews" element={<AdminReviews />} />
             <Route path="users" element={<UsersView />} />
           </Route>
         </Route>
