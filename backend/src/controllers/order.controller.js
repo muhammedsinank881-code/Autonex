@@ -265,7 +265,7 @@ export const updateOrderStatusController = async (req, res) => {
 
         const order = await updateOrderStatus({
             id,
-            status,
+            status: status.status,
             employeeId: req.user.id,
             ipAddress: req.ip,
             userAgent: req.get("user-agent"),
