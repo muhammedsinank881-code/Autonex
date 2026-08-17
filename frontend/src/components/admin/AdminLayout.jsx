@@ -8,12 +8,6 @@ import { useSelector } from "react-redux";
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user } = useSelector((state) => state.auth);
-
-  const haveProfile = user.profile;
-
-  console.log(haveProfile);
-  console.log(user);
-
   if (!user) {
     return <div>Loading...</div>;
   }

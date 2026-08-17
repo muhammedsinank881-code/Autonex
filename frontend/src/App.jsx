@@ -30,6 +30,9 @@ import VerifyOTPPage from "./pages/Login/VerifyOTPPage";
 import ResetPassword from "./pages/Login/ResetPassword";
 import ForgotPassword from "./pages/Login/ForgotPassword";
 
+import EmployeeOrderPage from "./pages/employee/EmployeeOrderPage.jsx";
+import EmployeeRoute from "./routes/EmployeeRoute.jsx";
+
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
 import AdminRoute from "./routes/AdminRoute";
@@ -100,6 +103,10 @@ const App = () => {
           <Route path="/confirm-order" element={<ConfirmOrderModal />} />
           <Route path="/order-success" element={<OrderSuccess />} />
 
+        </Route>
+
+        <Route element={<EmployeeRoute />}>
+          <Route path="/e/o/:trackingId" element={<EmployeeOrderPage />} />
         </Route>
 
         <Route element={<AdminRoute />}>

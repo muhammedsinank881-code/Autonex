@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; 
+import { useQuill } from "react-quilljs";
+import "quill/dist/quill.snow.css";
+
 // Using the legacy import so it doesn't break depending on vite config for css
 import { Save, X, Image as ImageIcon } from "lucide-react";
 import { useAdminBlogById } from "../../../hooks/blogs/useBlogQueries";
@@ -14,6 +15,21 @@ const CreateEditBlog = () => {
   const navigate = useNavigate();
   const isEditing = !!id;
 
+  const { quill, quillRef } = useQuill({
+    theme: "snow",
+    modules: {
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ align: [] }],
+        ["blockquote", "code-block"],
+        ["link"],
+        ["clean"],
+      ],
+    },
+  });
+
   const { data: blogData, isLoading } = useAdminBlogById(id);
   const createBlog = useCreateBlog();
   const updateBlog = useUpdateBlog();
@@ -25,7 +41,7 @@ const CreateEditBlog = () => {
     category: CATEGORIES[0],
     status: "draft",
   });
-  
+
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
 
@@ -66,14 +82,14 @@ const CreateEditBlog = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     const data = new FormData();
     data.append("title", formData.title);
     data.append("excerpt", formData.excerpt);
     data.append("content", formData.content);
     data.append("category", formData.category);
     data.append("status", formData.status);
-    
+
     if (imageFile) {
       data.append("image", imageFile);
     }
@@ -105,7 +121,7 @@ const CreateEditBlog = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-        
+
         {/* Title */}
         <div>
           <label className="block text-sm font-semibold text-slate-700 mb-2">Title</label>
@@ -168,9 +184,8 @@ const CreateEditBlog = () => {
           <label className="block text-sm font-semibold text-slate-700 mb-2">Featured Image</label>
           <div className="flex items-start gap-6">
             <div
-              className={`w-40 h-24 rounded-lg flex items-center justify-center border-2 border-dashed ${
-                imagePreview ? "border-transparent bg-slate-100" : "border-slate-300 bg-slate-50"
-              } overflow-hidden relative group`}
+              className={`w-40 h-24 rounded-lg flex items-center justify-center border-2 border-dashed ${imagePreview ? "border-transparent bg-slate-100" : "border-slate-300 bg-slate-50"
+                } overflow-hidden relative group`}
             >
               {imagePreview ? (
                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
@@ -199,12 +214,18 @@ const CreateEditBlog = () => {
         <div>
           <label className="block text-sm font-semibold text-slate-700 mb-2">Content</label>
           <div className="bg-white rounded-lg border border-slate-200">
-             <ReactQuill 
-               theme="snow" 
-               value={formData.content} 
-               onChange={handleContentChange} 
-               className="h-64 mb-10" // added mb-10 because quill editor overflows the container
-             />
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Content
+              </label>
+
+              <div className="bg-white rounded-lg border border-slate-200">
+                <div
+                  ref={quillRef}
+                  className="min-h-[300px]"
+                />
+              </div>
+            </div>
           </div>
         </div>
 

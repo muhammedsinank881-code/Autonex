@@ -57,7 +57,7 @@ const FAQPage = () => {
                     <select 
                        value={activeCategory}
                        onChange={(e) => setActiveCategory(e.target.value)}
-                       className="bg-white border border-slate-200 py-3.5 px-4 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent transition-all outline-none"
+                       className="bg-white border border-slate-200 py-3 px-4 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent transition-all outline-none"
                     >
                         {categories.map((cat) => (
                             <option key={cat} value={cat}>{cat}</option>

@@ -11,7 +11,7 @@ import {
   ArrowDown
 } from "lucide-react";
 
-import { useAdminFaqs, useDeleteFaq, useUpdateFaqStatus, useReorderFaqs } from "../../../hooks/faqs/useFaqQueries";
+import { useAdminFaqs, } from "../../../hooks/faqs/useFaqQueries";
 import { useDeleteFaq as useApiDeleteFaq, useUpdateFaqStatus as useApiUpdateFaqStatus, useReorderFaqs as useApiReorderFaqs } from "../../../hooks/faqs/useFaqMutations";
 import useDebounce from "../../../hooks/useDebounce";
 
