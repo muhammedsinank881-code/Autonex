@@ -1,16 +1,17 @@
 import express from "express";
 import {
-    cancelOrderController,
-    createOrderController,
-    downloadInvoiceController,
-    getAllOrders,
-    getMyOrders,
-    getOrderById,
-    updateOrderStatusController
+  cancelOrderController,
+  createOrderController,
+  downloadInvoiceController,
+  getAllOrders,
+  getMyOrders,
+  getOrderById,
+  getOrderByTrackingId,
+  updateOrderStatusController,
 } from "../controllers/order.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
 import { adminOnly } from "../middlewares/role.middleware.js";
-
+import { employeeOrAdmin } from "../middlewares/role.middleware.js";
 
 const router = express.Router();
 
@@ -26,16 +27,15 @@ router.get("/:id", protect, getOrderById);
 // Admin - Get all orders
 router.get("/", protect, adminOnly, getAllOrders);
 
-router.patch(
-    "/:id/status",
-    protect,
-    updateOrderStatusController
-);
+router.patch("/:id/status", protect, updateOrderStatusController);
 
-router.patch(
-    "/:id/cancel",
-    protect,
-    cancelOrderController
+router.patch("/:id/cancel", protect, cancelOrderController);
+
+router.get(
+  "/tracking/:trackingId",
+  protect,
+  employeeOrAdmin,
+  getOrderByTrackingId,
 );
 
 router.get("/:id/invoice", protect, downloadInvoiceController);
