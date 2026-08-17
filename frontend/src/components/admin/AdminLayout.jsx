@@ -1,11 +1,22 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import Sidebar from "./Sidebar";
 import Logo from "../../assets/icons/AutonexLogo.png";
 import { Search, Warehouse, Menu, X } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user } = useSelector((state) => state.auth);
+
+  const haveProfile = user.profile;
+
+  console.log(haveProfile);
+  console.log(user);
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex h-screen bg-slate-100 font-sans text-slate-800 overflow-hidden">
@@ -23,7 +34,6 @@ export default function AdminLayout() {
         {/* ============ TOP NAVIGATION HEADER ============ */}
         <header className="bg-white border-b border-slate-200/80 sticky top-0 z-20 shrink-0">
           <div className="px-4 sm:px-6 py-3 flex items-center justify-between gap-3 md:gap-6">
-            
             {/* Left Section: Mobile Toggle & Logo */}
             <div className="flex items-center gap-3 shrink-0">
               <button
@@ -64,44 +74,35 @@ export default function AdminLayout() {
 
             {/* User Action Items */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-              {/* My Garage Button */}
-              <div className="hidden sm:flex items-center gap-2.5 bg-[#F1F5F9] px-3 py-1.5 rounded-full border border-slate-200/60">
-                <div className="w-7 h-7 rounded-full bg-[#0066B2] text-white flex items-center justify-center shrink-0">
-                  <Warehouse size={14} />
-                </div>
-                <div className="text-left text-xs">
-                  <span className="text-slate-400 block text-[9px] uppercase font-bold leading-none">
-                    Vehicle
-                  </span>
-                  <span className="font-bold text-slate-800 text-[11px]">
-                    My Garage
-                  </span>
-                </div>
-              </div>
-
               {/* Account Pill */}
               <div className="flex items-center gap-2 pl-2 sm:border-l sm:border-slate-200">
                 <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-xs border border-slate-200 shrink-0">
-                  A
+                  {user?.profile?.url ? (
+                    <img
+                      src={user.profile.url}
+                      alt={user?.fullName || "Admin"}
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    user?.fullName?.charAt(0)?.toUpperCase() || "A"
+                  )}
                 </div>
                 <div className="text-left hidden lg:block text-xs">
                   <span className="block text-[10px] text-slate-400 leading-none mb-0.5">
                     Signed in as
                   </span>
-                  <span className="font-bold text-slate-800">Admin User</span>
+                  <span className="font-bold text-slate-800">
+                    {user.fullName || "Admin"}
+                  </span>
                 </div>
               </div>
             </div>
-
           </div>
         </header>
 
         {/* ============ MAIN CONTENT AREA & SIDEBAR ============ */}
         <div className="flex flex-1 overflow-hidden relative">
-          <Sidebar
-            isOpen={sidebarOpen}
-            onClose={() => setSidebarOpen(false)}
-          />
+          <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
           {/* View Content */}
           <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">

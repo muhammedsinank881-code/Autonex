@@ -20,6 +20,8 @@ import checkoutRoutes from "./routes/checkout.routes.js"
 import paymentRoutes from "./routes/payment.routes.js"
 import orderRoutes from "./routes/order.routes.js"
 import reviewRoutes from "./routes/review.routes.js"
+import blogRoutes from "./routes/blog.routes.js"
+import faqRoutes from "./routes/faq.routes.js"
 import app from "./app.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 
@@ -45,6 +47,8 @@ app.use("/api/checkout", checkoutRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/orders", orderRoutes);  
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/blogs", blogRoutes);
+app.use("/api/faqs", faqRoutes);
 
 
 app.use(errorHandler);

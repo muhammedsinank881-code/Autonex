@@ -22,6 +22,10 @@ import Brands from "./components/admin/brand/Brands.jsx";
 import Orders from "./components/admin/orders/Orders.jsx";
 import AdminReviews from "./components/admin/reviews/AdminReviews.jsx";
 import UsersView from "./components/admin/users/UsersView.jsx";
+import AdminBlogs from "./components/admin/blogs/Blogs.jsx";
+import CreateEditBlog from "./components/admin/blogs/CreateEditBlog.jsx";
+import AdminFAQs from "./components/admin/faqs/FAQs.jsx";
+import CreateEditFAQ from "./components/admin/faqs/CreateEditFAQ.jsx";
 import VerifyOTPPage from "./pages/Login/VerifyOTPPage";
 import ResetPassword from "./pages/Login/ResetPassword";
 import ForgotPassword from "./pages/Login/ForgotPassword";
@@ -32,6 +36,7 @@ import AdminRoute from "./routes/AdminRoute";
 import Dashboard from "./components/admin/Dashboard.jsx";
 import MainLoader from "./components/layout.jsx/MainLoader.jsx";
 import Blog from "./pages/blog&contact/Blog.jsx";
+import BlogDetails from "./pages/blog&contact/BlogDetails.jsx";
 import AllCategoryPage from "./pages/home/AllCategoryPage.jsx";
 import ContactPage from "./pages/blog&contact/ContactPage.jsx";
 import FAQPage from "./pages/blog&contact/FAQPage.jsx";
@@ -87,6 +92,7 @@ const App = () => {
           />
           <Route path="/compare" element={<ComparePage />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogDetails />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/faq" element={<FAQPage />} />
 
@@ -104,6 +110,12 @@ const App = () => {
             <Route path="brands" element={<Brands />} />
             <Route path="orders" element={<Orders />} />
             <Route path="reviews" element={<AdminReviews />} />
+            <Route path="blogs" element={<AdminBlogs />} />
+            <Route path="blogs/create" element={<CreateEditBlog />} />
+            <Route path="blogs/:id/edit" element={<CreateEditBlog />} />
+            <Route path="faqs" element={<AdminFAQs />} />
+            <Route path="faqs/create" element={<CreateEditFAQ />} />
+            <Route path="faqs/:id/edit" element={<CreateEditFAQ />} />
             <Route path="users" element={<UsersView />} />
           </Route>
         </Route>
