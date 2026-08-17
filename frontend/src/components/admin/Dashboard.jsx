@@ -8,30 +8,37 @@ import {
   Loader2,
 } from "lucide-react";
 import { useDashboardStats } from "../../hooks/dashboard/useDashboardStatus";
+import { useAdminDashboardAnalytics } from "../../hooks/dashboard/useAdminAnalytics";
 import useAllOrders from "../../hooks/orders/useAllOrders";
 import DashboardSkeleton from "../layout.jsx/DashboardSkeleton";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const {
     data: statsData,
     isLoading: isStatsLoading,
     isError: isStatsError,
-    error: statsError
+    error: statsError,
   } = useDashboardStats();
+
+  const { data, isLoading, isError } = useAdminDashboardAnalytics();
 
   // Fetch orders (Pass a larger limit or full set if needed to calculate month-over-month stats accurately)
   const {
     data: ordersData,
     isLoading: isOrdersLoading,
     isError: isOrdersError,
-    error: ordersError
+    error: ordersError,
   } = useAllOrders({ page: 1, limit: 100 });
 
   // 1. Extract raw order list and total count from API response
-  const allOrders = useMemo(() => ordersData?.data || ordersData?.orders || [], [ordersData]);
-  const totalOrdersCount = ordersData?.pagination?.totalOrders ?? allOrders.length;
+  const allOrders = useMemo(
+    () => ordersData?.data || ordersData?.orders || [],
+    [ordersData],
+  );
+  const totalOrdersCount =
+    ordersData?.pagination?.totalOrders ?? allOrders.length;
 
   // 2. Dynamic Month-over-Month Calculation for Orders
   const ordersMonthOverMonthChange = useMemo(() => {
@@ -73,10 +80,14 @@ const Dashboard = () => {
   }, [allOrders]);
 
   if (isStatsLoading) return <DashboardSkeleton />;
-  if (isStatsError) return <p className="p-4 text-red-500">{statsError.message}</p>;
+  if (isStatsError)
+    return <p className="p-4 text-red-500">{statsError.message}</p>;
 
-  const { totalUsers, activeProducts, thisMonthUsers, thisMonthProducts } = statsData?.data || {};
+  const { totalUsers, activeProducts, thisMonthUsers, thisMonthProducts } =
+    statsData?.data || {};
   const recentOrders = allOrders.slice(0, 5); // Take top 5 for table display
+
+  const analytics = data?.data;
 
   return (
     <div className="flex flex-col min-h-full bg-[#F8FAFC] font-sans antialiased text-slate-800">
@@ -125,8 +136,12 @@ const Dashboard = () => {
             {[
               {
                 title: "Total Revenue",
-                value: "$128,430.00",
-                change: "+14.2%",
+                value: isLoading
+                  ? "..."
+                  : `₹${(analytics?.overview?.netRevenue ?? 0).toLocaleString("en-IN")}`,
+                change: isLoading
+                  ? "..."
+                  : `${analytics?.growth?.revenue >= 0 ? "+" : ""}${analytics?.growth?.revenue ?? 0}%`,
                 icon: TrendingUp,
                 color: "text-emerald-600 bg-emerald-50",
               },
@@ -193,7 +208,8 @@ const Dashboard = () => {
               </div>
               <button
                 onClick={() => navigate("/admin/orders")}
-                className="text-xs font-bold text-[#0066B2] hover:underline text-left sm:text-right">
+                className="text-xs font-bold text-[#0066B2] hover:underline text-left sm:text-right"
+              >
                 View All Orders
               </button>
             </div>
@@ -212,7 +228,10 @@ const Dashboard = () => {
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                   {isOrdersLoading ? (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-slate-400">
+                      <td
+                        colSpan={5}
+                        className="py-8 text-center text-slate-400"
+                      >
                         <div className="flex items-center justify-center gap-2">
                           <Loader2 className="animate-spin" size={18} />
                           <span>Loading orders...</span>
@@ -227,20 +246,33 @@ const Dashboard = () => {
                     </tr>
                   ) : recentOrders.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-6 text-center text-slate-400">
+                      <td
+                        colSpan={5}
+                        className="py-6 text-center text-slate-400"
+                      >
                         No recent orders found.
                       </td>
                     </tr>
                   ) : (
                     recentOrders.map((order, i) => {
-                      const orderId = order.orderNumber || order._id || `#ORD-${order.id}`;
-                      const customerName = order.shippingAddress?.fullName || order.user?.email || "N/A";
+                      const orderId =
+                        order.orderNumber || order._id || `#ORD-${order.id}`;
+                      const customerName =
+                        order.shippingAddress?.fullName ||
+                        order.user?.email ||
+                        "N/A";
                       const category = order.items?.[0]?.name || "General";
-                      const amount = typeof order.totalAmount === "number" ? `$${order.totalAmount.toFixed(2)}` : "$0.00";
-                      const status = order.orderStatus
+                      const amount =
+                        typeof order.totalAmount === "number"
+                          ? `$${order.totalAmount.toFixed(2)}`
+                          : "$0.00";
+                      const status = order.orderStatus;
 
                       return (
-                        <tr key={order._id || i} className="hover:bg-slate-50 transition-colors">
+                        <tr
+                          key={order._id || i}
+                          className="hover:bg-slate-50 transition-colors"
+                        >
                           <td className="py-3.5 px-4 sm:px-5 font-bold text-[#0066B2]">
                             {orderId}
                           </td>
@@ -255,12 +287,20 @@ const Dashboard = () => {
                           </td>
                           <td className="py-3.5 px-4 sm:px-5">
                             <span
-                              className={`px-2.5 py-1 rounded-full text-[10px] font-bold inline-block capitalize ${["placed","completed", "shipped", "delivered"].includes(status.toLowerCase())
+                              className={`px-2.5 py-1 rounded-full text-[10px] font-bold inline-block capitalize ${
+                                [
+                                  "placed",
+                                  "completed",
+                                  "shipped",
+                                  "delivered",
+                                ].includes(status.toLowerCase())
                                   ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                                  : ["processing", "shipped"].includes(status.toLowerCase())
+                                  : ["processing", "shipped"].includes(
+                                        status.toLowerCase(),
+                                      )
                                     ? "bg-blue-50 text-blue-600 border border-blue-200"
                                     : "bg-amber-50 text-red-600 border border-red-200"
-                                }`}
+                              }`}
                             >
                               {status}
                             </span>
@@ -277,6 +317,6 @@ const Dashboard = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Dashboard;
