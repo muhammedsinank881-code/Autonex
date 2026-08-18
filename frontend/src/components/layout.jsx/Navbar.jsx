@@ -18,7 +18,6 @@ import { useWishlist } from "../../hooks/wishlist/useWishlist";
 import LanguageSelector from "../common/LanguageSelector.jsx";
 import CurrencySelector from "../common/CurrencySelector.jsx";
 import { useTranslation } from "react-i18next";
-import CurrencySelector from "../common/CurrencySelector.jsx";
 
 
 const navItems = [

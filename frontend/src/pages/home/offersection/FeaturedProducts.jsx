@@ -148,9 +148,15 @@ const FeaturedProducts = () => {
             </h3>
 
             <div className="flex items-baseline gap-1.5 mt-1">
-              <span className="text-xs sm:text-sm font-extrabold text-[#00A651]">
-                {price}
-              </span>
+              <Price
+                amount={
+                  product.discountPrice > 0
+                    ? product.discountPrice
+                    : product.price
+                }
+                currency={product.currency || "USD"}
+                className="text-xs sm:text-sm font-extrabold text-[#00A651]"
+              />
               {originalPrice && (
                 <span className="text-[9px] sm:text-[10px] text-gray-400 line-through">
                   {originalPrice}
