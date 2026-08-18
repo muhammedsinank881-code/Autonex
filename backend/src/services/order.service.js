@@ -5,7 +5,6 @@ import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 import { generateQRCode } from "../utils/generateQRCode.js";
 import { sendOrderStatusEmail } from "./email/order.email.js";
-import { sendWhatsAppOrderConfirmation } from "./whatsapp.service.js";
 import User from "../models/User.js";
 
 const generateOrderNumber = () => {
