@@ -22,6 +22,7 @@ import orderRoutes from "./routes/order.routes.js"
 import reviewRoutes from "./routes/review.routes.js"
 import blogRoutes from "./routes/blog.routes.js"
 import faqRoutes from "./routes/faq.routes.js"
+import settingsRoutes from "./routes/settings.routes.js";
 import app from "./app.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 
@@ -49,6 +50,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/faqs", faqRoutes);
+app.use("/api/settings", settingsRoutes);
 
 
 app.use(errorHandler);

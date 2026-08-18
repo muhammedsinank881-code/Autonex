@@ -47,6 +47,7 @@ import Payment from "./pages/payment/Payment.jsx";
 import OrderSuccess from "./pages/payment/OrderSuccess.jsx";
 import ConfirmOrderModal from "./pages/payment/ConfirmOrderModal.jsx";
 import OrderDetailsPage from "./pages/Login/profile/OrderDetailsPage.jsx";
+import Settings from "./components/admin/Settings.jsx";
 
 const App = () => {
   useInitializeAuth();
@@ -124,6 +125,7 @@ const App = () => {
             <Route path="faqs/create" element={<CreateEditFAQ />} />
             <Route path="faqs/:id/edit" element={<CreateEditFAQ />} />
             <Route path="users" element={<UsersView />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Route>
       </Routes>
