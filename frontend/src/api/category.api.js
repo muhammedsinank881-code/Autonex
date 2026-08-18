@@ -1,8 +1,8 @@
-import axios from "./axios";
+import API from "./axios";
 
 // GET /api/categories
-export const getCategories = async ({ page = 1, search = "" }) => {
-  const { data } = await axios.get("/category", {
+export const getCategories = async ({ page = 1, search = "", limit = 10 }) => {
+  const { data } = await API.get("/category", {
     params: {
       page,
       search,
@@ -12,21 +12,22 @@ export const getCategories = async ({ page = 1, search = "" }) => {
 
   return data;
 };
+
 // GET /api/categories/active
 export const getActiveCategories = async () => {
-  const { data } = await axios.get("/category/active");
+  const { data } = await API.get("/category/active");
   return data;
 };
 
 // GET /api/categories/:id
 export const getCategoryById = async (id) => {
-  const { data } = await axios.get(`/category/${id}`);
+  const { data } = await API.get(`/category/${id}`);
   return data;
 };
 
 // POST /api/categories
 export const createCategory = async (formData) => {
-  const { data } = await axios.post("/category", formData, {
+  const { data } = await API.post("/category", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -37,7 +38,7 @@ export const createCategory = async (formData) => {
 
 // PUT /api/categories/:id
 export const updateCategory = async ({ id, formData }) => {
-  const { data } = await axios.put(`/category/${id}`, formData, {
+  const { data } = await API.put(`/category/${id}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -48,12 +49,12 @@ export const updateCategory = async ({ id, formData }) => {
 
 // DELETE /api/categories/:id
 export const deleteCategory = async (id) => {
-  const { data } = await axios.delete(`/category/${id}`);
+  const { data } = await API.delete(`/category/${id}`);
   return data;
 };
 
 // PATCH /api/categories/:id/restore
 export const restoreCategory = async (id) => {
-  const { data } = await axios.patch(`/category/${id}/restore`);
+  const { data } = await API.patch(`/category/${id}/restore`);
   return data;
 };

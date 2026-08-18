@@ -43,10 +43,11 @@ const Products = () => {
     page,
   });
   const { data: brandsData } = useBrands({
-    limit:100
+    limit: 100
   });
   const { data: categoriesData } = useCategories({
-    limit : 100
+    page: 1,
+    limit: 100,
   });
 
   const products = productsData?.data || [];
@@ -303,11 +304,10 @@ const Products = () => {
                 <button
                   key={pageNum}
                   onClick={() => setPage(pageNum)}
-                  className={`px-3 py-1 rounded text-xs font-semibold ${
-                    pagination.currentPage === pageNum
+                  className={`px-3 py-1 rounded text-xs font-semibold ${pagination.currentPage === pageNum
                       ? "bg-[#0066B2] text-white"
                       : "border border-slate-200 text-slate-600 hover:bg-white"
-                  }`}
+                    }`}
                 >
                   {pageNum}
                 </button>

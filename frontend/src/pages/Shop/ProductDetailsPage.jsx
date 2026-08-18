@@ -25,6 +25,7 @@ import { useProduct } from "../../hooks/products/useProduct.js";
 import { useAddToCart } from "../../hooks/cart/useAddToCart";
 import { useCompare } from "../../context/CompareContext";
 import ProductReviews from "../../components/reviews/ProductReviews";
+import Price from "../../components/common/Price.jsx";
 
 const ProductDetailsPage = ({ productId: propProductId }) => {
   const navigate = useNavigate();
@@ -107,10 +108,10 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
 
   const discountPercentage = hasDiscount
     ? Math.round(
-        ((currentProduct.price - currentProduct.discountPrice) /
-          currentProduct.price) *
-          100,
-      )
+      ((currentProduct.price - currentProduct.discountPrice) /
+        currentProduct.price) *
+      100,
+    )
     : 0;
 
   // Extract related items (excluding current product)
@@ -123,7 +124,7 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
         id: product.id,
         sku: product.sku || product.id?.substring(0, 8),
         title: product.name || "Untitled Product",
-        price: product.price ? `$${product.price}` : "$0.00",
+        price: product.price || 0.00 ,
 
         rating: product.rating || 4,
         reviewsCount: product.reviewsCount || 0,
@@ -199,11 +200,10 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
                 <Star
                   key={i}
                   size={14}
-                  className={`fill-current ${
-                    i < Math.floor(currentProduct.rating)
+                  className={`fill-current ${i < Math.floor(currentProduct.rating)
                       ? "text-[#f5b300]"
                       : "text-slate-200"
-                  }`}
+                    }`}
                 />
               ))}
               <span className="text-slate-900 font-bold ml-1">
@@ -256,11 +256,10 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-lg bg-white overflow-hidden p-1 flex items-center justify-center text-[10px] text-slate-300 transition-all cursor-pointer ${
-                    selectedImage === index
+                  className={`w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-lg bg-white overflow-hidden p-1 flex items-center justify-center text-[10px] text-slate-300 transition-all cursor-pointer ${selectedImage === index
                       ? "border-2 border-[#006bc0] ring-1 ring-[#006bc0]"
                       : "border border-slate-200"
-                  }`}
+                    }`}
                 >
                   {img?.startsWith("http") ? (
                     <img
@@ -286,14 +285,16 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
 
               {/* Price Metrics */}
               <div className="flex items-baseline gap-3 mb-4">
-                <span className="text-2xl sm:text-3xl font-bold text-[#00a062] tracking-tight">
-                  ${displayPrice.toFixed(2)}
-                </span>
+                <Price
+                  amount={displayPrice}
+                  className="text-2xl sm:text-3xl font-bold text-[#00a062] tracking-tight"
+                />
 
                 {hasDiscount && (
-                  <span className="text-xs sm:text-sm text-slate-400 line-through font-normal">
-                    ${currentProduct.price.toFixed(2)}
-                  </span>
+                  <Price
+                    amount={currentProduct.price}
+                    className="text-xs sm:text-sm text-slate-400 line-through font-normal"
+                  />
                 )}
               </div>
 
@@ -359,11 +360,10 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
                       });
                     }
                   }}
-                  className={`flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    isCurrentWishlisted
+                  className={`flex items-center gap-1.5 transition-colors cursor-pointer ${isCurrentWishlisted
                       ? "text-red-500 font-semibold"
                       : "hover:text-red-500 text-slate-600"
-                  }`}
+                    }`}
                 >
                   <Heart
                     size={14}
@@ -452,31 +452,28 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
           <div className="flex gap-4 sm:gap-6 border-b border-slate-100 mb-4 text-xs sm:text-sm font-medium overflow-x-auto whitespace-nowrap scrollbar-none">
             <button
               onClick={() => setActiveTab("description")}
-              className={`pb-2 transition-all cursor-pointer ${
-                activeTab === "description"
+              className={`pb-2 transition-all cursor-pointer ${activeTab === "description"
                   ? "text-[#006bc0] border-b-2 border-[#006bc0] font-semibold"
                   : "text-slate-400 hover:text-slate-600"
-              }`}
+                }`}
             >
               Description
             </button>
             <button
               onClick={() => setActiveTab("info")}
-              className={`pb-2 transition-all cursor-pointer ${
-                activeTab === "info"
+              className={`pb-2 transition-all cursor-pointer ${activeTab === "info"
                   ? "text-[#006bc0] border-b-2 border-[#006bc0] font-semibold"
                   : "text-slate-400 hover:text-slate-600"
-              }`}
+                }`}
             >
               Additional Information
             </button>
             <button
               onClick={() => setActiveTab("reviews")}
-              className={`pb-2 transition-all cursor-pointer ${
-                activeTab === "reviews"
+              className={`pb-2 transition-all cursor-pointer ${activeTab === "reviews"
                   ? "text-[#006bc0] border-b-2 border-[#006bc0] font-semibold"
                   : "text-slate-400 hover:text-slate-600"
-              }`}
+                }`}
             >
               Reviews {currentProduct.reviewCount > 0 ? `(${currentProduct.reviewCount})` : ""}
             </button>

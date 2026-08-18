@@ -6,6 +6,7 @@ import { useCart } from "../../hooks/cart/useCart";
 import { useUpdateCartItem } from "../../hooks/cart/useUpdateCartItem";
 import { useRemoveCartItem } from "../../hooks/cart/useRemoveCartItem";
 import { useClearCart } from "../../hooks/cart/useClearCart";
+import Price from "../../components/common/Price";
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -110,9 +111,10 @@ const CartPage = () => {
                     <Info className="w-4 h-4 text-red-500 flex-shrink-0" />
                     <span>
                       Add{" "}
-                      <strong className="font-bold">
-                        ${amountNeededForFreeShipping.toFixed(2)}
-                      </strong>{" "}
+                      <Price
+                        amount={amountNeededForFreeShipping}
+                        className="font-bold"
+                      />{" "}
                       to cart and get Free Shipping!
                     </span>
                   </div>
@@ -161,7 +163,7 @@ const CartPage = () => {
                             </div>
                           </td>
                           <td className="py-4 px-4 text-right font-medium text-gray-700">
-                            ${item.price.toFixed(2)}
+                            <Price amount={item.price} />
                           </td>
                           <td className="py-4 px-4">
                             <div className="flex items-center justify-center border border-gray-200 rounded w-20 mx-auto bg-white">
@@ -183,7 +185,7 @@ const CartPage = () => {
                             </div>
                           </td>
                           <td className="py-4 px-4 text-right font-medium text-gray-800">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            <Price amount={item.price * item.quantity} />
                           </td>
                           <td className="py-4 px-2 text-center">
                             <button
@@ -231,9 +233,10 @@ const CartPage = () => {
 
                   <div className="flex justify-between items-center text-xs text-gray-600 pt-1">
                     <span>Subtotal</span>
-                    <span className="font-semibold text-gray-800">
-                      ${subtotal.toFixed(2)}
-                    </span>
+                    <Price
+                      amount={subtotal}
+                      className="font-semibold text-gray-800"
+                    />
                   </div>
 
                   <hr className="border-gray-100" />
@@ -244,9 +247,11 @@ const CartPage = () => {
                       <span>Shipping</span>
                       <div className="text-right space-y-1">
                         <label className="flex items-center gap-2 justify-end cursor-pointer">
-                          <span>
-                            Flat rate: <strong>$15.00</strong>
-                          </span>
+                          Flat rate:{" "}
+                          <Price
+                            amount={15}
+                            className="font-semibold"
+                          />
                           <input
                             type="radio"
                             name="shipping"
@@ -279,7 +284,10 @@ const CartPage = () => {
                   {/* Total */}
                   <div className="flex justify-between items-center text-sm font-semibold text-gray-800 pt-1">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <Price
+                      amount={total}
+                      className="font-semibold"
+                    />
                   </div>
 
                   {/* Checkout Button */}

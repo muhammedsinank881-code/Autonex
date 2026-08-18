@@ -6,6 +6,7 @@ import { useRemoveWishlist } from "../../hooks/wishlist/useRemoveWishlist";
 import { useClearWishlist } from "../../hooks/wishlist/useClearWishlist";
 import { useAddToCart } from "../../hooks/cart/useAddToCart";
 import CartSkeleton from "./CartSkeleton";
+import Price from "../../components/common/Price";
 
 const Wishlist = ({ onReturnToShop }) => {
   const { data, isLoading } = useWishlist();
@@ -112,9 +113,10 @@ const Wishlist = ({ onReturnToShop }) => {
                       {item.name}
                     </h4>
                     <div className="flex items-center space-x-3 mt-1">
-                      <span className="text-sm font-semibold text-[#0067B2]">
-                        ${numPrice.toFixed(2)}
-                      </span>
+                      <Price
+                        amount={numPrice}
+                        className="text-sm font-semibold text-[#0067B2]"
+                      />
                       <span
                         className={`text-xs font-medium px-2 py-0.5 rounded-md ${item.stock > 0
                           ? "bg-emerald-50 text-emerald-700"

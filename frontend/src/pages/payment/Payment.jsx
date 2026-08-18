@@ -3,7 +3,8 @@ import { Link, Navigate, useLocation } from "react-router-dom";
 import { ShieldCheck, ArrowLeft, CreditCard } from "lucide-react";
 import useCreatePaymentOrder from "../../hooks/payment/useCreatePaymentOrder";
 import useVerifyPayment from "../../hooks/payment/useVerifyPayment";
-import { useCreateOrder } from "../../hooks/orders/useCreateOrder"; 
+import { useCreateOrder } from "../../hooks/orders/useCreateOrder";
+import Price from "../../components/common/Price";
 
 const Payment = () => {
     const location = useLocation();
@@ -52,7 +53,6 @@ const Payment = () => {
 
         createPaymentOrder(checkoutData._id, {
             onSuccess: (response) => {
-                console.log("Create Payment Order Response:", response);
 
                 const paymentData = response.data;
 
@@ -108,11 +108,6 @@ const Payment = () => {
                             },
                             {
                                 onSuccess: (response) => {
-                                    console.log(
-                                        "Payment Verification Success:",
-                                        response
-                                    );
-
                                     createOrder({
                                         checkoutId: checkoutData._id,
 
@@ -230,9 +225,10 @@ const Payment = () => {
                                         </p>
                                     </div>
 
-                                    <span className="font-semibold text-gray-700 whitespace-nowrap">
-                                        ${item.subtotal?.toFixed(2)}
-                                    </span>
+                                    <Price
+                                        amount={item.subtotal || 0}
+                                        className="font-semibold text-gray-700 whitespace-nowrap"
+                                    />
                                 </div>
                             ))}
 
@@ -244,25 +240,28 @@ const Payment = () => {
                             <div className="flex justify-between text-gray-500">
                                 <span>Subtotal</span>
 
-                                <span className="font-semibold text-gray-700">
-                                    ${subtotal.toFixed(2)}
-                                </span>
+                                <Price
+                                    amount={subtotal}
+                                    className="font-semibold text-gray-700"
+                                />
                             </div>
 
                             <div className="flex justify-between text-gray-500">
                                 <span>Shipping</span>
 
-                                <span className="font-semibold text-gray-700">
-                                    ${shipping.toFixed(2)}
-                                </span>
+                                <Price
+                                    amount={shipping}
+                                    className="font-semibold text-gray-700"
+                                />
                             </div>
 
                             <div className="flex justify-between text-gray-500">
                                 <span>Tax</span>
 
-                                <span className="font-semibold text-gray-700">
-                                    ${tax.toFixed(2)}
-                                </span>
+                                <Price
+                                    amount={tax}
+                                    className="font-semibold text-gray-700"
+                                />
                             </div>
 
                             {discount > 0 && (
@@ -270,7 +269,7 @@ const Payment = () => {
                                     <span>Discount</span>
 
                                     <span className="font-semibold">
-                                        -${discount.toFixed(2)}
+                                        -<Price amount={discount} />
                                     </span>
                                 </div>
                             )}
@@ -281,9 +280,10 @@ const Payment = () => {
                                     Total Amount
                                 </span>
 
-                                <span className="font-bold text-[#0066b2] text-base">
-                                    ${total.toFixed(2)}
-                                </span>
+                                <Price
+                                    amount={total}
+                                    className="font-bold text-[#0066b2] text-base"
+                                />
                             </div>
 
                         </div>
@@ -367,9 +367,10 @@ const Payment = () => {
                                     Amount to Pay
                                 </p>
 
-                                <p className="text-2xl font-bold text-[#0066b2]">
-                                    ${total.toFixed(2)}
-                                </p>
+                                <Price
+                                    amount={total}
+                                    className="text-2xl font-bold text-[#0066b2]"
+                                />
 
                             </div>
 
@@ -403,7 +404,15 @@ const Payment = () => {
                                     ? "Creating Payment..."
                                     : isVerifyingPayment
                                         ? "Verifying Payment..."
-                                        : `Pay $${total.toFixed(2)}`}
+                                        : (
+                                            <>
+                                                Pay{" "}
+                                                <Price
+                                                    amount={total}
+                                                    className="text-white"
+                                                />
+                                            </>
+                                        )}
                             </button>
 
                             {paymentError && (

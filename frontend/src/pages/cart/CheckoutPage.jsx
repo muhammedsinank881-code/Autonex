@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useGetDefaultAddress } from "../../hooks/address/useGetDefaultAddress";
 import { useCart } from "../../hooks/cart/useCart";
 import { useCheckout } from "../../hooks/checkout/useCheckout";
+import Price from "../../components/common/Price";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -199,9 +200,10 @@ const CheckoutPage = () => {
                 {amountNeededForFreeShipping > 0 ? (
                   <>
                     Add{" "}
-                    <strong className="font-bold">
-                      ${amountNeededForFreeShipping.toFixed(2)}
-                    </strong>{" "}
+                    <Price
+                      amount={amountNeededForFreeShipping}
+                      className="font-bold"
+                    />{" "}
                     to cart and get free shipping!
                   </>
                 ) : (
@@ -418,9 +420,10 @@ const CheckoutPage = () => {
                           × {item.quantity}
                         </strong>
                       </span>
-                      <span className="font-semibold text-gray-800 whitespace-nowrap">
-                        ${(item.price * item.quantity).toFixed(2)}
-                      </span>
+                      <Price
+                        amount={item.price * item.quantity}
+                        className="font-semibold text-gray-800 whitespace-nowrap"
+                      />
                     </div>
                   ))}
                 </div>
@@ -430,9 +433,10 @@ const CheckoutPage = () => {
                 {/* Subtotal */}
                 <div className="flex justify-between items-center text-xs text-gray-600">
                   <span>Subtotal</span>
-                  <span className="font-semibold text-gray-800">
-                    ${subtotal.toFixed(2)}
-                  </span>
+                  <Price
+                    amount={subtotal}
+                    className="font-semibold text-gray-800"
+                  />
                 </div>
 
                 <hr className="border-gray-100" />
@@ -444,7 +448,11 @@ const CheckoutPage = () => {
                     <div className="text-right space-y-1">
                       <label className="flex items-center gap-2 justify-end cursor-pointer">
                         <span>
-                          Flat rate: <strong>$15.00</strong>
+                          Flat rate:{" "}
+                          <Price
+                            amount={shippingCost}
+                            className="font-semibold"
+                          />
                         </span>
                         <input
                           type="radio"
@@ -475,7 +483,10 @@ const CheckoutPage = () => {
                 {/* Total */}
                 <div className="flex justify-between items-center text-sm font-semibold text-gray-800 pt-1">
                   <span>Total</span>
-                  <span className="text-base">${total.toFixed(2)}</span>
+                  <Price
+                    amount={total}
+                    className="text-base"
+                  />
                 </div>
 
                 {/* Payment Methods */}

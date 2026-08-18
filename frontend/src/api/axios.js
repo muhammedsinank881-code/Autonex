@@ -2,9 +2,6 @@ import axios from "axios";
 import { store } from "../redux/store";
 import { setAccessToken, logout } from "../redux/slices/authSlice";
 
-// ======================================================
-// CUSTOMER API
-// ======================================================
 
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL,

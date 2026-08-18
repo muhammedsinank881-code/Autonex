@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Price from "../../../components/common/Price";
 
 const DealCard = ({ item }) => {
   const available = item.available || 0;
@@ -18,8 +19,8 @@ const DealCard = ({ item }) => {
     item.discountPrice > 0 &&
     item.discountPrice < item.price;
   return (
-    <Link 
-    to={`/product/${item.id}`}
+    <Link
+      to={`/product/${item.id}`}
     >
       <div
         key={item.id}
@@ -52,14 +53,17 @@ const DealCard = ({ item }) => {
 
           {/* Price */}
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-[#00A651]">
-              ${hasDiscount ? item.discountPrice : item.price}
-            </span>
+            <Price
+              amount={hasDiscount ? item.discountPrice : item.price}
+              className="text-sm font-bold text-[#00A651]"
+            />
 
             {hasDiscount && (
-              <span className="text-xs text-gray-400 line-through">
-                {item.price}
-              </span>
+              <Price
+                amount={item.price}
+                currency={item.currency || "INR"}
+                className="text-[10px] sm:text-xs text-gray-400 line-through"
+              />
             )}
           </div>
 
@@ -88,3 +92,4 @@ const DealCard = ({ item }) => {
 };
 
 export default DealCard;
+

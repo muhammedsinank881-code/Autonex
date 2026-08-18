@@ -11,6 +11,7 @@ import {
   GitCompare,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Price from "../../components/common/Price";
 
 const ComparePage = () => {
   const navigate = useNavigate()
@@ -126,13 +127,16 @@ const ComparePage = () => {
 
                             {/* Pricing */}
                             <div className="flex items-baseline gap-2 mb-3">
-                              <span className="text-lg font-bold text-[#0066B2]">
-                                {product.price}
-                              </span>
+                              <Price
+                                amount={product.price}
+                                className="text-lg font-bold text-[#0066B2]"
+                              />
+
                               {product.originalPrice && (
-                                <span className="text-xs text-gray-400 line-through">
-                                  {product.originalPrice}
-                                </span>
+                                <Price
+                                  amount={product.originalPrice}
+                                  className="text-xs text-gray-400 line-through"
+                                />
                               )}
                             </div>
 

@@ -48,6 +48,7 @@ import OrderSuccess from "./pages/payment/OrderSuccess.jsx";
 import ConfirmOrderModal from "./pages/payment/ConfirmOrderModal.jsx";
 import OrderDetailsPage from "./pages/Login/profile/OrderDetailsPage.jsx";
 import Settings from "./components/admin/Settings.jsx";
+import CurrencyInitializer from "./components/common/CurrencyInitializer.jsx";
 
 const App = () => {
   useInitializeAuth();
@@ -66,6 +67,7 @@ const App = () => {
   }
   return (
     <>
+      <CurrencyInitializer />
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />

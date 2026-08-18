@@ -5,6 +5,7 @@ import { useProducts } from "../../../hooks/products/useProducts";
 import { useAddWishlist } from "../../../hooks/wishlist/useAddWishlist";
 import { useRemoveWishlist } from "../../../hooks/wishlist/useRemoveWishlist";
 import { useWishlist } from "../../../hooks/wishlist/useWishlist";
+import Price from "../../../components/common/Price";
 
 const FeaturedProducts = () => {
   const scrollRef = useRef(null);
@@ -150,18 +151,20 @@ const FeaturedProducts = () => {
             <div className="flex items-baseline gap-1.5 mt-1">
               <Price
                 amount={
-                  product.discountPrice > 0
+                  product.discountPrice > 0 && product.discountPrice < product.price
                     ? product.discountPrice
                     : product.price
                 }
-                currency={product.currency || "USD"}
                 className="text-xs sm:text-sm font-extrabold text-[#00A651]"
               />
-              {originalPrice && (
-                <span className="text-[9px] sm:text-[10px] text-gray-400 line-through">
-                  {originalPrice}
-                </span>
-              )}
+
+              {product.discountPrice > 0 &&
+                product.discountPrice < product.price && (
+                  <Price
+                    amount={product.price}
+                    className="text-[9px] sm:text-[10px] text-gray-400 line-through"
+                  />
+                )}
             </div>
           </div>
 
@@ -375,7 +378,14 @@ const FeaturedProducts = () => {
 
                   {/* Price */}
                   <div className="text-base sm:text-lg font-black text-gray-900">
-                    {spotlightPrice}
+                    <Price
+                      amount={
+                        spotlightProduct?.discountPrice > 0 &&
+                          spotlightProduct.discountPrice < spotlightProduct.price
+                          ? spotlightProduct.discountPrice
+                          : spotlightProduct?.price
+                      }
+                    />
                   </div>
 
                   {/* View Product Button */}

@@ -7,6 +7,7 @@ import {
     Home,
 } from "lucide-react";
 import { useDownloadInvoice } from "../../hooks/orders/useDownloadInvoice";
+import Price from "../../components/common/Price";
 
 const OrderSuccess = () => {
     const location = useLocation();
@@ -148,9 +149,10 @@ const OrderSuccess = () => {
                                         </span>
                                     </div>
 
-                                    <span className="font-semibold text-gray-800">
-                                        ₹{item.subtotal}
-                                    </span>
+                                    <Price
+                                        amount={item.subtotal}
+                                        className="font-semibold text-gray-800"
+                                    />
                                 </div>
                             ))}
                         </div>
@@ -252,9 +254,9 @@ const OrderSuccess = () => {
                                     Subtotal
                                 </span>
 
-                                <span>
-                                    ₹{order.subtotal}
-                                </span>
+                                <Price
+                                    amount={order.subtotal}
+                                />
                             </div>
 
                             {order.discount > 0 && (
@@ -264,7 +266,7 @@ const OrderSuccess = () => {
                                     </span>
 
                                     <span className="text-green-600">
-                                        -₹{order.discount}
+                                        -<Price amount={order.discount} />
                                     </span>
                                 </div>
                             )}
@@ -275,9 +277,10 @@ const OrderSuccess = () => {
                                     Total Amount
                                 </span>
 
-                                <span className="font-bold text-base text-[#0066b2]">
-                                    ₹{order.totalAmount}
-                                </span>
+                                <Price
+                                    amount={order.totalAmount}
+                                    className="font-bold text-base text-[#0066b2]"
+                                />
                             </div>
                         </div>
                     </div>

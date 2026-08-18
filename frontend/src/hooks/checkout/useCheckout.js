@@ -7,9 +7,7 @@ export const useCheckout = () => {
 
     return useMutation({
         mutationFn: checkout,
-        
         onSuccess: (response) => {
-            console.log("CHECKOUT RESPONSE:", response.data);
             const checkoutResult = response.data;
 
             switch (checkoutResult.nextStep) {

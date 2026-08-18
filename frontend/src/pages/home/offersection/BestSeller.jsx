@@ -6,6 +6,7 @@ import { useAddWishlist } from "../../../hooks/wishlist/useAddWishlist";
 import { useRemoveWishlist } from "../../../hooks/wishlist/useRemoveWishlist";
 import { useWishlist } from "../../../hooks/wishlist/useWishlist";
 import { useCategories } from "../../../hooks/categories/useCategories";
+import Price from "../../../components/common/Price";
 
 // Tab definitions with the exact category names as stored in DB
 const CATEGORY_TABS = [
@@ -95,11 +96,10 @@ const BestSeller = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab)}
-                className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium whitespace-nowrap transition-colors border ${
-                  activeTab.id === tab.id
+                className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium whitespace-nowrap transition-colors border ${activeTab.id === tab.id
                     ? "border-[#0066CC] text-[#0066CC] bg-blue-50/50"
                     : "border-gray-200 text-gray-500 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 {tab.name}
               </button>
@@ -186,9 +186,9 @@ const BestSeller = () => {
 
             const discountPercentage = hasDiscount
               ? Math.round(
-                  ((product.price - product.discountPrice) / product.price) *
-                    100,
-                )
+                ((product.price - product.discountPrice) / product.price) *
+                100,
+              )
               : 0;
 
             return (
@@ -256,14 +256,22 @@ const BestSeller = () => {
                   </div>
 
                   {/* Price */}
+                  {/* Price */}
                   <div className="flex items-baseline gap-1.5 pt-1">
-                    <span className="text-sm sm:text-base font-bold text-[#00A651]">
-                      {price}
-                    </span>
-                    {originalPrice && (
-                      <span className="text-[10px] sm:text-xs text-gray-400 line-through">
-                        {originalPrice}
-                      </span>
+                    <Price
+                      amount={
+                        hasDiscount
+                          ? product.discountPrice
+                          : product.price
+                      }
+                      className="text-sm sm:text-base font-bold text-[#00A651]"
+                    />
+
+                    {hasDiscount && (
+                      <Price
+                        amount={product.price}
+                        className="text-[10px] sm:text-xs text-gray-400 line-through"
+                      />
                     )}
                   </div>
                 </div>

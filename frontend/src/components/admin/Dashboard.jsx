@@ -13,6 +13,7 @@ import { useAdminDashboardAnalytics } from "../../hooks/dashboard/useAdminAnalyt
 import useAllOrders from "../../hooks/orders/useAllOrders";
 import DashboardSkeleton from "../layout.jsx/DashboardSkeleton";
 import { useNavigate } from "react-router-dom";
+import Price from "../common/Price";
 
 // Component for Circular Radial Metric Card with Framer Motion
 const StatCircularCard = ({
@@ -175,9 +176,13 @@ const Dashboard = () => {
   const statsConfig = [
     {
       title: "Total Revenue",
-      value: isAnalyticsLoading
-        ? "..."
-        : `₹${(analytics?.overview?.netRevenue ?? 0).toLocaleString("en-IN")}`,
+      value: isAnalyticsLoading ? (
+        "..."
+      ) : (
+        <Price
+          amount={analytics?.overview?.netRevenue ?? 0}
+        />
+      ),
       percentage: analytics?.growth?.revenue ?? 100,
       subtext: `Gross: ₹${(analytics?.overview?.grossRevenue ?? 0).toLocaleString("en-IN")}`,
       icon: TrendingUp,
@@ -366,8 +371,7 @@ const Dashboard = () => {
                           </td>
                           <td className="py-3.5 px-4 sm:px-5">
                             <span
-                              className={`px-2.5 py-1 rounded-full text-[10px] font-bold inline-block capitalize ${
-                                [
+                              className={`px-2.5 py-1 rounded-full text-[10px] font-bold inline-block capitalize ${[
                                   "placed",
                                   "completed",
                                   "shipped",
@@ -375,11 +379,11 @@ const Dashboard = () => {
                                 ].includes(status.toLowerCase())
                                   ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
                                   : ["processing", "shipped"].includes(
-                                        status.toLowerCase(),
-                                      )
+                                    status.toLowerCase(),
+                                  )
                                     ? "bg-blue-50 text-blue-600 border border-blue-200"
                                     : "bg-amber-50 text-red-600 border border-red-200"
-                              }`}
+                                }`}
                             >
                               {status}
                             </span>

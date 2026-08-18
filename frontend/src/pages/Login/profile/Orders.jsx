@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useMyOrders from "../../../hooks/orders/useMyOrders";
 import useDebounce from "../../../hooks/useDebounce";
 import { Search, Calendar, X, PackageSearch, ChevronLeft, ChevronRight } from "lucide-react";
+import Price from "../../../components/common/Price";
 
 const Orders = ({ setActiveTab }) => {
   const navigate = useNavigate();
@@ -198,8 +199,9 @@ const Orders = ({ setActiveTab }) => {
                     })}
                   </p>
 
-                  <p className="text-sm font-semibold text-gray-700 mt-1">
-                    Total: ₹{order.totalAmount}
+                  <p className="text-sm font-semibold text-gray-700 mt-1 flex items-center gap-1">
+                    Total:
+                    <Price amount={order.totalAmount} />
                   </p>
                 </div>
 
@@ -207,12 +209,12 @@ const Orders = ({ setActiveTab }) => {
                 <div className="flex items-center space-x-3">
                   <span
                     className={`text-xs px-2.5 py-1 rounded-full font-semibold ${order.orderStatus === "DELIVERED"
-                        ? "bg-green-100 text-green-700"
-                        : order.orderStatus === "CANCELLED"
-                          ? "bg-red-100 text-red-700"
-                          : order.orderStatus === "SHIPPED"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-amber-100 text-amber-700"
+                      ? "bg-green-100 text-green-700"
+                      : order.orderStatus === "CANCELLED"
+                        ? "bg-red-100 text-red-700"
+                        : order.orderStatus === "SHIPPED"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-amber-100 text-amber-700"
                       }`}
                   >
                     {order.orderStatus}
@@ -263,8 +265,8 @@ const Orders = ({ setActiveTab }) => {
                   key={p}
                   onClick={() => setPage(p)}
                   className={`w-7 h-7 text-xs rounded-md font-medium transition-colors ${currentPage === p
-                      ? "bg-[#0066b2] text-white"
-                      : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                    ? "bg-[#0066b2] text-white"
+                    : "border border-gray-200 text-gray-600 hover:bg-gray-50"
                     }`}
                 >
                   {p}

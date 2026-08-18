@@ -20,11 +20,12 @@ import { useDownloadInvoice } from "../../../hooks/orders/useDownloadInvoice";
 import useCancelOrder from "../../../hooks/orders/useCancelOrder";
 import OrderProductReviewAction from "./OrderProductReviewAction";
 import OrderProductReviewInlineForm from "./OrderProductReviewInlineForm";
+import Price from "../../../components/common/Price";
 
 const OrderDetailsPage = () => {
     const navigate = useNavigate()
     const { id } = useParams();
-    
+
     // Track which product is currently being reviewed inline
     const [reviewingProductId, setReviewingProductId] = React.useState(null);
 
@@ -315,15 +316,21 @@ const OrderDetailsPage = () => {
                                                     <h3 className="font-medium text-slate-600 text-sm sm:text-base">
                                                         {item.name}
                                                     </h3>
-                                                    <p className="text-xs text-slate-400 mt-1">
-                                                        Qty: <span className="font-semibold text-slate-500">{item.quantity}</span> × ₹{item.price}
+                                                    <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                                                        Qty:{" "}
+                                                        <span className="font-semibold text-slate-500">
+                                                            {item.quantity}
+                                                        </span>
+                                                        ×
+                                                        <Price amount={item.price} />
                                                     </p>
                                                 </div>
                                             </div>
                                             <div className="text-right flex flex-col items-end">
-                                                <p className="font-semibold text-slate-700 text-sm sm:text-base">
-                                                    ₹{item.subtotal}
-                                                </p>
+                                                <Price
+                                                    amount={item.subtotal}
+                                                    className="font-semibold text-slate-700 text-sm sm:text-base"
+                                                />
                                                 {orderData.orderStatus === "DELIVERED" && (
                                                     <OrderProductReviewAction
                                                         item={item}
@@ -334,7 +341,7 @@ const OrderDetailsPage = () => {
                                                 )}
                                             </div>
                                         </div>
-                                        
+
                                         {reviewingProductId === item.productId && (
                                             <OrderProductReviewInlineForm
                                                 item={item}
@@ -357,21 +364,32 @@ const OrderDetailsPage = () => {
                             <div className="space-y-2 text-sm pt-2">
                                 <div className="flex justify-between text-slate-400">
                                     <span>Subtotal</span>
-                                    <span className="text-slate-700">₹{orderData.subtotal}</span>
+                                    <Price
+                                        amount={orderData.subtotal}
+                                        className="text-slate-700"
+                                    />
                                 </div>
                                 <div className="flex justify-between text-slate-400">
                                     <span>Shipping Fee</span>
-                                    <span className="text-slate-700">₹{orderData.shippingCharge}</span>
+                                    <Price
+                                        amount={orderData.shippingCharge}
+                                        className="text-slate-700"
+                                    />
                                 </div>
                                 {orderData.discount > 0 && (
                                     <div className="flex justify-between text-emerald-400">
                                         <span>Discount</span>
-                                        <span>-₹{orderData.discount}</span>
+                                        <span className="flex items-center">
+                                            -<Price amount={orderData.discount} />
+                                        </span>
                                     </div>
                                 )}
                                 <div className="border-t border-slate-800 pt-3 mt-3 flex justify-between font-bold text-base text-slate-800">
                                     <span>Total Amount</span>
-                                    <span className="text-red-500">₹{orderData.totalAmount}</span>
+                                    <Price
+                                        amount={orderData.totalAmount}
+                                        className="text-red-500"
+                                    />
                                 </div>
                             </div>
 

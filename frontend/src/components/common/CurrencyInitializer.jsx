@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setDefaultCurrency } from "../../redux/slices/currencySlice.js";
+import { setCurrency } from "../../redux/slices/currencySlice.js";
 import { getSettings } from "../../api/settings.api.js";
 
 const CurrencyInitializer = () => {
@@ -10,7 +10,6 @@ const CurrencyInitializer = () => {
     const initializeCurrency = async () => {
       const savedCurrency = localStorage.getItem("currency");
 
-      // User already selected a currency, so keep it.
       if (savedCurrency) {
         return;
       }
@@ -18,17 +17,12 @@ const CurrencyInitializer = () => {
       try {
         const data = await getSettings();
 
-        const defaultCurrency =
-          data?.data?.defaultCurrency || "INR";
+        const defaultCurrency = data?.data?.defaultCurrency || "INR";
 
-        dispatch(setDefaultCurrency(defaultCurrency));
+        dispatch(setCurrency(defaultCurrency));
       } catch (error) {
-        console.error(
-          "Failed to load default currency:",
-          error,
-        );
+        console.error("Failed to load default currency:", error);
 
-        // Safe fallback
         dispatch(setCurrency("INR"));
       }
     };

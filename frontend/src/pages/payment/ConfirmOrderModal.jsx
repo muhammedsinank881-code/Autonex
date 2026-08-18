@@ -2,6 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AlertCircle, ShieldCheck, X } from "lucide-react";
 import { useCreateOrder } from "../../hooks/orders/useCreateOrder"
+import Price from "../../components/common/Price";
 
 /**
  * ConfirmOrderModal Component
@@ -53,7 +54,7 @@ const ConfirmOrderModal = () => {
                     </h2>
                     <button
                         type="button"
-                        onClick={()=>navigate(-1)}
+                        onClick={() => navigate(-1)}
                         className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-md disabled:opacity-50"
                     >
                         <X className="w-4 h-4" />
@@ -84,25 +85,28 @@ const ConfirmOrderModal = () => {
 
                         <div className="flex justify-between items-center text-xs">
                             <span className="text-gray-500">Subtotal</span>
-                            <span className="font-medium text-gray-700">
-                                {checkoutData.summary.subtotal}
-                            </span>
+                            <Price
+                                amount={checkoutData.summary.subtotal}
+                                className="font-medium text-gray-700"
+                            />
                         </div>
 
                         <div className="flex justify-between items-center text-xs">
                             <span className="text-gray-500">Shipping Charge</span>
-                            <span className="font-medium text-gray-700">
-                                {checkoutData.summary.shipping}
-                            </span>
+                            <Price
+                                amount={checkoutData.summary.shipping}
+                                className="font-medium text-gray-700"
+                            />
                         </div>
 
                         <div className="pt-2.5 border-t border-gray-200 flex justify-between items-center">
                             <span className="text-xs font-bold text-gray-800">
                                 Total Charge
                             </span>
-                            <span className="text-base font-bold text-[#0066b2]">
-                                {checkoutData.summary.total}
-                            </span>
+                            <Price
+                                amount={checkoutData.summary.total}
+                                className="text-base font-bold text-[#0066b2]"
+                            />
                         </div>
                     </div>
 
@@ -120,7 +124,7 @@ const ConfirmOrderModal = () => {
                     <div className="flex gap-3">
                         <button
                             type="button"
-                            onClick={()=>navigate(-1)}
+                            onClick={() => navigate(-1)}
                             className="w-1/2 border border-gray-200 hover:bg-gray-100 text-gray-700 text-xs font-semibold py-2.5 px-4 rounded-md transition-colors disabled:opacity-50"
                         >
                             Cancel

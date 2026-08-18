@@ -6,4 +6,4 @@ export const useSettings = () => {
     queryKey: ["settings"],
     queryFn: getSettings,
   });
-};
+}; 
