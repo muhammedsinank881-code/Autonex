@@ -53,6 +53,11 @@ const userSchema = new mongoose.Schema(
       enum: ["admin", "user", "employee"],
       default: "user",
     },
+    preferredCurrency: {
+      type: String,
+      enum: ["USD", "EUR",  "INR"],
+      default: "INR",
+    },
 
     isVerified: {
       type: Boolean,

@@ -1,108 +1,104 @@
 import PDFDocument from "pdfkit";
 
 export const generateInvoice = (order, res) => {
-    // 80mm = ~226.77 points in PDFKit
-    const receiptWidth = 226.77;
-    const margin = 12;
-    const printableWidth = receiptWidth - margin * 2;
+  const doc = new PDFDocument({
+    margin: 50,
+    size: "A4",
+  });
 
-    // Estimate page height dynamically based on item count to keep it single-page
-    const baseHeight = 350;
-    const itemHeight = 35;
-    const totalHeight = baseHeight + (order.items?.length || 0) * itemHeight;
+  // Response Headers
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `inline; filename=invoice-${order.orderNumber}.pdf`,
+  );
 
-    const doc = new PDFDocument({
-        margin: margin,
-        size: [receiptWidth, totalHeight],
-    });
+  doc.pipe(res);
 
-    // Response Headers
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-        "Content-Disposition",
-        `inline; filename=invoice-${order.orderNumber}.pdf`
-    );
+  // Company
 
-    doc.pipe(res);
+  doc.fontSize(24).text("Your Company Name", {
+    align: "center",
+  });
 
-    // Helper: Draw horizontal divider line
-    const drawDivider = () => {
-        doc.moveDown(0.3);
-        doc.fontSize(8).font("Courier").text("-".repeat(38), { align: "center" });
-        doc.moveDown(0.3);
-    };
+  doc.fontSize(12).text("Invoice", {
+    align: "center",
+  });
 
-    // Helper: Two-column key/value row
-    const drawRow = (leftText, rightText, isBold = false) => {
-        const font = isBold ? "Courier-Bold" : "Courier";
-        doc.font(font).fontSize(8);
+  doc.moveDown();
 
-        const y = doc.y;
-        doc.text(leftText, margin, y, { width: printableWidth - 60, align: "left" });
-        doc.text(rightText, margin, y, { width: printableWidth, align: "right" });
-    };
+  // Invoice Details
+  doc.fontSize(12);
 
-    // --- Header ---
-    doc.font("Helvetica-Bold").fontSize(16).text("AUTONEX", { align: "center" });
-    doc.font("Helvetica").fontSize(8).text("TAX INVOICE", { align: "center" });
+  doc.text(`Invoice Date : ${new Date().toLocaleDateString()}`);
+  doc.text(`Order Number : ${order.orderNumber}`);
+  doc.text(`Order Status : ${order.orderStatus}`);
+  doc.text(`Payment Method : ${order.paymentMethod}`);
+  doc.text(`Payment Status : ${order.paymentStatus}`);
 
-    drawDivider();
+  doc.moveDown();
 
-    // --- Order Meta ---
-    doc.font("Courier").fontSize(8);
-    doc.text(`Date : ${new Date().toLocaleDateString()}`);
-    doc.text(`Order: #${order.orderNumber}`);
-    doc.text(`Status: ${order.orderStatus} / ${order.paymentStatus}`);
-    doc.text(`Pay Via: ${order.paymentMethod}`);
+  // Customer
+  doc.fontSize(14).text("Shipping Address");
 
-    drawDivider();
+  doc.fontSize(12);
 
-    // --- Customer & Shipping ---
-    doc.font("Courier-Bold").fontSize(8).text("DELIVER TO:");
-    doc.font("Courier").fontSize(8);
-    doc.text(order.shippingAddress.fullName);
-    doc.text(order.shippingAddress.phone);
+  doc.text(order.shippingAddress.fullName);
+  doc.text(order.shippingAddress.phone);
+  doc.text(order.shippingAddress.addressLine1);
+
+  if (order.shippingAddress.addressLine2) {
+    doc.text(order.shippingAddress.addressLine2);
+  }
+
+  doc.text(`${order.shippingAddress.city}, ${order.shippingAddress.state}`);
+
+  doc.text(
+    `${order.shippingAddress.postalCode}, ${order.shippingAddress.country}`,
+  );
+
+  doc.moveDown();
+
+  // Items
+  doc.fontSize(14).text("Products");
+
+  doc.moveDown(0.5);
+
+  order.items.forEach((item) => {
+    doc.fontSize(12);
+
+    doc.text(item.name);
+
     doc.text(
-        `${order.shippingAddress.addressLine1}${order.shippingAddress.addressLine2 ? ", " + order.shippingAddress.addressLine2 : ""
-        }`
+      `Qty : ${item.quantity}    Price : ₹${item.price}    Subtotal : ₹${item.subtotal}`,
     );
-    doc.text(`${order.shippingAddress.city}, ${order.shippingAddress.state} - ${order.shippingAddress.postalCode}`);
 
-    drawDivider();
-
-    // --- Product List Header ---
-    drawRow("ITEM", "PRICE");
-    drawDivider();
-
-    // --- Items ---
-    order.items.forEach((item) => {
-        doc.font("Courier-Bold").fontSize(8).text(item.name, { width: printableWidth });
-
-        const qtyPrice = `${item.quantity} x RS.${item.price}`;
-        const subtotal = `RS.${item.subtotal}`;
-
-        drawRow(`  ${qtyPrice}`, subtotal);
-        doc.moveDown(0.2);
-    });
-
-    drawDivider();
-
-    // --- Totals Section ---
-    drawRow("Subtotal", `RS.${order.subtotal}`);
-    drawRow("Shipping Charge", `RS.${order.shippingCharge}`);
-    drawRow("Discount", `-RS.${order.discount}`);
-
-    drawDivider();
-
-    drawRow("TOTAL AMOUNT", `RS.${order.totalAmount}`, true);
-
-    drawDivider();
-
-    // --- Footer ---
     doc.moveDown(0.5);
-    doc.font("Helvetica-Oblique").fontSize(8).text("Thank you for shopping with Autonex!", {
-        align: "center",
-    });
+  });
 
-    doc.end();
+  doc.moveDown();
+
+  // Totals
+  doc.fontSize(12);
+
+  doc.text(`Subtotal : ₹${order.subtotal}`);
+
+  doc.text(`Shipping : ₹${order.shippingCharge}`);
+
+  doc.text(`Discount : ₹${order.discount}`);
+
+  doc.moveDown(0.5);
+
+  doc.font("Helvetica-Bold").text(`Total : ₹${order.totalAmount}`);
+
+  doc.font("Helvetica");
+
+  doc.moveDown(2);
+
+  // Footer
+  doc.fontSize(10).text("Thank you for shopping with us!", {
+    align: "center",
+  });
+
+  doc.end();
 };

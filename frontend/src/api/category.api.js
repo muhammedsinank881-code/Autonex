@@ -6,6 +6,7 @@ export const getCategories = async ({ page = 1, search = "" }) => {
     params: {
       page,
       search,
+      limit,
     },
   });
 

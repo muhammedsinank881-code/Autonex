@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { motion } from "framer-motion";
 import {
   TrendingUp,
   Package,
@@ -13,6 +14,86 @@ import useAllOrders from "../../hooks/orders/useAllOrders";
 import DashboardSkeleton from "../layout.jsx/DashboardSkeleton";
 import { useNavigate } from "react-router-dom";
 
+// Component for Circular Radial Metric Card with Framer Motion
+const StatCircularCard = ({
+  title,
+  value,
+  percentage = 100,
+  subtext,
+  icon: Icon,
+  colorScheme,
+  delay = 0,
+}) => {
+  const radius = 38;
+  const circumference = 2 * Math.PI * radius;
+
+  // Cap percentage visual fill between 0 and 100
+  const normalizedPercentage = Math.min(Math.max(percentage, 0), 100);
+  const strokeDashoffset =
+    circumference - (normalizedPercentage / 100) * circumference;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay }}
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex items-center justify-between gap-4"
+    >
+      <div className="flex-1 min-w-0">
+        <span className="text-xs font-bold text-slate-400 block mb-1 uppercase tracking-wider">
+          {title}
+        </span>
+        <h4 className="text-xl sm:text-2xl font-black text-slate-900 truncate">
+          {value}
+        </h4>
+        <span className="text-xs font-semibold text-slate-500 mt-1.5 block">
+          {subtext}
+        </span>
+      </div>
+
+      {/* Circular Ring Graphic */}
+      <div className="relative w-24 h-24 flex items-center justify-center shrink-0">
+        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 96 96">
+          {/* Background Ring */}
+          <circle
+            cx="48"
+            cy="48"
+            r={radius}
+            className={`${colorScheme.bgRing}`}
+            strokeWidth="8"
+            fill="transparent"
+          />
+          {/* Animated Growth Ring */}
+          <motion.circle
+            cx="48"
+            cy="48"
+            r={radius}
+            className={`${colorScheme.stroke}`}
+            strokeWidth="8"
+            strokeDasharray={circumference}
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset }}
+            transition={{ duration: 1.2, delay: delay + 0.2, ease: "easeOut" }}
+            strokeLinecap="round"
+            fill="transparent"
+          />
+        </svg>
+
+        {/* Inner Content (Icon or Growth Percentage) */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-1">
+          <Icon className={`w-5 h-5 mb-0.5 ${colorScheme.text}`} />
+          <span
+            className={`text-[11px] font-black leading-tight ${colorScheme.text}`}
+          >
+            {percentage}%
+          </span>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const {
@@ -22,9 +103,8 @@ const Dashboard = () => {
     error: statsError,
   } = useDashboardStats();
 
-  const { data, isLoading, isError } = useAdminDashboardAnalytics();
+  const { data, isLoading: isAnalyticsLoading } = useAdminDashboardAnalytics();
 
-  // Fetch orders (Pass a larger limit or full set if needed to calculate month-over-month stats accurately)
   const {
     data: ordersData,
     isLoading: isOrdersLoading,
@@ -32,7 +112,6 @@ const Dashboard = () => {
     error: ordersError,
   } = useAllOrders({ page: 1, limit: 100 });
 
-  // 1. Extract raw order list and total count from API response
   const allOrders = useMemo(
     () => ordersData?.data || ordersData?.orders || [],
     [ordersData],
@@ -40,15 +119,13 @@ const Dashboard = () => {
   const totalOrdersCount =
     ordersData?.pagination?.totalOrders ?? allOrders.length;
 
-  // 2. Dynamic Month-over-Month Calculation for Orders
   const ordersMonthOverMonthChange = useMemo(() => {
-    if (!allOrders.length) return "0.0%";
+    if (!allOrders.length) return 0;
 
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
 
-    // Previous month handling (handles January roll-over to December)
     const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
     const prevMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
 
@@ -68,26 +145,85 @@ const Dashboard = () => {
       }
     });
 
-    if (lastMonthCount === 0) {
-      return thisMonthCount > 0 ? `+100%` : `0.0%`;
-    }
-
+    if (lastMonthCount === 0) return thisMonthCount > 0 ? 100 : 0;
     const diff = thisMonthCount - lastMonthCount;
-    const percentage = ((diff / lastMonthCount) * 100).toFixed(1);
-    const sign = percentage >= 0 ? "+" : "";
-
-    return `${sign}${percentage}%`;
+    return Number(((diff / lastMonthCount) * 100).toFixed(1));
   }, [allOrders]);
 
   if (isStatsLoading) return <DashboardSkeleton />;
   if (isStatsError)
     return <p className="p-4 text-red-500">{statsError.message}</p>;
 
-  const { totalUsers, activeProducts, thisMonthUsers, thisMonthProducts } =
-    statsData?.data || {};
-  const recentOrders = allOrders.slice(0, 5); // Take top 5 for table display
-
+  const {
+    totalUsers = 0,
+    activeProducts = 0,
+    thisMonthUsers = 0,
+    thisMonthProducts = 0,
+  } = statsData?.data || {};
+  const recentOrders = allOrders.slice(0, 5);
   const analytics = data?.data;
+
+  // Percentage estimations for products and users month progress
+  const productGrowthRatio =
+    activeProducts > 0
+      ? Math.round((thisMonthProducts / activeProducts) * 100)
+      : 100;
+
+  const userGrowthRatio =
+    totalUsers > 0 ? Math.round((thisMonthUsers / totalUsers) * 100) : 100;
+
+  const statsConfig = [
+    {
+      title: "Total Revenue",
+      value: isAnalyticsLoading
+        ? "..."
+        : `₹${(analytics?.overview?.netRevenue ?? 0).toLocaleString("en-IN")}`,
+      percentage: analytics?.growth?.revenue ?? 100,
+      subtext: `Gross: ₹${(analytics?.overview?.grossRevenue ?? 0).toLocaleString("en-IN")}`,
+      icon: TrendingUp,
+      colorScheme: {
+        stroke: "stroke-emerald-500",
+        bgRing: "stroke-emerald-100",
+        text: "text-emerald-600",
+      },
+    },
+    {
+      title: "Total Orders",
+      value: isOrdersLoading ? "..." : totalOrdersCount,
+      percentage: Math.abs(ordersMonthOverMonthChange),
+      subtext: `${ordersMonthOverMonthChange >= 0 ? "+" : ""}${ordersMonthOverMonthChange}% vs last month`,
+      icon: ShoppingBag,
+      colorScheme: {
+        stroke: "stroke-blue-500",
+        bgRing: "stroke-blue-100",
+        text: "text-blue-600",
+      },
+    },
+    {
+      title: "Active Products",
+      value: isStatsLoading ? "..." : activeProducts,
+      percentage: productGrowthRatio,
+      subtext: `${thisMonthProducts} added this month`,
+      icon: Package,
+      colorScheme: {
+        stroke: "stroke-purple-500",
+        bgRing: "stroke-purple-100",
+        text: "text-purple-600",
+      },
+    },
+    {
+      title: "Registered Users",
+      value: isStatsLoading ? "..." : totalUsers,
+      percentage: userGrowthRatio,
+      subtext: `${thisMonthUsers} new this month`,
+      icon: Users,
+      colorScheme: {
+        stroke: "stroke-amber-500",
+        bgRing: "stroke-amber-100",
+        text: "text-amber-600",
+      },
+    },
+  ];
 
   return (
     <div className="flex flex-col min-h-full bg-[#F8FAFC] font-sans antialiased text-slate-800">
@@ -131,68 +267,11 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* OVERVIEW METRICS CARDS */}
+          {/* OVERVIEW METRICS CARDS WITH CIRCULAR GRAPH */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-            {[
-              {
-                title: "Total Revenue",
-                value: isLoading
-                  ? "..."
-                  : `₹${(analytics?.overview?.netRevenue ?? 0).toLocaleString("en-IN")}`,
-                change: isLoading
-                  ? "..."
-                  : `${analytics?.growth?.revenue >= 0 ? "+" : ""}${analytics?.growth?.revenue ?? 0}%`,
-                icon: TrendingUp,
-                color: "text-emerald-600 bg-emerald-50",
-              },
-              {
-                title: "Total Orders",
-                value: isOrdersLoading ? "..." : totalOrdersCount,
-                change: ordersMonthOverMonthChange,
-                icon: ShoppingBag,
-                color: "text-blue-600 bg-blue-50",
-              },
-              {
-                title: "Active Products",
-                value: isStatsLoading ? "..." : (activeProducts ?? 0),
-                change: `${thisMonthProducts ?? 0} Active`,
-                icon: Package,
-                color: "text-purple-600 bg-purple-50",
-              },
-              {
-                title: "Registered Users",
-                value: isStatsLoading ? "..." : (totalUsers ?? 0),
-                change: `${thisMonthUsers ?? 0} Active`,
-                icon: Users,
-                color: "text-amber-600 bg-amber-50",
-              },
-            ].map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div
-                  key={index}
-                  className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between"
-                >
-                  <div>
-                    <span className="text-xs font-semibold text-slate-400 block mb-1">
-                      {stat.title}
-                    </span>
-                    <h4 className="text-lg sm:text-xl font-extrabold text-slate-900">
-                      {stat.value}
-                    </h4>
-                    <span className="text-[11px] font-bold text-emerald-600 mt-1 inline-block">
-                      {stat.change} vs last month
-                    </span>
-                  </div>
-                  <div
-                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 ${stat.color}`}
-                  >
-                    <Icon size={20} className="sm:hidden" />
-                    <Icon size={22} className="hidden sm:block" />
-                  </div>
-                </div>
-              );
-            })}
+            {statsConfig.map((stat, index) => (
+              <StatCircularCard key={index} {...stat} delay={index * 0.1} />
+            ))}
           </div>
 
           {/* RECENT ORDERS TABLE */}
@@ -264,9 +343,9 @@ const Dashboard = () => {
                       const category = order.items?.[0]?.name || "General";
                       const amount =
                         typeof order.totalAmount === "number"
-                          ? `$${order.totalAmount.toFixed(2)}`
-                          : "$0.00";
-                      const status = order.orderStatus;
+                          ? `₹${order.totalAmount.toFixed(2)}`
+                          : "₹0.00";
+                      const status = order.orderStatus || "placed";
 
                       return (
                         <tr
