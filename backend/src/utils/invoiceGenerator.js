@@ -1,14 +1,14 @@
 import PDFDocument from "pdfkit";
 
 export const generateInvoice = (order, res) => {
-  // 80mm width receipt paper (~226 points)
-  const TICKET_WIDTH = 226;
+  // Standard 80mm thermal receipt paper dimensions
+  const PAGE_WIDTH = 226; // ~80mm width in points
   const MARGIN = 10;
-  const PRINTABLE_WIDTH = TICKET_WIDTH - MARGIN * 2;
+  const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
 
   const doc = new PDFDocument({
     margin: MARGIN,
-    size: [TICKET_WIDTH, 600], // Adjust height dynamically if needed or set estimated length
+    size: [PAGE_WIDTH, 600], // Height auto-adjusts nicely on continuous paper
   });
 
   // Response Headers
@@ -20,141 +20,136 @@ export const generateInvoice = (order, res) => {
 
   doc.pipe(res);
 
-  // --- HEADER SECTION ---
+  // --- BRAND HEADER ---
   doc
     .font("Helvetica-Bold")
     .fontSize(16)
-    .text("AUTONEX", { align: "center", width: PRINTABLE_WIDTH });
+    .text("AUTONEX", { align: "center", width: CONTENT_WIDTH });
+
   doc.moveDown(0.8);
 
-  // Helper for key-value details
-  const addDetailRow = (label, value) => {
+  // --- METADATA SECTION ---
+  const addMetaRow = (label, value) => {
     const y = doc.y;
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(8)
-      .text(`${label}:`, MARGIN, y, { width: 60 });
     doc
       .font("Helvetica")
       .fontSize(8)
-      .text(value, MARGIN + 60, y, { width: PRINTABLE_WIDTH - 60 });
+      .text(`${label}:`, MARGIN, y);
+
+    doc
+      .font("Helvetica")
+      .fontSize(8)
+      .text(value, MARGIN + 50, y, { width: CONTENT_WIDTH - 50, align: "left" });
+
+    doc.moveDown(0.3);
   };
 
-  addDetailRow("Date", new Date().toLocaleDateString());
-  addDetailRow("Order", order.orderNumber);
-  addDetailRow("Status", order.orderStatus?.toUpperCase() || "PAID");
-  addDetailRow("Pay Via", order.paymentMethod?.toUpperCase() || "RAZORPAY");
+  addMetaRow("Date", new Date().toLocaleDateString());
+  addMetaRow("Order", order.orderNumber);
+  addMetaRow("Status", order.orderStatus?.toUpperCase() || "PAID");
+  addMetaRow("Pay Via", `: ${order.paymentMethod?.toUpperCase() || "RAZORPAY"}`);
 
-  doc.moveDown(0.8);
+  doc.moveDown(0.6);
 
-  // Divider Line
-  doc
-    .moveTo(MARGIN, doc.y)
-    .lineTo(TICKET_WIDTH - MARGIN, doc.y)
-    .strokeColor("#000000")
-    .lineWidth(0.5)
-    .stroke();
-
-  doc.moveDown(0.5);
-
-  // --- SHIPPING ADDRESS ---
+  // --- SHIPPING / ADDRESS ---
   doc
     .font("Helvetica-Bold")
     .fontSize(9)
     .text("TAX INVOICE");
-  doc.text("DELIVER TO:");
-  doc.moveDown(0.2);
+
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(8)
+    .text("DELIVER TO:");
 
   doc.font("Helvetica").fontSize(8);
-  doc.text(order.shippingAddress.fullName, { width: PRINTABLE_WIDTH });
-  doc.text(order.shippingAddress.phone, { width: PRINTABLE_WIDTH });
-  doc.text(order.shippingAddress.addressLine1, { width: PRINTABLE_WIDTH });
+  doc.text(order.shippingAddress.fullName);
+  doc.text(order.shippingAddress.phone);
+  doc.text(order.shippingAddress.addressLine1);
   if (order.shippingAddress.addressLine2) {
-    doc.text(order.shippingAddress.addressLine2, { width: PRINTABLE_WIDTH });
+    doc.text(order.shippingAddress.addressLine2);
   }
-  doc.text(`${order.shippingAddress.city}, ${order.shippingAddress.state}`, {
-    width: PRINTABLE_WIDTH,
-  });
-  doc.text(`${order.shippingAddress.postalCode}`, { width: PRINTABLE_WIDTH });
+  doc.text(`${order.shippingAddress.city}, ${order.shippingAddress.state}`);
+  doc.text(`${order.shippingAddress.postalCode}`);
 
-  doc.moveDown(0.8);
+  doc.moveDown(0.6);
 
-  // Divider Line
+  // --- ITEMS HEADER ---
+  const headerY = doc.y;
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(8)
+    .text("ITEM", MARGIN, headerY);
+
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(8)
+    .text("PRICE", MARGIN, headerY, { width: CONTENT_WIDTH, align: "right" });
+
+  doc.moveDown(0.3);
+
+  // Separator Line
   doc
     .moveTo(MARGIN, doc.y)
-    .lineTo(TICKET_WIDTH - MARGIN, doc.y)
-    .strokeColor("#000000")
+    .lineTo(PAGE_WIDTH - MARGIN, doc.y)
+    .strokeColor("#999999")
     .lineWidth(0.5)
     .stroke();
 
   doc.moveDown(0.5);
 
-  // --- PRODUCT TABLE HEADER ---
-  const tableHeaderY = doc.y;
+  // --- ITEMS LIST ---
+  order.items.forEach((item) => {
+    const itemY = doc.y;
 
-  doc.font("Helvetica-Bold").fontSize(8);
-  doc.text("ITEM", MARGIN, tableHeaderY);
-  doc.text("PRICE", MARGIN, tableHeaderY, {
-    width: PRINTABLE_WIDTH,
-    align: "right",
+    // Item Title
+    doc
+      .font("Helvetica")
+      .fontSize(8)
+      .text(item.name, MARGIN, itemY, { width: CONTENT_WIDTH - 50 });
+
+    // Unit Price Breakout
+    doc
+      .font("Helvetica")
+      .fontSize(7)
+      .text(`${item.quantity} x RS.${item.price}`, MARGIN, doc.y);
+
+    // Line Subtotal Right Aligned
+    doc
+      .font("Helvetica")
+      .fontSize(8)
+      .text(`RS.${item.subtotal}`, MARGIN, itemY, {
+        width: CONTENT_WIDTH,
+        align: "right",
+      });
+
+    doc.moveDown(0.5);
   });
 
   doc.moveDown(0.3);
 
-  // --- PRODUCT ITEMS ---
-  order.items.forEach((item) => {
-    const itemY = doc.y;
-
-    doc.font("Helvetica").fontSize(8);
-    // Item Name
-    doc.text(item.name, MARGIN, itemY, { width: PRINTABLE_WIDTH - 60 });
-
-    // Total Price on Right
-    doc.text(`RS.${item.subtotal}`, MARGIN, itemY, {
-      width: PRINTABLE_WIDTH,
-      align: "right",
-    });
-
-    // Qty x Unit Price under name
-    doc
-      .fontSize(7)
-      .fillColor("#444444")
-      .text(`${item.quantity} x RS.${item.price}`, MARGIN, doc.y);
-
-    doc.fillColor("#000000");
-    doc.moveDown(0.4);
-  });
-
-  // Divider Line
-  doc
-    .moveTo(MARGIN, doc.y)
-    .lineTo(TICKET_WIDTH - MARGIN, doc.y)
-    .strokeColor("#000000")
-    .lineWidth(0.5)
-    .stroke();
-
-  doc.moveDown(0.5);
-
-  // --- TOTALS SECTION ---
+  // --- TOTALS BREAKDOWN ---
   const addTotalRow = (label, value, isBold = false) => {
     const y = doc.y;
     doc
       .font(isBold ? "Helvetica-Bold" : "Helvetica")
       .fontSize(8)
       .text(label, MARGIN, y);
-    doc.text(`RS.${value}`, MARGIN, y, {
-      width: PRINTABLE_WIDTH,
-      align: "right",
-    });
-    doc.moveDown(0.3);
+
+    doc
+      .font(isBold ? "Helvetica-Bold" : "Helvetica")
+      .fontSize(8)
+      .text(value, MARGIN, y, { width: CONTENT_WIDTH, align: "right" });
+
+    doc.moveDown(0.4);
   };
 
-  addTotalRow("Subtotal", order.subtotal);
-  addTotalRow("Shipping Charge", order.shippingCharge || 0);
-  addTotalRow("Discount", order.discount ? `-${order.discount}` : "-0");
+  addTotalRow("Subtotal", `RS.${order.subtotal}`);
+  addTotalRow("Shipping Charge", `RS.${order.shippingCharge || 0}`);
+  addTotalRow("Discount", `-RS.${order.discount || 0}`);
 
   doc.moveDown(0.2);
-  addTotalRow("TOTAL AMOUNT", order.totalAmount, true);
+  addTotalRow("TOTAL AMOUNT", `RS.${order.totalAmount}`, true);
 
   doc.moveDown(1);
 
@@ -164,7 +159,7 @@ export const generateInvoice = (order, res) => {
     .fontSize(8)
     .text("Thank you for shopping with Autonex!", {
       align: "center",
-      width: PRINTABLE_WIDTH,
+      width: CONTENT_WIDTH,
     });
 
   doc.end();
