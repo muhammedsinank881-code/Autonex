@@ -1,9 +1,14 @@
 import PDFDocument from "pdfkit";
 
 export const generateInvoice = (order, res) => {
+  // 80mm width receipt paper (~226 points)
+  const TICKET_WIDTH = 226;
+  const MARGIN = 10;
+  const PRINTABLE_WIDTH = TICKET_WIDTH - MARGIN * 2;
+
   const doc = new PDFDocument({
-    margin: 50,
-    size: "A4",
+    margin: MARGIN,
+    size: [TICKET_WIDTH, 600], // Adjust height dynamically if needed or set estimated length
   });
 
   // Response Headers
@@ -18,26 +23,21 @@ export const generateInvoice = (order, res) => {
   // --- HEADER SECTION ---
   doc
     .font("Helvetica-Bold")
-    .fontSize(22)
-    .text("AUTONEX", { align: "center" });
-  doc.moveDown(1.5);
+    .fontSize(16)
+    .text("AUTONEX", { align: "center", width: PRINTABLE_WIDTH });
+  doc.moveDown(0.8);
 
-  // --- ORDER & INVOICE DETAILS (Two-Column Layout) ---
-  const detailsTop = doc.y;
-  const leftColX = 50;
-  const rightColX = 180;
-
+  // Helper for key-value details
   const addDetailRow = (label, value) => {
     const y = doc.y;
     doc
       .font("Helvetica-Bold")
-      .fontSize(10)
-      .text(label, leftColX, y);
+      .fontSize(8)
+      .text(`${label}:`, MARGIN, y, { width: 60 });
     doc
       .font("Helvetica")
-      .fontSize(10)
-      .text(`: ${value}`, rightColX, y);
-    doc.moveDown(0.4);
+      .fontSize(8)
+      .text(value, MARGIN + 60, y, { width: PRINTABLE_WIDTH - 60 });
   };
 
   addDetailRow("Date", new Date().toLocaleDateString());
@@ -45,103 +45,126 @@ export const generateInvoice = (order, res) => {
   addDetailRow("Status", order.orderStatus?.toUpperCase() || "PAID");
   addDetailRow("Pay Via", order.paymentMethod?.toUpperCase() || "RAZORPAY");
 
-  doc.moveDown(1.5);
+  doc.moveDown(0.8);
+
+  // Divider Line
+  doc
+    .moveTo(MARGIN, doc.y)
+    .lineTo(TICKET_WIDTH - MARGIN, doc.y)
+    .strokeColor("#000000")
+    .lineWidth(0.5)
+    .stroke();
+
+  doc.moveDown(0.5);
 
   // --- SHIPPING ADDRESS ---
   doc
     .font("Helvetica-Bold")
-    .fontSize(11)
+    .fontSize(9)
     .text("TAX INVOICE");
-  doc.text("DELIVER TO:", { underline: true });
-  doc.moveDown(0.3);
+  doc.text("DELIVER TO:");
+  doc.moveDown(0.2);
 
-  doc.font("Helvetica").fontSize(10);
-  doc.text(order.shippingAddress.fullName);
-  doc.text(order.shippingAddress.phone);
-  doc.text(order.shippingAddress.addressLine1);
+  doc.font("Helvetica").fontSize(8);
+  doc.text(order.shippingAddress.fullName, { width: PRINTABLE_WIDTH });
+  doc.text(order.shippingAddress.phone, { width: PRINTABLE_WIDTH });
+  doc.text(order.shippingAddress.addressLine1, { width: PRINTABLE_WIDTH });
   if (order.shippingAddress.addressLine2) {
-    doc.text(order.shippingAddress.addressLine2);
+    doc.text(order.shippingAddress.addressLine2, { width: PRINTABLE_WIDTH });
   }
-  doc.text(`${order.shippingAddress.city}, ${order.shippingAddress.state}`);
-  doc.text(`${order.shippingAddress.postalCode}`);
+  doc.text(`${order.shippingAddress.city}, ${order.shippingAddress.state}`, {
+    width: PRINTABLE_WIDTH,
+  });
+  doc.text(`${order.shippingAddress.postalCode}`, { width: PRINTABLE_WIDTH });
 
-  doc.moveDown(1.5);
-
-  // --- PRODUCT TABLE HEADER ---
-  const tableTop = doc.y;
-  const col1X = 50;  // Item Name
-  const col2X = 380; // Qty x Unit Price
-  const col3X = 480; // Subtotal
-
-  doc.font("Helvetica-Bold").fontSize(10);
-  doc.text("ITEM", col1X, tableTop);
-  doc.text("PRICE", col3X, tableTop, { align: "right" });
+  doc.moveDown(0.8);
 
   // Divider Line
   doc
-    .moveTo(col1X, tableTop + 15)
-    .lineTo(545, tableTop + 15)
-    .strokeColor("#cccccc")
-    .lineWidth(1)
+    .moveTo(MARGIN, doc.y)
+    .lineTo(TICKET_WIDTH - MARGIN, doc.y)
+    .strokeColor("#000000")
+    .lineWidth(0.5)
     .stroke();
 
-  let position = tableTop + 25;
+  doc.moveDown(0.5);
+
+  // --- PRODUCT TABLE HEADER ---
+  const tableHeaderY = doc.y;
+
+  doc.font("Helvetica-Bold").fontSize(8);
+  doc.text("ITEM", MARGIN, tableHeaderY);
+  doc.text("PRICE", MARGIN, tableHeaderY, {
+    width: PRINTABLE_WIDTH,
+    align: "right",
+  });
+
+  doc.moveDown(0.3);
 
   // --- PRODUCT ITEMS ---
   order.items.forEach((item) => {
-    doc.font("Helvetica").fontSize(10);
-    doc.text(item.name, col1X, position);
+    const itemY = doc.y;
 
-    // Qty x Price details on next line under item name
+    doc.font("Helvetica").fontSize(8);
+    // Item Name
+    doc.text(item.name, MARGIN, itemY, { width: PRINTABLE_WIDTH - 60 });
+
+    // Total Price on Right
+    doc.text(`RS.${item.subtotal}`, MARGIN, itemY, {
+      width: PRINTABLE_WIDTH,
+      align: "right",
+    });
+
+    // Qty x Unit Price under name
     doc
-      .fontSize(9)
-      .fillColor("#555555")
-      .text(`${item.quantity} x RS.${item.price}`, col1X, position + 14);
+      .fontSize(7)
+      .fillColor("#444444")
+      .text(`${item.quantity} x RS.${item.price}`, MARGIN, doc.y);
 
-    // Total for line
-    doc
-      .fontSize(10)
-      .fillColor("#000000")
-      .text(`RS.${item.subtotal}`, col3X, position, { align: "right" });
-
-    position += 35;
+    doc.fillColor("#000000");
+    doc.moveDown(0.4);
   });
 
   // Divider Line
   doc
-    .moveTo(col1X, position)
-    .lineTo(545, position)
-    .strokeColor("#cccccc")
-    .lineWidth(1)
+    .moveTo(MARGIN, doc.y)
+    .lineTo(TICKET_WIDTH - MARGIN, doc.y)
+    .strokeColor("#000000")
+    .lineWidth(0.5)
     .stroke();
 
-  position += 15;
+  doc.moveDown(0.5);
 
   // --- TOTALS SECTION ---
   const addTotalRow = (label, value, isBold = false) => {
+    const y = doc.y;
     doc
       .font(isBold ? "Helvetica-Bold" : "Helvetica")
-      .fontSize(10)
-      .text(label, col1X, position);
-    doc
-      .text(`RS.${value}`, col3X, position, { align: "right" });
-    position += 18;
+      .fontSize(8)
+      .text(label, MARGIN, y);
+    doc.text(`RS.${value}`, MARGIN, y, {
+      width: PRINTABLE_WIDTH,
+      align: "right",
+    });
+    doc.moveDown(0.3);
   };
 
   addTotalRow("Subtotal", order.subtotal);
   addTotalRow("Shipping Charge", order.shippingCharge || 0);
   addTotalRow("Discount", order.discount ? `-${order.discount}` : "-0");
 
-  position += 5;
+  doc.moveDown(0.2);
   addTotalRow("TOTAL AMOUNT", order.totalAmount, true);
 
+  doc.moveDown(1);
+
   // --- FOOTER ---
-  doc.moveDown(3);
   doc
     .font("Helvetica")
-    .fontSize(10)
+    .fontSize(8)
     .text("Thank you for shopping with Autonex!", {
       align: "center",
+      width: PRINTABLE_WIDTH,
     });
 
   doc.end();
