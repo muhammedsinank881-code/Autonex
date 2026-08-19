@@ -17,6 +17,7 @@ import OrderTracking from "./OrderTracking";
 import { useCurrentUser } from "../../../hooks/mutations/useCurrentUser.js";
 import { useLogout } from "../../../hooks/mutations/useLogout";
 import { useSearchParams } from "react-router-dom";
+import ProfileAvatar from "../../../components/layout.jsx/ProfileAvatar.jsx";
 
 const ProfileLayout = () => {
   const { data: user, isLoading, isError } = useCurrentUser();
@@ -130,17 +131,7 @@ const ProfileLayout = () => {
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex flex-col w-72 border-r border-gray-100 bg-white p-6 shrink-0">
           <div className="flex items-center space-x-3.5 mb-8 pb-6 border-b border-gray-100">
-            <div className="w-12 h-12 rounded-full bg-[#0067B2]/10 text-[#0067B2] flex items-center justify-center font-bold">
-              {user?.profile ? (
-                <img
-                  src={user.profile?.url}
-                  alt={user.fullName}
-                  className="w-full h-full rounded-full object-cover"
-                />
-              ) : (
-                user?.fullName?.charAt(0).toUpperCase()
-              )}
-            </div>
+            <ProfileAvatar user={user} />
             <div className="overflow-hidden">
               <h3 className="text-sm font-bold truncate">{user?.fullName}</h3>
 

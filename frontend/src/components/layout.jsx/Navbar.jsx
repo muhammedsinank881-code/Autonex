@@ -18,6 +18,8 @@ import { useWishlist } from "../../hooks/wishlist/useWishlist";
 import LanguageSelector from "../common/LanguageSelector.jsx";
 import CurrencySelector from "../common/CurrencySelector.jsx";
 import { useTranslation } from "react-i18next";
+import { useCurrentUser } from "../../hooks/mutations/useCurrentUser.js";
+import ProfileAvatar from "./ProfileAvatar.jsx";
 
 
 const navItems = [
@@ -61,6 +63,7 @@ const navTranslations = {
 const Navbar = ({ onOpenCategory }) => {
   const { data: cart } = useCart();
   const { data: wishlist } = useWishlist();
+  const { data: user } = useCurrentUser();
   const { t } = useTranslation();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -158,14 +161,7 @@ const Navbar = ({ onOpenCategory }) => {
             <NavLink to="/account">
               {({ isActive }) => (
                 <div className="flex items-center gap-2 text-xs">
-                  <div
-                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${isActive
-                      ? "bg-[#288ED8] text-white"
-                      : "bg-[#1977BB] border border-[#288ED8] text-white hover:bg-gray-300/60"
-                      }`}
-                  >
-                    <User size={18} />
-                  </div>
+                  <ProfileAvatar user={user} />
 
                   <div className="text-left hidden xl:block">
                     <span

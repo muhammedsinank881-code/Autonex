@@ -208,7 +208,7 @@ const brands = brandData?.data || [];
                   />
                   <span className={selectedBrands.includes(brand._id) ? "text-[#006bc0] font-semibold" : ""}>{brand.name}</span>
                 </div>
-                <span className="text-[10px] text-slate-400">({brand.count})</span>
+                <span className="text-[10px] text-slate-400">({brand.productsCount})</span>
               </label>
             ))}
           </div>
