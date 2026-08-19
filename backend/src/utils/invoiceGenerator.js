@@ -1,7 +1,7 @@
 import PDFDocument from "pdfkit";
 
 export const generateInvoice = (order, res) => {
-  const PAGE_WIDTH = 226; // ~80mm
+  const PAGE_WIDTH = 256; // ~80mm
   const MARGIN = 10;
   const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
 
@@ -19,7 +19,7 @@ export const generateInvoice = (order, res) => {
   }, 0);
 
   const calculatedHeight =
-    245 +
+    275 +
     estimatedItemHeight +
     (order.shippingAddress.addressLine2 ? 8 : 0);
 
