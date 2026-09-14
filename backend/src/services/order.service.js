@@ -3,9 +3,11 @@ import Checkout from "../models/Checkout.js";
 import Order from "../models/Order.js";
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
+import User from "../models/User.js";
+
 import { generateQRCode } from "../utils/generateQRCode.js";
 import { sendOrderStatusEmail } from "./email/order.email.js";
-import User from "../models/User.js";
+import { sendOrderStatusWhatsApp } from "../whatsapp/order.whatsapp.js";
 
 const generateOrderNumber = () => {
   return `ORD-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -198,7 +200,10 @@ export const createOrder = async (checkoutId, paymentDetails) => {
     }
 
     try {
-      await sendWhatsAppOrderConfirmation(createdOrder);
+      await sendOrderStatusWhatsApp({
+        order: createdOrder,
+        message: "Your order has been placed successfully.",
+      });
     } catch (error) {
       console.error(
         `Failed to send WhatsApp confirmation for order ${createdOrder.orderNumber}:`,
@@ -297,6 +302,16 @@ export const updateOrderStatus = async ({
         error,
       );
     });
+
+    sendOrderStatusWhatsApp({
+      order: updatedOrder,
+      message: "Great news! Your order has been shipped.",
+    }).catch((error) => {
+      console.error(
+        `Failed to send shipped WhatsApp for order ${updatedOrder.orderNumber}:`,
+        error,
+      );
+    });
   }
 
   if (status === "DELIVERED") {
@@ -308,6 +323,16 @@ export const updateOrderStatus = async ({
     }).catch((error) => {
       console.error(
         `Failed to send delivered email for order ${updatedOrder.orderNumber}:`,
+        error,
+      );
+    });
+
+    sendOrderStatusWhatsApp({
+      order: updatedOrder,
+      message: "Your order has been delivered successfully.",
+    }).catch((error) => {
+      console.error(
+        `Failed to send delivered WhatsApp for order ${updatedOrder.orderNumber}:`,
         error,
       );
     });
@@ -429,6 +454,16 @@ export const cancelOrder = async ({ orderId, user, ipAddress, userAgent }) => {
     }).catch((error) => {
       console.error(
         `Failed to send cancellation email for order ${cancelledOrder.orderNumber}:`,
+        error,
+      );
+    });
+
+    sendOrderStatusWhatsApp({
+      order: cancelledOrder,
+      message: "Your order has been cancelled successfully.",
+    }).catch((error) => {
+      console.error(
+        `Failed to send cancellation WhatsApp for order ${cancelledOrder.orderNumber}:`,
         error,
       );
     });

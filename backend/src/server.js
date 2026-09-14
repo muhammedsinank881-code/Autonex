@@ -14,19 +14,26 @@ import brandRoutes from "./routes/brand.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
 import wishRoutes from "./routes/whishlist.routes.js";
 import addressRoutes from "./routes/address.routes.js";
-import dashboardRoutes from "./routes/dashboard.routes.js"
-import contactRoutes from "./routes/contact.routes.js"
-import checkoutRoutes from "./routes/checkout.routes.js"
-import paymentRoutes from "./routes/payment.routes.js"
-import orderRoutes from "./routes/order.routes.js"
-import reviewRoutes from "./routes/review.routes.js"
-import blogRoutes from "./routes/blog.routes.js"
-import faqRoutes from "./routes/faq.routes.js"
+import dashboardRoutes from "./routes/dashboard.routes.js";
+import contactRoutes from "./routes/contact.routes.js";
+import checkoutRoutes from "./routes/checkout.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
+import orderRoutes from "./routes/order.routes.js";
+import reviewRoutes from "./routes/review.routes.js";
+import blogRoutes from "./routes/blog.routes.js";
+import faqRoutes from "./routes/faq.routes.js";
 import settingsRoutes from "./routes/settings.routes.js";
 import app from "./app.js";
+
 import { errorHandler } from "./middlewares/error.middleware.js";
+import { startWhatsApp } from "./whatsapp/whatsapp.service.js";
 
 connectDB();
+
+const start = async () => {
+  await startWhatsApp();
+};
+start();
 
 app.use(cors(corsOptions));
 app.use(helmet());
@@ -46,12 +53,11 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/checkout", checkoutRoutes);
 app.use("/api/payments", paymentRoutes);
-app.use("/api/orders", orderRoutes);  
+app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/faqs", faqRoutes);
 app.use("/api/settings", settingsRoutes);
-
 
 app.use(errorHandler);
 
