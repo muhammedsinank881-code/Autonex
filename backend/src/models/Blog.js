@@ -54,14 +54,13 @@ const blogSchema = new mongoose.Schema(
 );
 
 // Pre-validate hook to generate slug if not present
-blogSchema.pre("validate", function (next) {
+blogSchema.pre("validate", function () {
   if (this.title && !this.slug) {
     this.slug = this.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)+/g, "");
   }
-  next();
 });
 
 // Create indexes
