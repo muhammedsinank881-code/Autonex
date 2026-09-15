@@ -1,34 +1,28 @@
-import React, { useState, useEffect } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuill } from "react-quilljs";
-import "quill/dist/quill.snow.css";
 
 // Using the legacy import so it doesn't break depending on vite config for css
 import { Save, X, Image as ImageIcon } from "lucide-react";
 import { useAdminBlogById } from "../../../hooks/blogs/useBlogQueries";
-import { useCreateBlog, useUpdateBlog } from "../../../hooks/blogs/useBlogMutations";
+import {
+  useCreateBlog,
+  useUpdateBlog,
+} from "../../../hooks/blogs/useBlogMutations";
 
-const CATEGORIES = ["Maintenance", "Upgrades", "Guides", "Engine Care", "Other"];
+const RichTextEditor = lazy(() => import("./RichTextEditor"));
+
+const CATEGORIES = [
+  "Maintenance",
+  "Upgrades",
+  "Guides",
+  "Engine Care",
+  "Other",
+];
 
 const CreateEditBlog = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = !!id;
-
-  const { quill, quillRef } = useQuill({
-    theme: "snow",
-    modules: {
-      toolbar: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline", "strike"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        [{ align: [] }],
-        ["blockquote", "code-block"],
-        ["link"],
-        ["clean"],
-      ],
-    },
-  });
 
   const { data: blogData, isLoading } = useAdminBlogById(id);
   const createBlog = useCreateBlog();
@@ -64,9 +58,12 @@ const CreateEditBlog = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleContentChange = (value) => {
-    setFormData((prev) => ({ ...prev, content: value }));
-  };
+  const handleContentChange = useCallback((value) => {
+    setFormData((prev) => ({
+      ...prev,
+      content: value,
+    }));
+  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -97,7 +94,7 @@ const CreateEditBlog = () => {
     if (isEditing) {
       updateBlog.mutate(
         { id, blogData: data },
-        { onSuccess: () => navigate("/admin/blogs") }
+        { onSuccess: () => navigate("/admin/blogs") },
       );
     } else {
       createBlog.mutate(data, { onSuccess: () => navigate("/admin/blogs") });
@@ -120,11 +117,15 @@ const CreateEditBlog = () => {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6 bg-white p-6 rounded-xl shadow-sm border border-slate-200"
+      >
         {/* Title */}
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Title</label>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Title
+          </label>
           <input
             type="text"
             name="title"
@@ -138,7 +139,9 @@ const CreateEditBlog = () => {
 
         {/* Excerpt */}
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Short Description (Excerpt)</label>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Short Description (Excerpt)
+          </label>
           <textarea
             name="excerpt"
             required
@@ -153,7 +156,9 @@ const CreateEditBlog = () => {
         {/* Categories & Status */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Category</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Category
+            </label>
             <select
               name="category"
               value={formData.category}
@@ -161,12 +166,16 @@ const CreateEditBlog = () => {
               className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-[#0066B2]"
             >
               {CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Status</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Status
+            </label>
             <select
               name="status"
               value={formData.status}
@@ -181,14 +190,23 @@ const CreateEditBlog = () => {
 
         {/* Image Upload */}
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Featured Image</label>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Featured Image
+          </label>
           <div className="flex items-start gap-6">
             <div
-              className={`w-40 h-24 rounded-lg flex items-center justify-center border-2 border-dashed ${imagePreview ? "border-transparent bg-slate-100" : "border-slate-300 bg-slate-50"
-                } overflow-hidden relative group`}
+              className={`w-40 h-24 rounded-lg flex items-center justify-center border-2 border-dashed ${
+                imagePreview
+                  ? "border-transparent bg-slate-100"
+                  : "border-slate-300 bg-slate-50"
+              } overflow-hidden relative group`}
             >
               {imagePreview ? (
-                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <div className="text-center text-slate-400">
                   <ImageIcon className="mx-auto w-6 h-6 mb-1" />
@@ -212,21 +230,22 @@ const CreateEditBlog = () => {
 
         {/* Rich Text Editor */}
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Content</label>
-          <div className="bg-white rounded-lg border border-slate-200">
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Content
-              </label>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Content
+          </label>
 
-              <div className="bg-white rounded-lg border border-slate-200">
-                <div
-                  ref={quillRef}
-                  className="min-h-[300px]"
-                />
+          <Suspense
+            fallback={
+              <div className="min-h-[300px] p-4 border border-slate-200 rounded-lg">
+                Loading editor...
               </div>
-            </div>
-          </div>
+            }
+          >
+            <RichTextEditor
+              value={formData.content}
+              onChange={handleContentChange}
+            />
+          </Suspense>
         </div>
 
         {/* Actions */}
@@ -247,7 +266,6 @@ const CreateEditBlog = () => {
             {isEditing ? "Save Changes" : "Create Blog"}
           </button>
         </div>
-
       </form>
     </div>
   );

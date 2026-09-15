@@ -17,6 +17,11 @@ export const useAddToCart = () => {
     },
 
     onError: (error) => {
+      if (error.response?.status === 401) {
+        toast.error("Please login to add product");
+        return;
+      }
+
       toast.error(error.response?.data?.message || "Failed to add item");
     },
   });

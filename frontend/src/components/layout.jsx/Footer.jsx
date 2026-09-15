@@ -11,7 +11,7 @@ import {
   Paypal,
   Skrill,
 } from "../../assets/icon.js";
-import WhiteLogo from "../../assets/icons/whiteLogo.png";
+import WhiteLogo from "../../assets/icons/whiteLogo.webp";
 
 const Footer = () => {
   return (
@@ -109,47 +109,47 @@ const Footer = () => {
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm text-gray-400">
               <li>
-                <Link to="/accessibility" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Accessibility Statement
                 </Link>
               </li>
               <li>
-                <Link to="/orders" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Your Orders
                 </Link>
               </li>
               <li>
-                <Link to="/returns" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Returns &amp; Replacements
                 </Link>
               </li>
               <li>
-                <Link to="/shipping-policy" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Shipping Rates &amp; Policies
                 </Link>
               </li>
               <li>
-                <Link to="/refund-policy" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Refund and Returns Policy
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Terms and Conditions
                 </Link>
               </li>
               <li>
-                <Link to="/cookie-settings" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Cookie Settings
                 </Link>
               </li>
               <li>
-                <Link to="/help" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Help Center
                 </Link>
               </li>
@@ -163,42 +163,42 @@ const Footer = () => {
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm text-gray-400">
               <li>
-                <Link to="/sell" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Sell on AUTONEX
                 </Link>
               </li>
               <li>
-                <Link to="/sell/services" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Sell Your Services on AUTONEX
                 </Link>
               </li>
               <li>
-                <Link to="/sell/business" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Sell on AUTONEX Business
                 </Link>
               </li>
               <li>
-                <Link to="/sell/apps" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Sell Your Apps on AUTONEX
                 </Link>
               </li>
               <li>
-                <Link to="/affiliate" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Become an Affiliate
                 </Link>
               </li>
               <li>
-                <Link to="/advertise" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Advertise Your Products
                 </Link>
               </li>
               <li>
-                <Link to="/sell/publish" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Sell &amp; Publish with Us
                 </Link>
               </li>
               <li>
-                <Link to="/vendor" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Become an AUTONEX Vendor
                 </Link>
               </li>
@@ -212,37 +212,37 @@ const Footer = () => {
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm text-gray-400">
               <li>
-                <Link to="/careers" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Careers for AUTONEX
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   About AUTONEX
                 </Link>
               </li>
               <li>
-                <Link to="/investor-relations" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Investor Relations
                 </Link>
               </li>
               <li>
-                <Link to="/devices" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   AUTONEX Devices
                 </Link>
               </li>
               <li>
-                <Link to="/reviews" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Customer Reviews
                 </Link>
               </li>
               <li>
-                <Link to="/social-responsibility" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Social Responsibility
                 </Link>
               </li>
               <li>
-                <Link to="/stores" className="hover:text-white transition-colors">
+                <Link to="/faq" className="hover:text-white transition-colors">
                   Store Locations
                 </Link>
               </li>
@@ -258,7 +258,7 @@ const Footer = () => {
               <img
                 src={WhiteLogo}
                 alt="Autonex Logo"
-                className="h-16 md:h-30 object-contain"
+                className="h-8 md:h-16 object-contain"
               />
             </Link>
 
@@ -266,28 +266,28 @@ const Footer = () => {
             <div className="flex items-center gap-4">
               <span className="text-xs md:text-sm text-gray-400">Follow Us:</span>
               <a
-                href="#"
+                href="https://facebook.com"
                 aria-label="Facebook"
                 className="text-gray-400 hover:text-white transition-colors p-1"
               >
                 <FaFacebook size={18} />
               </a>
               <a
-                href="#"
+                href="https://x.com"
                 aria-label="Twitter"
                 className="text-gray-400 hover:text-white transition-colors p-1"
               >
                 <FaTwitter size={18} />
               </a>
               <a
-                href="#"
+                href="https://instagram.com"
                 aria-label="Instagram"
                 className="text-gray-400 hover:text-white transition-colors p-1"
               >
                 <FaInstagram size={18} />
               </a>
               <a
-                href="#"
+                href="https://youtube.com"
                 aria-label="YouTube"
                 className="text-gray-400 hover:text-white transition-colors p-1"
               >

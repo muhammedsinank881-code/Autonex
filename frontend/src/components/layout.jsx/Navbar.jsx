@@ -11,8 +11,8 @@ import {
   X,
   Warehouse,
 } from "lucide-react";
-import Logo from "../../assets/icons/AutonexLogo.png";
-import WhiteLogo from "../../assets/icons/whiteLogo.png";
+import Logo from "../../assets/icons/AutonexLogo.webp";
+import WhiteLogo from "../../assets/icons/whiteLogo.webp";
 import { useCart } from "../../hooks/cart/useCart.js";
 import { useWishlist } from "../../hooks/wishlist/useWishlist";
 import LanguageSelector from "../common/LanguageSelector.jsx";
@@ -87,7 +87,7 @@ const Navbar = ({ onOpenCategory }) => {
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between text-[11px] text-white h-8">
           <div className="flex items-center gap-5">
             <Link
-              to="/contact"
+              to="/aboutus"
               className="hover:text-gray-900 transition-colors"
             >
               {t("navbar.about")}
@@ -120,7 +120,7 @@ const Navbar = ({ onOpenCategory }) => {
             <img
               src={WhiteLogo}
               alt="Autonex"
-              className="h-30 w-auto object-cover"
+              className="h-10 w-auto object-cover"
             />
           </Link>
 
@@ -323,7 +323,7 @@ const Navbar = ({ onOpenCategory }) => {
             <img
               src={WhiteLogo}
               alt="Autonex"
-              className="h-30 w-auto object-cover"
+              className="h-10 w-auto object-cover"
             />
           </Link>
 

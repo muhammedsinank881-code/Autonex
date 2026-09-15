@@ -1,6 +1,6 @@
 import React, { use, useState } from "react";
 import Sidebar from "./Sidebar";
-import Logo from "../../assets/icons/AutonexLogo.png";
+import Logo from "../../assets/icons/AutonexLogo.webp";
 import { Search, Warehouse, Menu, X } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -46,24 +46,9 @@ export default function AdminLayout() {
                 <img
                   src={Logo}
                   alt="Autonex"
-                  className="h-30 w-auto object-cover"
+                  className="h-10 w-auto object-cover"
                 />
               </Link>
-            </div>
-
-            {/* Search Bar */}
-            <div className="flex-1 hidden md:block max-w-xl relative">
-              <input
-                type="text"
-                placeholder="Search inventory, orders..."
-                className="w-full bg-[#F8FAFC] border border-slate-200 rounded-full py-1.5 sm:py-2 pl-3 sm:pl-4 pr-9 sm:pr-10 text-xs text-slate-700 outline-none focus:border-[#0066B2] focus:bg-white transition-all shadow-sm"
-              />
-              <button
-                aria-label="Search"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
-              >
-                <Search size={15} />
-              </button>
             </div>
 
             {/* User Action Items */}

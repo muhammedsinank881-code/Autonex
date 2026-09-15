@@ -160,7 +160,7 @@ const productSchema = new mongoose.Schema(
 productSchema.index({ name: "text" });
 productSchema.index({ category: 1 });
 productSchema.index({ brand: 1 });
-productSchema.index({ basePrice: 1 });
+productSchema.index({ price: 1 });
 productSchema.index({ createdAt: -1 });
 // For rating-based filtering and sorting on the product listing page
 productSchema.index({ averageRating: -1 });
