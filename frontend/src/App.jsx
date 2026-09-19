@@ -14,6 +14,7 @@ import EmployeeRoute from "./routes/EmployeeRoute.jsx";
 import MainLoader from "./components/layout.jsx/MainLoader.jsx";
 import CurrencyInitializer from "./components/common/CurrencyInitializer.jsx";
 import AboutPage from "./pages/blog&contact/AboutPage.jsx";
+import Coupon from "./components/admin/coupon/Coupon.jsx";
 
 // Public pages
 const Home = lazy(() => import("./pages/home/Home"));
@@ -202,6 +203,8 @@ const App = () => {
               <Route path="faqs/:id/edit" element={<CreateEditFAQ />} />
 
               <Route path="users" element={<UsersView />} />
+
+              <Route path="coupon" element={<Coupon />} />
 
               <Route path="settings" element={<Settings />} />
             </Route>

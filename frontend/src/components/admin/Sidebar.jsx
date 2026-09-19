@@ -12,7 +12,8 @@ import {
   Settings,
   Star,
   FileText,
-  MessageSquare
+  MessageSquare,
+  TicketPercent 
 } from "lucide-react";
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -27,7 +28,8 @@ export default function Sidebar({ isOpen, onClose }) {
     { id: "reviews", label: "Reviews", path: "/admin/reviews", icon: Star },
     { id: "blog", label: "Blog", path: "/admin/blogs", icon: FileText },
     { id: "faq", label: "FAQ", path: "/admin/faqs", icon: MessageSquare },
-    { id: "users", label: "Users", path: "/admin/users", icon: Users },
+    { id: "users", label: "Users", path: "/admin/users", icon: Users }, 
+    { id:"coupon" , label:"Coupons" , path:"/admin/coupon" , icon: TicketPercent }
   ];
 
   const handleLogout = () => {

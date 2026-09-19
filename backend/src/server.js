@@ -22,10 +22,10 @@ import reviewRoutes from "./routes/review.routes.js";
 import blogRoutes from "./routes/blog.routes.js";
 import faqRoutes from "./routes/faq.routes.js";
 import settingsRoutes from "./routes/settings.routes.js";
+import couponRoutes from "./routes/coupon.routes.js";
 
 import app from "./app.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
-import { startWhatsApp } from "./whatsapp/whatsapp.service.js";
 
 const PORT = process.env.PORT || 5000;
 
@@ -54,6 +54,7 @@ const startServer = async () => {
     app.use("/api/blogs", blogRoutes);
     app.use("/api/faqs", faqRoutes);
     app.use("/api/settings", settingsRoutes);
+    app.use("/api/coupons", couponRoutes);
 
     // Global error handler must be registered last.
     app.use(errorHandler);

@@ -13,7 +13,7 @@ const CATEGORY_TABS = [
   {
     id: 1,
     name: "Oils & Fluids",
-    categoryNames: ["Engine Oil", "Brake Fluid", "Transmission Oil"],
+    categoryNames: ["Engine Oil"],
   },
   {
     id: 2,
