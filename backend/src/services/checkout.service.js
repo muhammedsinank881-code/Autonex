@@ -145,43 +145,20 @@ export const checkoutService = async (userId, body) => {
       }
     }
 
-    if (eligibleAmount === 0) {
-      throw new Error(
-        "This coupon is not applicable to any products in your cart",
+    if (eligibleAmount > 0) {
+      discount = Number(
+        ((eligibleAmount * coupon.discountPercentage) / 100).toFixed(2),
       );
-    }
-
-    discount = Number(
-      ((eligibleAmount * coupon.discountPercentage) / 100).toFixed(2),
-    );
-
-    appliedCoupon = {
-      couponId: coupon._id,
-      code: coupon.code,
-      percentage: coupon.discountPercentage,
-      discount,
-    };
-  }
-
-  // 1. Admin disabled coupons
-  if (!COUPON_ENABLED) {
-    discount = 0;
-    appliedCoupon = null;
-  } else {
-    if (!couponCode || couponCode.trim() === "") {
-      discount = 0;
-      appliedCoupon = null;
-    } else {
-      if (couponCode.trim().toUpperCase() !== COUPON_CODE.toUpperCase()) {
-        throw new Error("Wrong coupon code");
-      }
-
-      discount = Number(((subtotal * COUPON_DISCOUNT) / 100).toFixed(2));
 
       appliedCoupon = {
-        code: COUPON_CODE,
-        percentage: COUPON_DISCOUNT,
+        couponId: coupon._id,
+        code: coupon.code,
+        percentage: coupon.discountPercentage,
+        discount,
       };
+    } else {
+      discount = 0;
+      appliedCoupon = null;
     }
   }
 

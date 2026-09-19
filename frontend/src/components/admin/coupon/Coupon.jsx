@@ -18,16 +18,22 @@ import {
   CheckCircle2,
   DollarSign,
   RefreshCw,
+  Loader2,
 } from "lucide-react";
 import { useCoupons } from "../../../hooks/coupon/useCoupons";
+import { useCreateCoupon } from "../../../hooks/coupon/useCreateCoupon";
+import { useUpdateCoupon } from "../../../hooks/coupon/useUpdateCoupon";
+import { useDeleteCoupon } from "../../../hooks/coupon/useDeleteCoupon";
 
 export default function CouponDashboard() {
   const {
-    data: coupons = [],
+    data,
     isLoading: couponsLoading,
     isError: couponsError,
     refetch,
   } = useCoupons();
+
+  const coupons = data?.data ?? [];
 
   const createCouponMutation = useCreateCoupon();
   const updateCouponMutation = useUpdateCoupon();
@@ -47,7 +53,7 @@ export default function CouponDashboard() {
   const [deletingCouponId, setDeletingCouponId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
 
-  // Notification Toast
+  // Notification Toast State
   const [toastMessage, setToastMessage] = useState(null);
 
   const showToast = (message) => {
@@ -63,18 +69,53 @@ export default function CouponDashboard() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  // Toggle Featured status
+  const handleToggleFeatured = (coupon) => {
+    updateCouponMutation.mutate(
+      {
+        id: coupon.id,
+        updatedData: { ...coupon, isFeatured: !coupon.isFeatured },
+      },
+      {
+        onSuccess: () => {
+          showToast(
+            `Coupon marked as ${!coupon.isFeatured ? "Featured" : "Unfeatured"}`,
+          );
+        },
+        onError: (err) => {
+          showToast(err?.message || "Failed to update featured status");
+        },
+      },
+    );
+  };
+
+
+  // Delete Handler
+  const handleConfirmDelete = () => {
+    if (!deletingCouponId) return;
+    deleteCouponMutation.mutate(deletingCouponId, {
+      onSuccess: () => {
+        setDeletingCouponId(null);
+        showToast("Coupon deleted successfully");
+      },
+      onError: (err) => {
+        showToast(err?.message || "Failed to delete coupon");
+      },
+    });
+  };
+
   // Filtered Coupons Computation
   const filteredCoupons = useMemo(() => {
     return coupons.filter((coupon) => {
       const matchesSearch =
-        coupon.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        coupon.applicableProducts
+        (coupon.code || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (coupon.applicableProducts || "")
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
 
       const matchesStatus =
         statusFilter === "ALL" ||
-        coupon.status.toUpperCase() === statusFilter.toUpperCase();
+        (coupon.status || "").toUpperCase() === statusFilter.toUpperCase();
 
       return matchesSearch && matchesStatus;
     });
@@ -97,7 +138,7 @@ export default function CouponDashboard() {
         </div>
       )}
 
-      {}
+      {/* Header Controls */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
         <div className="flex items-center gap-2">
           <Tag className="w-5 h-5 text-[#0066B2]" />
@@ -130,30 +171,15 @@ export default function CouponDashboard() {
             )}
           </div>
 
-          {/* Status Filter */}
-          <div className="flex items-center gap-1.5">
-            <Filter className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="text-xs py-2 px-3 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#0066B2]/20 focus:border-[#0066B2]"
-            >
-              <option value="ALL">All Status</option>
-              <option value="ACTIVE">Active</option>
-              <option value="INACTIVE">Inactive</option>
-            </select>
-          </div>
-
           {/* Refresh Data Button */}
           <button
-            onClick={refetch}
+            onClick={() => refetch()}
             title="Refresh"
             className="p-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition self-center"
           >
-            <RefreshCw className={`w-4 h-4 ${couponsLoading  ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`w-4 h-4 ${couponsLoading ? "animate-spin" : ""}`}
+            />
           </button>
 
           {/* Add Coupon Button */}
@@ -166,7 +192,7 @@ export default function CouponDashboard() {
         </div>
       </div>
 
-      {}
+      {/* Coupons Table */}
       <div className="bg-white w-full rounded-xl border border-slate-200 shadow-sm overflow-hidden text-xs flex flex-col text-slate-800">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left">
@@ -183,12 +209,29 @@ export default function CouponDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {loading ? (
+              {couponsLoading ? (
                 <tr>
                   <td colSpan="8" className="py-12 text-center text-slate-400">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <RefreshCw className="w-5 h-5 animate-spin text-[#0066B2]" />
                       <span>Loading coupons...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : couponsError ? (
+                <tr>
+                  <td colSpan="8" className="py-12 text-center text-red-500">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <AlertCircle className="w-6 h-6 text-red-500" />
+                      <p className="text-sm font-semibold">
+                        Failed to load coupons
+                      </p>
+                      <button
+                        onClick={() => refetch()}
+                        className="text-xs text-[#0066B2] underline hover:text-[#005290]"
+                      >
+                        Try Again
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -210,7 +253,7 @@ export default function CouponDashboard() {
               ) : (
                 paginatedCoupons.map((c) => (
                   <tr
-                    key={c.id}
+                    key={c.id || c._id}
                     className="hover:bg-slate-50/80 transition-colors"
                   >
                     {/* Code & Copy Button */}
@@ -220,11 +263,11 @@ export default function CouponDashboard() {
                           {c.code}
                         </span>
                         <button
-                          onClick={() => handleCopyCode(c.code, c.id)}
+                          onClick={() => handleCopyCode(c.code, c.id || c._id)}
                           className="text-slate-400 hover:text-[#0066B2] transition p-1 rounded hover:bg-slate-100"
                           title="Copy Code"
                         >
-                          {copiedId === c.id ? (
+                          {copiedId === (c.id || c._id) ? (
                             <Check className="w-3.5 h-3.5 text-emerald-600" />
                           ) : (
                             <Copy className="w-3.5 h-3.5" />
@@ -237,11 +280,11 @@ export default function CouponDashboard() {
                     <td className="py-3 px-4 font-semibold text-slate-900">
                       {c.type === "percentage" ? (
                         <span className="inline-flex items-center gap-1 text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded font-medium">
-                          <Percent className="w-3 h-3" /> {c.discountValue}% OFF
+                          <Percent className="w-3 h-3" /> {c.discountPercentage}% OFF
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-medium">
-                          <DollarSign className="w-3 h-3" /> ${c.discountValue}{" "}
+                          <DollarSign className="w-3 h-3" /> ${c.discountPercentage}{" "}
                           OFF
                         </span>
                       )}
@@ -252,7 +295,7 @@ export default function CouponDashboard() {
                       className="py-3 px-4 text-slate-600 max-w-xs truncate"
                       title={c.applicableProducts}
                     >
-                      {c.applicableProducts}
+                      {c.applicableProducts || "All Products"}
                     </td>
 
                     {/* Start Date */}
@@ -274,8 +317,7 @@ export default function CouponDashboard() {
                     {/* Is Featured Toggle */}
                     <td className="py-3 px-4 text-center">
                       <button
-                        onClick={() => toggleFeatured(c.id)}
-                        className={`p-1.5 rounded-full transition ${
+                        className={`p-1.5 rounded-full transition  ${
                           c.isFeatured
                             ? "text-amber-500 bg-amber-50 hover:bg-amber-100"
                             : "text-slate-300 hover:text-slate-400"
@@ -283,7 +325,9 @@ export default function CouponDashboard() {
                         title={c.isFeatured ? "Featured" : "Mark as Featured"}
                       >
                         <Sparkles
-                          className={`w-4 h-4 ${c.isFeatured ? "fill-amber-400" : ""}`}
+                          className={`w-4 h-4 ${
+                            c.isFeatured ? "fill-amber-400" : ""
+                          }`}
                         />
                       </button>
                     </td>
@@ -291,21 +335,20 @@ export default function CouponDashboard() {
                     {/* Status Badge & Toggle */}
                     <td className="py-3 px-4 whitespace-nowrap">
                       <button
-                        onClick={() => toggleStatus(c.id)}
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition ${
-                          c.status === "Active"
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition disabled:opacity-50 ${
+                          c.isActive === "Active"
                             ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
                             : "bg-amber-100 text-amber-800 hover:bg-amber-200"
                         }`}
                       >
                         <span
                           className={`w-1.5 h-1.5 rounded-full ${
-                            c.status === "Active"
+                            c.isActive === true
                               ? "bg-emerald-500"
                               : "bg-amber-500"
                           }`}
                         ></span>
-                        {c.status}
+                        {c.isActive}
                       </button>
                     </td>
 
@@ -320,7 +363,7 @@ export default function CouponDashboard() {
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
-                          onClick={() => setDeletingCouponId(c.id)}
+                          onClick={() => setDeletingCouponId(c.id || c._id)}
                           className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-md transition"
                           title="Delete Coupon"
                         >
@@ -379,30 +422,51 @@ export default function CouponDashboard() {
         </div>
       </div>
 
-      {}
+      {/* Add / Edit Form Modal */}
       {(isAddModalOpen || editingCoupon) && (
         <CouponFormModal
           isOpen={isAddModalOpen || Boolean(editingCoupon)}
           initialData={editingCoupon}
+          isSubmitting={
+            createCouponMutation.isPending || updateCouponMutation.isPending
+          }
           onClose={() => {
             setIsAddModalOpen(false);
             setEditingCoupon(null);
           }}
-          onSubmit={async (formData) => {
+          onSubmit={(formData) => {
             if (editingCoupon) {
-              await updateCoupon(editingCoupon.id, formData);
-              showToast("Coupon updated successfully!");
+              const targetId = editingCoupon.id || editingCoupon._id;
+              updateCouponMutation.mutate(
+                { id: targetId, data: formData },
+                {
+                  onSuccess: () => {
+                    showToast("Coupon updated successfully!");
+                    setIsAddModalOpen(false);
+                    setEditingCoupon(null);
+                  },
+                  onError: (err) => {
+                    showToast(err?.message || "Failed to update coupon");
+                  },
+                },
+              );
             } else {
-              await addCoupon(formData);
-              showToast("New coupon created successfully!");
+              createCouponMutation.mutate(formData, {
+                onSuccess: () => {
+                  showToast("New coupon created successfully!");
+                  setIsAddModalOpen(false);
+                  setEditingCoupon(null);
+                },
+                onError: (err) => {
+                  showToast(err?.message || "Failed to create coupon");
+                },
+              });
             }
-            setIsAddModalOpen(false);
-            setEditingCoupon(null);
           }}
         />
       )}
 
-      {}
+      {/* Delete Confirmation Modal */}
       {deletingCouponId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fadeIn">
           <div className="bg-white rounded-xl shadow-2xl border border-slate-200 p-6 max-w-sm w-full space-y-4">
@@ -421,19 +485,24 @@ export default function CouponDashboard() {
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setDeletingCouponId(null)}
-                className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 border border-slate-200 transition"
+                disabled={deleteCouponMutation.isPending}
+                className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 border border-slate-200 transition disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
-                onClick={async () => {
-                  await deleteCoupon(deletingCouponId);
-                  setDeletingCouponId(null);
-                  showToast("Coupon deleted successfully");
-                }}
-                className="px-4 py-2 rounded-lg text-xs font-semibold text-white bg-red-600 hover:bg-red-700 shadow-md transition"
+                onClick={handleConfirmDelete}
+                disabled={deleteCouponMutation.isPending}
+                className="px-4 py-2 rounded-lg text-xs font-semibold text-white bg-red-600 hover:bg-red-700 shadow-md transition flex items-center gap-1.5 disabled:opacity-50"
               >
-                Confirm Delete
+                {deleteCouponMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Confirm Delete"
+                )}
               </button>
             </div>
           </div>
@@ -443,11 +512,17 @@ export default function CouponDashboard() {
   );
 }
 
-function CouponFormModal({ isOpen, onClose, onSubmit, initialData }) {
+function CouponFormModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  isSubmitting,
+}) {
   const [formData, setFormData] = useState({
     code: initialData?.code || "",
     type: initialData?.type || "percentage",
-    discountValue: initialData?.discountValue || 10,
+    discountPercentage: initialData?.discountPercentage,
     applicableProducts: initialData?.applicableProducts || "All Products",
     startDate: initialData?.startDate || new Date().toISOString().split("T")[0],
     endDate: initialData?.endDate || "",
@@ -517,37 +592,22 @@ function CouponFormModal({ isOpen, onClose, onSubmit, initialData }) {
             </div>
           </div>
 
-          {/* Type & Value */}
+          {/*  Value */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block font-semibold text-slate-700 mb-1">
-                Discount Type
-              </label>
-              <select
-                value={formData.type}
-                onChange={(e) =>
-                  setFormData({ ...formData, type: e.target.value })
-                }
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#0066B2]/20 focus:border-[#0066B2]"
-              >
-                <option value="percentage">Percentage (%)</option>
-                <option value="fixed">Fixed Amount ($)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block font-semibold text-slate-700 mb-1">
-                Discount Value
+                Discount Value <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
                 min="1"
+                max="99"
                 required
-                value={formData.discountValue}
+                value={formData.discountPercentage}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    discountValue: Number(e.target.value),
+                    discountPercentage : Number(e.target.value),
                   })
                 }
                 className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#0066B2]/20 focus:border-[#0066B2]"
@@ -590,7 +650,7 @@ function CouponFormModal({ isOpen, onClose, onSubmit, initialData }) {
 
             <div>
               <label className="block font-semibold text-slate-700 mb-1">
-                End Date
+                End Date <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
@@ -638,15 +698,26 @@ function CouponFormModal({ isOpen, onClose, onSubmit, initialData }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg font-semibold text-slate-600 hover:bg-slate-100 border border-slate-200 transition"
+              disabled={isSubmitting}
+              className="px-4 py-2 rounded-lg font-semibold text-slate-600 hover:bg-slate-100 border border-slate-200 transition disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-[#0066B2] hover:bg-[#005290] text-white font-bold rounded-lg shadow-md transition"
+              disabled={isSubmitting}
+              className="px-4 py-2 bg-[#0066B2] hover:bg-[#005290] text-white font-bold rounded-lg shadow-md transition flex items-center gap-1.5 disabled:opacity-50"
             >
-              {initialData ? "Save Changes" : "Create Coupon"}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  Saving...
+                </>
+              ) : initialData ? (
+                "Save Changes"
+              ) : (
+                "Create Coupon"
+              )}
             </button>
           </div>
         </form>
