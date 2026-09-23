@@ -148,6 +148,13 @@ export const updateCouponService = async (id, data) => {
     throw new Error("Coupon not found.");
   }
 
+  if (
+    data.applyTo !== undefined &&
+    !["all", "category", "brand", "products"].includes(data.applyTo)
+  ) {
+    throw new Error("Invalid coupon target.");
+  }
+
   // Check duplicate coupon code
   if (data.code) {
     data.code = data.code.trim().toUpperCase();
@@ -208,6 +215,28 @@ export const updateCouponService = async (id, data) => {
     if (data.isFeatured === true) {
       await removeFeaturedFromAll(id);
     }
+  }
+
+  // Handle coupon target
+  if (data.applyTo === "all") {
+    data.category = null;
+    data.brand = null;
+    data.products = [];
+  }
+
+  if (data.applyTo === "category") {
+    data.brand = null;
+    data.products = [];
+  }
+
+  if (data.applyTo === "brand") {
+    data.category = null;
+    data.products = [];
+  }
+
+  if (data.applyTo === "products") {
+    data.category = null;
+    data.brand = null;
   }
 
   return await updateCoupon(id, data);

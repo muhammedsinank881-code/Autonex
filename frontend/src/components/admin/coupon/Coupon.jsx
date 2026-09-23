@@ -89,7 +89,6 @@ export default function CouponDashboard() {
     );
   };
 
-
   // Delete Handler
   const handleConfirmDelete = () => {
     if (!deletingCouponId) return;
@@ -280,12 +279,13 @@ export default function CouponDashboard() {
                     <td className="py-3 px-4 font-semibold text-slate-900">
                       {c.type === "percentage" ? (
                         <span className="inline-flex items-center gap-1 text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded font-medium">
-                          <Percent className="w-3 h-3" /> {c.discountPercentage}% OFF
+                          <Percent className="w-3 h-3" /> {c.discountPercentage}
+                          % OFF
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-medium">
-                          <DollarSign className="w-3 h-3" /> ${c.discountPercentage}{" "}
-                          OFF
+                          <DollarSign className="w-3 h-3" /> $
+                          {c.discountPercentage} OFF
                         </span>
                       )}
                     </td>
@@ -522,8 +522,11 @@ function CouponFormModal({
   const [formData, setFormData] = useState({
     code: initialData?.code || "",
     type: initialData?.type || "percentage",
-    discountPercentage: initialData?.discountPercentage,
-    applicableProducts: initialData?.applicableProducts || "All Products",
+    applyTo: initialData?.applyTo || "all",
+    discountPercentage: initialData?.discountPercentage || "",
+    category: initialData?.category || "",
+    brand: initialData?.brand || "",
+    products: initialData?.products || [],
     startDate: initialData?.startDate || new Date().toISOString().split("T")[0],
     endDate: initialData?.endDate || "",
     isFeatured: initialData?.isFeatured || false,
@@ -607,28 +610,97 @@ function CouponFormModal({
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    discountPercentage : Number(e.target.value),
+                    discountPercentage: Number(e.target.value),
                   })
                 }
                 className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#0066B2]/20 focus:border-[#0066B2]"
               />
+            </div>
+
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">
+                Apply To
+              </label>
+
+              <select
+                value={formData.applyTo}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    applyTo: e.target.value,
+                  })
+                }
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white"
+              >
+                <option value="all">All Products</option>
+                <option value="category">Category</option>
+                <option value="brand">Brand</option>
+                <option value="products">Products</option>
+              </select>
             </div>
           </div>
 
           {/* Applicable Products */}
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Products / Categories
+              Products / Categories / Brand
             </label>
-            <input
-              type="text"
-              value={formData.applicableProducts}
-              onChange={(e) =>
-                setFormData({ ...formData, applicableProducts: e.target.value })
-              }
-              placeholder="e.g. All Products, Electronics"
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#0066B2]/20 focus:border-[#0066B2]"
-            />
+            {formData.applyTo === "all" && (
+              <input
+                type="text"
+                disabled
+                value="All Products"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-400"
+              />
+            )}
+
+            {formData.applyTo === "category" && (
+              <select
+                value={formData.category || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    category: e.target.value,
+                  })
+                }
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white"
+              >
+                <option value="">Select Category</option>
+                {/* categories will come here */}
+              </select>
+            )}
+
+            {formData.applyTo === "brand" && (
+              <select
+                value={formData.brand || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    brand: e.target.value,
+                  })
+                }
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white"
+              >
+                <option value="">Select Brand</option>
+                {/* brands will come here */}
+              </select>
+            )}
+
+            {formData.applyTo === "products" && (
+              <select
+                value={formData.products?.[0] || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    products: e.target.value ? [e.target.value] : [],
+                  })
+                }
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white"
+              >
+                <option value="">Select Product</option>
+                {/* products will come here */}
+              </select>
+            )}
           </div>
 
           {/* Start Date & End Date */}
