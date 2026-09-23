@@ -7,9 +7,9 @@ import {
   removeFeaturedFromAll,
   softDeleteCoupon,
   findFeaturedCoupon,
-  findCategoryById,
-  findBrandById,
   findProductsByIds,
+  findCategoriesByIds,
+  findBrandsByIds,
 } from "../repositories/coupon.repository.js";
 
 // Create Coupon
@@ -20,8 +20,8 @@ export const createCouponService = async (data) => {
     startDate,
     endDate,
     applyTo,
-    category,
-    brand,
+    categories,
+    brands,
     products,
     isActive,
     isFeatured,
@@ -33,10 +33,6 @@ export const createCouponService = async (data) => {
 
   if (discountPercentage === undefined || discountPercentage === null) {
     throw new Error("Discount percentage is required.");
-  }
-
-  if (discountPercentage < 1 || discountPercentage > 100) {
-    throw new Error("Discount percentage must be between 1 and 100.");
   }
 
   if (!startDate || !endDate) {
@@ -61,11 +57,11 @@ export const createCouponService = async (data) => {
     throw new Error("Invalid coupon target.");
   }
 
-  if (applyTo === "category" && !category) {
+  if (applyTo === "category" && (!categories || categories.length === 0)) {
     throw new Error("Category is required.");
   }
 
-  if (applyTo === "brand" && !brand) {
+  if (applyTo === "brand" && (!brands || brands.length === 0)) {
     throw new Error("Brand is required.");
   }
 
@@ -74,18 +70,18 @@ export const createCouponService = async (data) => {
   }
 
   if (applyTo === "category") {
-    const categoryExists = await findCategoryById(category);
+    const existingCategories = await findCategoriesByIds(categories);
 
-    if (!categoryExists) {
-      throw new Error("Category not found.");
+    if (existingCategories.length !== categories.length) {
+      throw new Error("One or more categories not found.");
     }
   }
 
   if (applyTo === "brand") {
-    const brandExists = await findBrandById(brand);
+    const existingBrands = await findBrandsByIds(brands);
 
-    if (!brandExists) {
-      throw new Error("Brand not found.");
+    if (existingBrands.length !== brands.length) {
+      throw new Error("One or more brands not found.");
     }
   }
 
@@ -97,6 +93,12 @@ export const createCouponService = async (data) => {
     }
   }
 
+  const discount = Number(discountPercentage);
+
+  if (isNaN(discount) || discount < 1 || discount > 100) {
+    throw new Error("Discount percentage must be between 1 and 100.");
+  }
+
   // If this coupon is featured,
   // remove featured status from all other coupons.
   if (isFeatured === true) {
@@ -105,14 +107,14 @@ export const createCouponService = async (data) => {
 
   return await createCoupon({
     code: code.trim().toUpperCase(),
-    discountPercentage: Number(discountPercentage),
+    discountPercentage: discount,
     startDate: parsedStartDate,
     endDate: parsedEndDate,
 
     applyTo,
 
-    category: applyTo === "category" ? category : null,
-    brand: applyTo === "brand" ? brand : null,
+    category: applyTo === "category" ? categories : [],
+    brand: applyTo === "brand" ? brands : [],
     products: applyTo === "products" ? products : [],
 
     isActive: isActive ?? true,
@@ -198,11 +200,6 @@ export const updateCouponService = async (id, data) => {
     data.endDate = endDate;
   }
 
-  // Products
-  if (data.products !== undefined) {
-    data.products = data.products;
-  }
-
   // Active status
   if (data.isActive !== undefined) {
     data.isActive = Boolean(data.isActive);
@@ -219,25 +216,60 @@ export const updateCouponService = async (id, data) => {
 
   // Handle coupon target
   if (data.applyTo === "all") {
-    data.category = null;
-    data.brand = null;
+    data.category = [];
+    data.brand = [];
     data.products = [];
   }
 
   if (data.applyTo === "category") {
-    data.brand = null;
+    if (!data.categories || data.categories.length === 0) {
+      throw new Error("Category is required.");
+    }
+
+    const existingCategories = await findCategoriesByIds(data.categories);
+
+    if (existingCategories.length !== data.categories.length) {
+      throw new Error("One or more categories not found.");
+    }
+
+    data.category = data.categories;
+    data.brand = [];
     data.products = [];
   }
 
   if (data.applyTo === "brand") {
-    data.category = null;
+    if (!data.brands || data.brands.length === 0) {
+      throw new Error("Brand is required.");
+    }
+
+    const existingBrands = await findBrandsByIds(data.brands);
+
+    if (existingBrands.length !== data.brands.length) {
+      throw new Error("One or more brands not found.");
+    }
+
+    data.category = [];
+    data.brand = data.brands;
     data.products = [];
   }
 
   if (data.applyTo === "products") {
-    data.category = null;
-    data.brand = null;
+    if (!data.products || data.products.length === 0) {
+      throw new Error("At least one product is required.");
+    }
+
+    const existingProducts = await findProductsByIds(data.products);
+
+    if (existingProducts.length !== data.products.length) {
+      throw new Error("One or more products not found.");
+    }
+
+    data.category = [];
+    data.brand = [];
   }
+
+  delete data.categories;
+  delete data.brands;
 
   return await updateCoupon(id, data);
 };

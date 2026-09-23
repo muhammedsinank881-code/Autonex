@@ -87,17 +87,13 @@ export const removeFeaturedFromAll = async (couponId = null) => {
 
 // Update
 export const updateCoupon = async (id, data) => {
-  return await Coupon.findOneAndUpdate(
-    {
-      _id: id,
-      isDeleted: false,
-    },
-    data,
-    {
-      new: true,
-      runValidators: true,
-    },
-  ).populate("products", "name sku images");
+  return await Coupon.findOneAndUpdate({ _id: id, isDeleted: false }, data, {
+    new: true,
+    runValidators: true,
+  })
+    .populate("category", "name")
+    .populate("brand", "name")
+    .populate("products", "name sku images");
 };
 
 // Soft delete
@@ -118,12 +114,16 @@ export const softDeleteCoupon = async (id) => {
   );
 };
 
-export const findCategoryById = async (categoryId) => {
-  return await Category.findById(categoryId);
+export const findCategoriesByIds = async (categoryIds) => {
+  return await Category.find({
+    _id: { $in: categoryIds },
+  });
 };
 
-export const findBrandById = async (brandId) => {
-  return await Brand.findById(brandId);
+export const findBrandsByIds = async (brandIds) => {
+  return await Brand.find({
+    _id: { $in: brandIds },
+  });
 };
 
 export const findProductsByIds = async (productIds) => {

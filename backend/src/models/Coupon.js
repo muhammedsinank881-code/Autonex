@@ -33,17 +33,19 @@ const couponSchema = new mongoose.Schema(
       default: "products",
     },
 
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      default: null,
-    },
+    category: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+      },
+    ],
 
-    brand: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Brand",
-      default: null,
-    },
+    brand: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Brand",
+        },
+    ],
 
     products: [
       {
