@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Tag, Info, ShoppingCart } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useGetDefaultAddress } from "../../hooks/address/useGetDefaultAddress";
 import { useCart } from "../../hooks/cart/useCart";
 import { useCheckout } from "../../hooks/checkout/useCheckout";
@@ -9,6 +9,7 @@ import Price from "../../components/common/Price";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Custom Hooks Data
   const { data: defaultAddress } = useGetDefaultAddress();
@@ -19,7 +20,9 @@ const CheckoutPage = () => {
 
   // Coupon toggle state
   const [showCouponInput, setShowCouponInput] = useState(false);
-  const [couponCode, setCouponCode] = useState("");
+  const [couponCode, setCouponCode] = useState(
+    location.state?.couponCode || "",
+  );
 
   // Form state
   const [formData, setFormData] = useState({
@@ -454,26 +457,7 @@ const CheckoutPage = () => {
                             className="font-semibold"
                           />
                         </span>
-                        <input
-                          type="radio"
-                          name="shipping"
-                          value="flat_rate"
-                          checked={shippingMethod === "flat_rate"}
-                          onChange={() => setShippingMethod("flat_rate")}
-                          className="text-blue-600 focus:ring-0"
-                        />
-                      </label>
-                      <label className="flex items-center gap-2 justify-end cursor-pointer text-gray-500">
-                        <span>Local pickup</span>
-                        <input
-                          type="radio"
-                          name="shipping"
-                          value="pickup"
-                          checked={shippingMethod === "pickup"}
-                          onChange={() => setShippingMethod("pickup")}
-                          className="text-blue-600 focus:ring-0"
-                        />
-                      </label>
+                        </label>
                     </div>
                   </div>
                 </div>
@@ -483,10 +467,7 @@ const CheckoutPage = () => {
                 {/* Total */}
                 <div className="flex justify-between items-center text-sm font-semibold text-gray-800 pt-1">
                   <span>Total</span>
-                  <Price
-                    amount={total}
-                    className="text-base"
-                  />
+                  <Price amount={total} className="text-base" />
                 </div>
 
                 {/* Payment Methods */}
@@ -507,10 +488,10 @@ const CheckoutPage = () => {
 
                     {paymentMethod === "RAZORPAY" && (
                       <div className="bg-gray-50 p-3 rounded text-[11px] text-gray-500 leading-relaxed border border-gray-100">
-                        Make your payment directly into our Razorpay account. Please
-                        use your Order ID as the payment reference. Your order
-                        will not be shipped until the funds have cleared in our
-                        account.
+                        Make your payment directly into our Razorpay account.
+                        Please use your Order ID as the payment reference. Your
+                        order will not be shipped until the funds have cleared
+                        in our account.
                       </div>
                     )}
                   </div>
@@ -534,8 +515,8 @@ const CheckoutPage = () => {
                 {/* Privacy Policy Notice */}
                 <p className="text-[11px] text-gray-500 leading-normal pt-2">
                   Your personal data will be used to process your order, support
-                  your experience throughout this website, and for other purposes
-                  described in our{" "}
+                  your experience throughout this website, and for other
+                  purposes described in our{" "}
                   <a href="#" className="text-gray-800 font-semibold underline">
                     privacy policy
                   </a>

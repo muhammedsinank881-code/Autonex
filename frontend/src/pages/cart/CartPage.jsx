@@ -10,7 +10,7 @@ import Price from "../../components/common/Price";
 
 const CartPage = () => {
   const navigate = useNavigate();
-  const { data, isLoading } = useCart();
+  const { data } = useCart();
   const { mutate: updateCart } = useUpdateCartItem();
   const { mutate: removeCartItem } = useRemoveCartItem();
   const { mutate: clearCart } = useClearCart();
@@ -18,7 +18,7 @@ const CartPage = () => {
   const cart = data?.data;
 
   const [couponCode, setCouponCode] = useState("");
-  const [shippingMethod, setShippingMethod] = useState("flat_rate");
+  const [shippingMethod] = useState("flat_rate");
 
   const cartItems =
     cart?.items?.map((item) => ({
@@ -244,38 +244,8 @@ const CartPage = () => {
                   {/* Shipping Selection */}
                   <div className="text-xs space-y-2">
                     <div className="flex justify-between text-gray-600 mb-1">
-                      <span>Shipping</span>
-                      <div className="text-right space-y-1">
-                        <label className="flex items-center gap-2 justify-end cursor-pointer">
-                          Flat rate:{" "}
-                          <Price
-                            amount={15}
-                            className="font-semibold"
-                          />
-                          <input
-                            type="radio"
-                            name="shipping"
-                            value="flat_rate"
-                            checked={shippingMethod === "flat_rate"}
-                            onChange={() => setShippingMethod("flat_rate")}
-                            className="text-blue-600 focus:ring-0"
-                          />
-                        </label>
-                        <label className="flex items-center gap-2 justify-end cursor-pointer text-gray-500">
-                          <span>Local pickup</span>
-                          <input
-                            type="radio"
-                            name="shipping"
-                            value="pickup"
-                            checked={shippingMethod === "pickup"}
-                            onChange={() => setShippingMethod("pickup")}
-                            className="text-blue-600 focus:ring-0"
-                          />
-                        </label>
-                      </div>
-                    </div>
-                    <div className="text-right text-[11px] text-gray-500 pt-1">
-                      Shipping to <strong>CA</strong>.
+                      <span>Shipping Charge</span>
+                      <span>15</span>
                     </div>
                   </div>
 
@@ -293,7 +263,9 @@ const CartPage = () => {
                   {/* Checkout Button */}
                   <button
                     className="w-full bg-[#0066b2] hover:bg-[#005290] text-white text-xs font-semibold py-3 px-4 rounded transition-colors mt-4"
-                    onClick={() => navigate("/cart/checkout")}
+                    onClick={() => navigate("/cart/checkout",{
+                      state: { couponCode },
+                    })}
                   >
                     Proceed to checkout
                   </button>
