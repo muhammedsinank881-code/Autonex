@@ -153,18 +153,26 @@ export const checkoutService = async (userId, body) => {
       }
 
       if (coupon.applyTo === "category") {
-        isEligible =
-          product.category?.toString() === coupon.category?.toString();
+        const product = productMap.get(item.productId.toString());
+
+        isEligible = coupon.category.some(
+          (categoryId) =>
+            categoryId.toString() === product.category?.toString(),
+        );
       }
 
       if (coupon.applyTo === "brand") {
-        isEligible = product.brand?.toString() === coupon.brand?.toString();
+        const product = productMap.get(item.productId.toString());
+
+        isEligible = coupon.brand.some(
+          (brandId) => brandId.toString() === product.brand?.toString(),
+        );
       }
 
       if (isEligible) {
         eligibleAmount += item.subtotal;
       }
-    } 
+    }
 
     if (eligibleAmount > 0) {
       discount = Number(
