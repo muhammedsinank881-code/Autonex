@@ -27,6 +27,24 @@ const couponSchema = new mongoose.Schema(
       required: true,
     },
 
+    applyTo: {
+      type: String,
+      enum: ["all", "category", "brand", "products"],
+      default: "products",
+    },
+
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      default: null,
+    },
+
+    brand: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brand",
+      default: null,
+    },
+
     products: [
       {
         type: mongoose.Schema.Types.ObjectId,

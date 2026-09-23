@@ -7,6 +7,9 @@ import {
   removeFeaturedFromAll,
   softDeleteCoupon,
   findFeaturedCoupon,
+  findCategoryById,
+  findBrandById,
+  findProductsByIds,
 } from "../repositories/coupon.repository.js";
 
 // Create Coupon
@@ -16,6 +19,9 @@ export const createCouponService = async (data) => {
     discountPercentage,
     startDate,
     endDate,
+    applyTo,
+    category,
+    brand,
     products,
     isActive,
     isFeatured,
@@ -50,6 +56,47 @@ export const createCouponService = async (data) => {
     throw new Error("Coupon code already exists.");
   }
 
+  // Validate coupon target
+  if (!["all", "category", "brand", "products"].includes(applyTo)) {
+    throw new Error("Invalid coupon target.");
+  }
+
+  if (applyTo === "category" && !category) {
+    throw new Error("Category is required.");
+  }
+
+  if (applyTo === "brand" && !brand) {
+    throw new Error("Brand is required.");
+  }
+
+  if (applyTo === "products" && (!products || products.length === 0)) {
+    throw new Error("At least one product is required.");
+  }
+
+  if (applyTo === "category") {
+    const categoryExists = await findCategoryById(category);
+
+    if (!categoryExists) {
+      throw new Error("Category not found.");
+    }
+  }
+
+  if (applyTo === "brand") {
+    const brandExists = await findBrandById(brand);
+
+    if (!brandExists) {
+      throw new Error("Brand not found.");
+    }
+  }
+
+  if (applyTo === "products") {
+    const existingProducts = await findProductsByIds(products);
+
+    if (existingProducts.length !== products.length) {
+      throw new Error("One or more products not found.");
+    }
+  }
+
   // If this coupon is featured,
   // remove featured status from all other coupons.
   if (isFeatured === true) {
@@ -61,7 +108,13 @@ export const createCouponService = async (data) => {
     discountPercentage: Number(discountPercentage),
     startDate: parsedStartDate,
     endDate: parsedEndDate,
-    products: products || [],
+
+    applyTo,
+
+    category: applyTo === "category" ? category : null,
+    brand: applyTo === "brand" ? brand : null,
+    products: applyTo === "products" ? products : [],
+
     isActive: isActive ?? true,
     isFeatured: isFeatured ?? false,
   });

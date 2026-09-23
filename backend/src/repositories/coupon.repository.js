@@ -1,4 +1,7 @@
+import Brand from "../models/Brand.js";
+import Category from "../models/Category.js";
 import Coupon from "../models/Coupon.js";
+import Product from "../models/Product.js";
 
 // Create
 export const createCoupon = async (data) => {
@@ -113,4 +116,18 @@ export const softDeleteCoupon = async (id) => {
       new: true,
     },
   );
+};
+
+export const findCategoryById = async (categoryId) => {
+  return await Category.findById(categoryId);
+};
+
+export const findBrandById = async (brandId) => {
+  return await Brand.findById(brandId);
+};
+
+export const findProductsByIds = async (productIds) => {
+  return await Product.find({
+    _id: { $in: productIds },
+  });
 };

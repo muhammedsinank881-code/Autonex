@@ -104,6 +104,10 @@ export const checkoutService = async (userId, body) => {
 
   const tax = Number(((subtotal * GST_PERCENT) / 100).toFixed(2));
 
+  const productMap = new Map(
+    cart.items.map((item) => [item.productId._id.toString(), item.productId]),
+  );
+
   // Coupon
 
   let discount = 0;
@@ -136,14 +140,31 @@ export const checkoutService = async (userId, body) => {
     let eligibleAmount = 0;
 
     for (const item of items) {
-      const isEligible = coupon.products.some(
-        (productId) => productId.toString() === item.productId.toString(),
-      );
+      let isEligible = false;
+
+      if (coupon.applyTo === "all") {
+        isEligible = true;
+      }
+
+      if (coupon.applyTo === "products") {
+        isEligible = coupon.products.some(
+          (productId) => productId.toString() === item.productId.toString(),
+        );
+      }
+
+      if (coupon.applyTo === "category") {
+        isEligible =
+          product.category?.toString() === coupon.category?.toString();
+      }
+
+      if (coupon.applyTo === "brand") {
+        isEligible = product.brand?.toString() === coupon.brand?.toString();
+      }
 
       if (isEligible) {
         eligibleAmount += item.subtotal;
       }
-    }
+    } 
 
     if (eligibleAmount > 0) {
       discount = Number(
