@@ -25,6 +25,11 @@ import { useCreateCoupon } from "../../../hooks/coupon/useCreateCoupon";
 import { useUpdateCoupon } from "../../../hooks/coupon/useUpdateCoupon";
 import { useDeleteCoupon } from "../../../hooks/coupon/useDeleteCoupon";
 
+import { useCategories } from "../../../hooks/categories/useCategories";
+import SearchableSelect from "./SearchableSelect";
+import { useBrands } from "../../../hooks/brands/useBrands";
+import { useProducts } from "../../../hooks/products/useProducts";
+
 export default function CouponDashboard() {
   const {
     data,
@@ -524,9 +529,11 @@ function CouponFormModal({
     type: initialData?.type || "percentage",
     applyTo: initialData?.applyTo || "all",
     discountPercentage: initialData?.discountPercentage || "",
-    category: initialData?.category || "",
-    brand: initialData?.brand || "",
+
+    categories: initialData?.categories || [],
+    brands: initialData?.brands || [],
     products: initialData?.products || [],
+
     startDate: initialData?.startDate || new Date().toISOString().split("T")[0],
     endDate: initialData?.endDate || "",
     isFeatured: initialData?.isFeatured || false,
@@ -534,6 +541,28 @@ function CouponFormModal({
   });
 
   if (!isOpen) return null;
+
+  const [categorySearch, setCategorySearch] = useState("");
+  const [brandSearch, setBrandSearch] = useState("");
+  const [productSearch, setProductSearch] = useState("");
+
+  const { data: categoryData } = useCategories({
+    search: categorySearch,
+    limit: 10,
+    enabled: categorySearch.length > 0,
+  });
+
+  const { data: brandData } = useBrands({
+    search: brandSearch,
+    limit: 10,
+    enabled: brandSearch.length > 0,
+  });
+
+  const { data: productData } = useProducts({
+    search: productSearch,
+    limit: 10,
+    enabled: productSearch.length > 0,
+  });
 
   const handleGenerateCode = () => {
     const random =
@@ -655,51 +684,48 @@ function CouponFormModal({
             )}
 
             {formData.applyTo === "category" && (
-              <select
-                value={formData.category || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    category: e.target.value,
-                  })
+              <SearchableSelect
+                value={formData.categories}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    categories: value,
+                  }))
                 }
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white"
-              >
-                <option value="">Select Category</option>
-                {/* categories will come here */}
-              </select>
+                data={categoryData?.data || ["empty"]}
+                placeholder="Search category..."
+                multiple
+              />
             )}
 
             {formData.applyTo === "brand" && (
-              <select
-                value={formData.brand || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    brand: e.target.value,
-                  })
+              <SearchableSelect
+                value={formData.brands}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    brands: value,
+                  }))
                 }
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white"
-              >
-                <option value="">Select Brand</option>
-                {/* brands will come here */}
-              </select>
+                data={brandData?.data || []}
+                placeholder="Search brand..."
+                multiple
+              />
             )}
 
             {formData.applyTo === "products" && (
-              <select
-                value={formData.products?.[0] || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    products: e.target.value ? [e.target.value] : [],
-                  })
+              <SearchableSelect
+                value={formData.products}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    products: value,
+                  }))
                 }
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white"
-              >
-                <option value="">Select Product</option>
-                {/* products will come here */}
-              </select>
+                data={productData?.data || []}
+                placeholder="Search products..."
+                multiple
+              />
             )}
           </div>
 
