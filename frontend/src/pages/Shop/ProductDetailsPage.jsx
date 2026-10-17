@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   Heart,
@@ -8,10 +8,11 @@ import {
   ShieldCheck,
   Minus,
   Plus,
+  icons,
+  Icon,
 } from "lucide-react";
 import ProductCard from "./ProductCard.jsx";
 import {
-  Call,
   Facebook,
   MiniCart,
   Pinterest,
@@ -26,6 +27,7 @@ import { useAddToCart } from "../../hooks/cart/useAddToCart";
 import { useCompare } from "../../context/CompareContext";
 import ProductReviews from "../../components/reviews/ProductReviews";
 import Price from "../../components/common/Price.jsx";
+import { shareProduct } from "../../utils/shareProduct.js";
 
 const ProductDetailsPage = ({ productId: propProductId }) => {
   const navigate = useNavigate();
@@ -38,7 +40,7 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
 
   const { mutate: removeFromWishlist } = useRemoveWishlist();
 
-  const { data, isLoading, isError } = useProduct(productId);
+  const { data, isLoading } = useProduct(productId);
 
   const { mutate: addToCart, isPending } = useAddToCart();
 
@@ -124,7 +126,7 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
         id: product.id,
         sku: product.sku || product.id?.substring(0, 8),
         title: product.name || "Untitled Product",
-        price: product.price || 0.00 ,
+        price: product.price || 0.00,
 
         rating: product.rating || 4,
         reviewsCount: product.reviewsCount || 0,
@@ -201,8 +203,8 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
                   key={i}
                   size={14}
                   className={`fill-current ${i < Math.floor(currentProduct.rating)
-                      ? "text-[#f5b300]"
-                      : "text-slate-200"
+                    ? "text-[#f5b300]"
+                    : "text-slate-200"
                     }`}
                 />
               ))}
@@ -257,8 +259,8 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
                   key={index}
                   onClick={() => setSelectedImage(index)}
                   className={`w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-lg bg-white overflow-hidden p-1 flex items-center justify-center text-[10px] text-slate-300 transition-all cursor-pointer ${selectedImage === index
-                      ? "border-2 border-[#006bc0] ring-1 ring-[#006bc0]"
-                      : "border border-slate-200"
+                    ? "border-2 border-[#006bc0] ring-1 ring-[#006bc0]"
+                    : "border border-slate-200"
                     }`}
                 >
                   {img?.startsWith("http") ? (
@@ -361,8 +363,8 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
                     }
                   }}
                   className={`flex items-center gap-1.5 transition-colors cursor-pointer ${isCurrentWishlisted
-                      ? "text-red-500 font-semibold"
-                      : "hover:text-red-500 text-slate-600"
+                    ? "text-red-500 font-semibold"
+                    : "hover:text-red-500 text-slate-600"
                     }`}
                 >
                   <Heart
@@ -416,18 +418,29 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs border-t border-slate-100 pt-4">
               <div className="flex items-center gap-2">
                 <span className="text-slate-800">Share:</span>
-                <span className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-blue-600 cursor-pointer transition-colors">
-                  <Facebook />
-                </span>
-                <span className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-blue-600 cursor-pointer transition-colors">
-                  <Twitter />
-                </span>
-                <span className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-blue-600 cursor-pointer transition-colors">
-                  <Pinterest />
-                </span>
-                <span className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-blue-600 cursor-pointer transition-colors">
-                  <Whatsapp />
-                </span>
+
+                {[
+                  { platform: "facebook", Icon: Facebook, label: "Share on Facebook" },
+                  { platform: "twitter", Icon: Twitter, label: "Share on X" },
+                  { platform: "pinterest", Icon: Pinterest, label: "Share on Pinterest" },
+                  { platform: "whatsapp", Icon: Whatsapp, label: "Share on WhatsApp" },
+                ].map(({ platform, Icon, label }) => (
+                  <button
+                    key={platform}
+                    type="button"
+                    aria-label="label"
+                    title="label"
+                    onClick={() => shareProduct(platform,
+                      {
+                        title: currentProduct.title,
+                        url: window.location.href,
+                        image: currentProduct.images?.[0] || "",
+                      })}
+                    className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-blue-600 
+                  hover:border-blue-300 cursor-pointer transition-colors">
+                    <Icon />
+                  </button>
+                ))}
               </div>
               <div className="flex sm:flex-col gap-3 sm:gap-1 items-start sm:items-end text-left sm:text-right text-[11px]">
                 <p>
@@ -453,8 +466,8 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
             <button
               onClick={() => setActiveTab("description")}
               className={`pb-2 transition-all cursor-pointer ${activeTab === "description"
-                  ? "text-[#006bc0] border-b-2 border-[#006bc0] font-semibold"
-                  : "text-slate-400 hover:text-slate-600"
+                ? "text-[#006bc0] border-b-2 border-[#006bc0] font-semibold"
+                : "text-slate-400 hover:text-slate-600"
                 }`}
             >
               Description
@@ -462,8 +475,8 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
             <button
               onClick={() => setActiveTab("info")}
               className={`pb-2 transition-all cursor-pointer ${activeTab === "info"
-                  ? "text-[#006bc0] border-b-2 border-[#006bc0] font-semibold"
-                  : "text-slate-400 hover:text-slate-600"
+                ? "text-[#006bc0] border-b-2 border-[#006bc0] font-semibold"
+                : "text-slate-400 hover:text-slate-600"
                 }`}
             >
               Additional Information
@@ -471,8 +484,8 @@ const ProductDetailsPage = ({ productId: propProductId }) => {
             <button
               onClick={() => setActiveTab("reviews")}
               className={`pb-2 transition-all cursor-pointer ${activeTab === "reviews"
-                  ? "text-[#006bc0] border-b-2 border-[#006bc0] font-semibold"
-                  : "text-slate-400 hover:text-slate-600"
+                ? "text-[#006bc0] border-b-2 border-[#006bc0] font-semibold"
+                : "text-slate-400 hover:text-slate-600"
                 }`}
             >
               Reviews {currentProduct.reviewCount > 0 ? `(${currentProduct.reviewCount})` : ""}
